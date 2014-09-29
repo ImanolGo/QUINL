@@ -1,31 +1,40 @@
 /*
-*	
-*	Description Quiet is the new loud. Prototype 1
-*	by Imanol Gomez
+* 
+* Description: Quiet is the new loud.
+*                Version 0.2
+* by Imanol Gomez
 *
 */
 
-
+ console.log("Starting QUINL");
+ 
 // OSC networking protocol
-network.startOSCServer(12000, function(name, data) { 
+console.log("Connecting to OSC server");
+ 
+var portNumber = 12000;
+
+network.startOSCServer(portNumber, function(name, data) { 
     console.log(name + " " + data);
 });
 
-var client = network.connectOSC("192.168.2.110", 12000);
+var client = network.connectOSC("192.168.2.110", portNumber);
+console.log("OSC Connected to port " + portNumber);
 
 //Set up some initial parameters
+console.log("Setup initial conditions");
 media.setVolume(50);
-ui.enableVolumeKeys(true);
+device.enableVolumeKeys(true);
 var currentTileID = -1;
-var SampleName = "Region1.ogg"
+var SampleName = "samples/Region1.ogg"
 
 
 //Create the data base
-
+console.log("Creating Data Base");
 var CREATE_TABLE = "CREATE TABLE tiles " + " ( id INT, lat1 REAL, lat2 REAL, lon1 REAL, lon2 REAL);" 
 var DROP_TABLE = "DROP TABLE IF EXISTS tiles;";
-var db = fileio.openSqlLite("tiles.db");//it opens the db if exists otherwise creates one 
-db.execSql(DROP_TABLE);//if db exists drop the existing table (reset)
+var dataBaseName = "tiles.db"
+var db = fileio.openSqlLite(dataBaseName);//it opens the db if exists otherwise creates one 
+console.log("Created data base: " + dataBaseName);
 
 var totalLat1 = 52.55592;
 var totalLat2 = 52.55783; 
@@ -36,8 +45,12 @@ var numRows = 3;
 var latSection = (totalLat2 - totalLat1)/numRows;
 var lonSection = (totalLon2 - totalLon1)/numColumns;
 
+//if db exists drop the existing table (reset)
+db.execSql(DROP_TABLE);
 //create and insert data 
 db.execSql(CREATE_TABLE);
+
+console.log("Inserting tiles to data base");
 
 var id = 0;
 for(var i = 0; i < numRows; i = i+1) {
@@ -52,35 +65,37 @@ for(var i = 0; i < numRows; i = i+1) {
          lon2_ = lon2_.toString();
          var id_ = id.toString();
          var valuesString = "(" + id_ + ", " +  lat1_ + ", " +  lat2_ + ", " +  lon1_ + ", " +  lon2_ + ");";
-         db.execSql("INSERT INTO tiles (id, lat1, lat2, lon1, lon2) VALUES " + valuesString);
-         
+         var dataBaseCommand = "INSERT INTO tiles (id, lat1, lat2, lon1, lon2) VALUES " + valuesString ;
+         db.execSql(dataBaseCommand);
+         //console.log("Command: " + dataBaseCommand);
          id = id + 1; 
     }
 }
 
-
-/// Create Map 
-
-var map = ui.addMap(0, 0, ui.screenWidth, ui.screenHeight);
+console.log("Creating Map");
+var map = ui.addMap(0, 350, ui.screenWidth, 500);
 map.moveTo(100 * Math.random(), 100 * Math.random());
 map.setCenter(1, 12);
 map.setZoom(18);
 map.showControls(true);
 
+console.log("Creating Labels");
 // Labels to hold lat, lng & city name values of current location
-var latLabel = ui.addLabel("Latitude : ",10,100,500,100);
-var lonLabel = ui.addLabel("Longitude : ",10,150,500,100);
-var altLabel = ui.addLabel("Altitude : ",10,200,500,100);
-var batteryLifeLabel = ui.addLabel("Battery Life : ",10,250,200,100);
+var latLabel = ui.addText("Latitude : ",10,100,500,100);
+var lonLabel = ui.addText("Longitude : ",10,150,500,100);
+var altLabel = ui.addText("Altitude : ",10,200,500,100);
+var batteryLifeLabel = ui.addText("Battery Life : ",10,250,200,100);
 
+console.log("Creating Buttons");
 ui.addButton("Region", 0, 0, 500, 100, function() { 
-	media.playSound(SampleName);
+  media.playSound(SampleName);
 });
 
+console.log("Reading from the data base");
 // Add Markers 
 var columns = ["id", "lat1", "lat2", "lon1", "lon2"];
 var c = db.query("tiles", columns); 
-console.log("We got " + c.getCount() + " positions"); // how many positions
+console.log("Data base has " + c.getCount() + " entries"); // how many positions
 
 //go through results
 var sectionsArray = []; // empty array
@@ -104,16 +119,15 @@ while (c.moveToNext()) {
   
   sectionsArray.push(section);
 } 
-
 db.close();
 
-
 //Send Mobile ID
-
 var mobileId = new Array();
 var info = device.getInfo();
 mobileId.push(info.id);
 client.send("/mobileId", mobileId);
+console.log("Mobile ID: " + mobileId);
+
 
 //for each GPS update the image and values are changed 
 sensors.startGPS(function (lat, lon, alt, speed, bearing) { 
@@ -144,7 +158,7 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
             currentTileID!=sectionsArray[i].id)
             { 
                 currentTileID=sectionsArray[i].id;
-                SampleName = "Region" + sectionsArray[i].id + ".ogg";
+                SampleName = "samples/Region" + sectionsArray[i].id + ".ogg";
                 media.playSound(SampleName);
                 console.log("Play sample: " + SampleName);
                 break;
@@ -154,6 +168,7 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     }
     
 });
+
 
 
 

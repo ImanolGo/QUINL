@@ -4,7 +4,7 @@ Creative Technologist: Imanol Gómez
 Url: imanolgomez.net
 E-mail: yo@imanolgomez.net 
 Date: 29/09/2014, Berlin.
-Title: Quiet is the new loudness
+Title: Quiet is the new loud
 
 -- About the Project --
 
