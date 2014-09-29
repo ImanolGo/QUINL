@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*                Version 0.2
+*                Version 0.3
 * by Imanol Gomez
 *
 */
@@ -26,7 +26,8 @@ media.setVolume(50);
 device.enableVolumeKeys(true);
 var currentTileID = -1;
 var SampleName = "samples/Region1.ogg"
-
+var BeaconId = 23;
+var BeaconStrength = 0.26;
 
 //Create the data base
 console.log("Creating Data Base");
@@ -73,7 +74,7 @@ for(var i = 0; i < numRows; i = i+1) {
 }
 
 console.log("Creating Map");
-var map = ui.addMap(0, 350, ui.screenWidth, 500);
+var map = ui.addMap(0, 400, ui.screenWidth, 500);
 map.moveTo(100 * Math.random(), 100 * Math.random());
 map.setCenter(1, 12);
 map.setZoom(18);
@@ -84,7 +85,8 @@ console.log("Creating Labels");
 var latLabel = ui.addText("Latitude : ",10,100,500,100);
 var lonLabel = ui.addText("Longitude : ",10,150,500,100);
 var altLabel = ui.addText("Altitude : ",10,200,500,100);
-var batteryLifeLabel = ui.addText("Battery Life : ",10,250,200,100);
+var regionLabel = ui.addText("Region : ",10,250,200,100);
+var batteryLifeLabel = ui.addText("Battery Life : ",10,300,200,100);
 
 console.log("Creating Buttons");
 ui.addButton("Region", 0, 0, 500, 100, function() { 
@@ -122,11 +124,12 @@ while (c.moveToNext()) {
 db.close();
 
 //Send Mobile ID
-var mobileId = new Array();
+var mobileIdArray = new Array();
 var info = device.getInfo();
-mobileId.push(info.id);
-client.send("/mobileId", mobileId);
-console.log("Mobile ID: " + mobileId);
+var MobileId = info.id;
+mobileIdArray.push(MobileId);
+client.send("/mobileId", mobileIdArray);
+console.log("Mobile ID: " + mobileIdArray);
 
 
 //for each GPS update the image and values are changed 
@@ -134,6 +137,7 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     latLabel.setText("Latitude : " + lat);
     lonLabel.setText("Longitude : " + lon);
     altLabel.setText("Altitude : " + alt);
+    regionLabel.setText("Region : " + currentTileID);
     batteryLifeLabel.setText("Battery Life : " + device.getBatteryLevel());
     var latitude = lat;
     var longitude  = lon;
@@ -157,10 +161,24 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
             longitude>=sectionsArray[i].lon1&&longitude<=sectionsArray[i].lon2 &&
             currentTileID!=sectionsArray[i].id)
             { 
+                regionLabel.setText("Region : " + sectionsArray[i].id);
                 currentTileID=sectionsArray[i].id;
                 SampleName = "samples/Region" + sectionsArray[i].id + ".ogg";
                 media.playSound(SampleName);
                 console.log("Play sample: " + SampleName);
+                
+                var date = getFormattedDate();
+                console.log("Date: " + date);
+                var url = "http://o-a.info/qitnl/track.php?time=" + date +
+                         "&phone=" + MobileId +
+                         "&bat=" + device.getBatteryLevel() +
+                          "&region=" + currentTileID +
+                          "&pos=" + latitude + "," + longitude +
+                          "&beacons=" + BeaconId + "," + BeaconStrength;
+                network.httpGet(url, function(status, response) { 
+                    console.log(status + " " + response);   
+                });
+          
                 break;
             }
         }
@@ -169,7 +187,26 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     
 });
 
-
+function getFormattedDate() {
+    var d = new Date();
+    var year = d.getFullYear();
+    //console.log("year: " + year);
+    var month = d.getMonth();
+    var monthInt = parseInt(month) + 1;
+    month = monthInt.toString();
+    if(monthInt<10){month = "0" + month;}
+    //console.log("month: " + month);
+    var day = d.getDate();
+    //console.log("day: " + day);
+    var hours = d.getHours();
+    //console.log("hours: " + hours);
+    var minutes = d.getMinutes();
+    //console.log("minutes: " + minutes);
+    var seconds = d.getSeconds();
+    //console.log("seconds: " + seconds);
+    var formattedString = year+month+day+hours+minutes+seconds;
+    return formattedString;    //Return the date          
+}
 
 
 
