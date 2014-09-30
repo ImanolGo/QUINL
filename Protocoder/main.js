@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*                Version 0.3
+*                Version 0.4
 * by Imanol Gomez
 *
 */
@@ -28,50 +28,8 @@ var currentTileID = -1;
 var SampleName = "samples/Region1.ogg"
 var BeaconId = 23;
 var BeaconStrength = 0.26;
+var RegionsArray = []; // empty array
 
-//Create the data base
-console.log("Creating Data Base");
-var CREATE_TABLE = "CREATE TABLE tiles " + " ( id INT, lat1 REAL, lat2 REAL, lon1 REAL, lon2 REAL);" 
-var DROP_TABLE = "DROP TABLE IF EXISTS tiles;";
-var dataBaseName = "tiles.db"
-var db = fileio.openSqlLite(dataBaseName);//it opens the db if exists otherwise creates one 
-console.log("Created data base: " + dataBaseName);
-
-var totalLat1 = 52.55592;
-var totalLat2 = 52.55783; 
-var totalLon1 = 13.38136;
-var totalLon2 = 13.38533;
-var numColumns = 4;
-var numRows = 3;
-var latSection = (totalLat2 - totalLat1)/numRows;
-var lonSection = (totalLon2 - totalLon1)/numColumns;
-
-//if db exists drop the existing table (reset)
-db.execSql(DROP_TABLE);
-//create and insert data 
-db.execSql(CREATE_TABLE);
-
-console.log("Inserting tiles to data base");
-
-var id = 0;
-for(var i = 0; i < numRows; i = i+1) {
-     for(var j = 0; j < numColumns; j = j+1) {
-         var lat1_ = totalLat1 + latSection*i;
-         var lat2_ = lat1_ + latSection;
-         var lon1_ = totalLon1 + lonSection*j;
-         var lon2_ = lon1_ + lonSection;
-         lat1_ = lat1_.toString();
-         lat2_ = lat2_.toString();
-         lon1_ = lon1_.toString();
-         lon2_ = lon2_.toString();
-         var id_ = id.toString();
-         var valuesString = "(" + id_ + ", " +  lat1_ + ", " +  lat2_ + ", " +  lon1_ + ", " +  lon2_ + ");";
-         var dataBaseCommand = "INSERT INTO tiles (id, lat1, lat2, lon1, lon2) VALUES " + valuesString ;
-         db.execSql(dataBaseCommand);
-         //console.log("Command: " + dataBaseCommand);
-         id = id + 1; 
-    }
-}
 
 console.log("Creating Map");
 var map = ui.addMap(0, 400, ui.screenWidth, 500);
@@ -93,35 +51,9 @@ ui.addButton("Region", 0, 0, 500, 100, function() {
   media.playSound(SampleName);
 });
 
-console.log("Reading from the data base");
-// Add Markers 
-var columns = ["id", "lat1", "lat2", "lon1", "lon2"];
-var c = db.query("tiles", columns); 
-console.log("Data base has " + c.getCount() + " entries"); // how many positions
+console.log("Reading regions...");
+readRegions();
 
-//go through results
-var sectionsArray = []; // empty array
-
-while (c.moveToNext()) {
-  var lat = c.getFloat(1) +  (c.getFloat(2) - c.getFloat(1))*0.5;
-  var lon = c.getFloat(3) +  (c.getFloat(4) - c.getFloat(3))*0.5;
-  //console.log("Add position " + id.toString() + ": lat = " + lat.toString() + ", lon = " + lon.toString());
-  console.log("Section " + c.getInt(0) + ": lat1 = " + c.getFloat(1)  + ", lat2 = " + c.getFloat(2)
-  + ": lon1 = " + c.getFloat(3)  + ", lon2 = " + c.getFloat(4));
-  map.addMarker("Position " + c.getInt(0), "text", lat, lon);
-  var section = {id: c.getInt(0), lat1: c.getFloat(1), lat2: c.getFloat(2), lon1: c.getFloat(3), lon2: c.getFloat(4)};
- 
-  var sectionOSC = new Array();
-  sectionOSC.push(section.id);
-  sectionOSC.push(section.lat1);
-  sectionOSC.push(section.lat2);
-  sectionOSC.push(section.lon1);
-  sectionOSC.push(section.lon2);
-  client.send("/section", sectionOSC);
-  
-  sectionsArray.push(section);
-} 
-db.close();
 
 //Send Mobile ID
 var mobileIdArray = new Array();
@@ -186,6 +118,83 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     }
     
 });
+
+function readRegions() {
+
+    console.log("Reading Regions");
+    //read data and store it in readData
+    var readData = fileio.loadStrings("data/regions.txt");
+    
+    for(var i = 0; i < readData.length; i++) { 
+      console.log(readData[i]);  
+      var id = readData[i].split(",")[0];
+      var info = readData[i].split(",")[1];
+      var lat1 = info.split(" ")[0];
+      var lon1 = info.split(" ")[1];
+      var lat2 = info.split(" ")[2];
+      var lon2 = info.split(" ")[3];
+      var sampleName = info.split(" ")[4];
+      
+      console.log("Region " + id + ": lat1 = " + lat1 + ", lon1 = " + lon1
+        + ", lat2 = " + lat2 + ", lon2 = " + lon2 + ", sample name = " + sampleName);
+        
+      map.addMarker("Region-> " + id +":1", "", lat1, lon1);
+      map.addMarker("Region-> " + id +":2", "", lat1, lon2);
+      map.addMarker("Region-> " + id +":3", "", lat2, lon2);
+      map.addMarker("Region-> " + id +":4", "", lat2, lon1);
+      
+      var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
+      
+      var regionsOSC = new Array();
+      regionsOSC.push(region.Id);
+      regionsOSC.push(region.Lat1);
+      regionsOSC.push(region.Lon1);
+      regionsOSC.push(region.Lat2);
+      regionsOSC.push(region.Lon2);
+      client.send("/region", regionsOSC);
+      
+      RegionsArray.push(region);
+      
+    } 
+}
+
+function createRegions() {
+    //Create the data base
+    console.log("Creating Regions");
+    
+    var totalLat1 = 52.55592;
+    var totalLat2 = 52.55783; 
+    var totalLon1 = 13.38136;
+    var totalLon2 = 13.38533;
+    var numColumns = 4;
+    var numRows = 3;
+    var latSection = (totalLat2 - totalLat1)/numRows;
+    var lonSection = (totalLon2 - totalLon1)/numColumns;
+    
+    var id = 1;
+    var data = new Array();
+    for(var i = 0; i < numRows; i = i+1) {
+         for(var j = 0; j < numColumns; j = j+1) {
+            var lat1 = totalLat1 + latSection*i;
+            var lat2 = lat1 + latSection;
+            var lon1 = totalLon1 + lonSection*j;
+            var lon2 = lon1 + lonSection;
+            
+            var regionString = id  + ", " +
+                            lat1  + " " +
+                            lon1  + " " +
+                            lat2  + " " +
+                            lon2  + " " +
+                            "Region" + id + ";";
+            data.push(regionString);
+            console.log(regionString); 
+            id = id + 1; 
+        }
+    }
+    
+    //saving data in regions.txt
+    fileio.saveStrings("regions.txt", data);
+}
 
 function getFormattedDate() {
     var d = new Date();
