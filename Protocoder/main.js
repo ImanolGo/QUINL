@@ -1,13 +1,14 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.5
+*              Version 0.51
 * Author: Imanol Gómez
 *
 */
 
 //Global values
-var CurrentRegion, SampleName, 
+var SonarLoopTime = 1000;
+var CurrentRegion, SampleToPlay, 
 BeaconId, BeaconStrength, RegionsArray,
 CurrentLatitude, CurrentLongitude, CurrentAltitude, 
 MobileId, OscClient,
@@ -55,6 +56,9 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     
 });
 
+var sonarLoop = util.loop(SonarLoopTime, function () { 
+    media.playSound(SampleToPlay);
+}); 
 
 function initializeApp(){
 
@@ -72,13 +76,15 @@ function initializeAttributes(){
   media.setVolume(50);
   device.enableVolumeKeys(true);
   CurrentRegion = -1;
-  SampleName = "samples/Region1.ogg"
+  SampleToPlay = "samples/Region1.ogg"
   BeaconId = 23;
   BeaconStrength = 0.26;
   RegionsArray = []; // empty array
   CurrentLatitude = 56;
   CurrentLongitude = 13;
   CurrentAltitude = 0;
+  SonarLoopTime = 1000;
+  sonarLoop.stop();
 }
 
 function initializeOSC(){
@@ -118,7 +124,7 @@ function createButtons(){
 
   console.log("Creating Buttons");
   ui.addButton("Region", 0, 0, 500, 100, function() { 
-    media.playSound(SampleName);
+    media.playSound(SampleToPlay);
   });
 }
 
@@ -253,9 +259,18 @@ function updateMap(){
 
 function  updateSample(){
   ///MAKE A MAP INSTEAD OF AN ARRAY
-  SampleName = "samples/Region" + regionsArray[CurrentRegion].SampleName + ".ogg";
-  media.playSound(SampleName);
-  console.log("Play sample: " + SampleName);
+  SampleName = regionsArray[CurrentRegion].SampleName;
+  SampleToPlay = "samples/Region" + regionsArray[CurrentRegion].SampleName + ".ogg";
+  media.playSound(SampleToPlay);
+  console.log("Play sample: " + SampleToPlay);
+
+  if(SampleName == "alarm"){
+     sonarLoop.start();
+  }
+  else{
+    sonarLoop.stop();
+  }
+ 
 }
   
 function sendDataToServer(){
