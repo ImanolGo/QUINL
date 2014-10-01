@@ -1,14 +1,14 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.53
+*              Version 0.6
 * Author: Imanol Gómez
 *
 */
 
 //Global values
 var SonarLoopTime = 1000;
-var SonarLoop = 1000;
+var AlarmLoopTime = 9000;
 var CurrentRegion, CurrentSample, TownMap,
 BeaconId, BeaconStrength, RegionsArray,
 CurrentLatitude, CurrentLongitude, CurrentAltitude, CurrentSpeed,
@@ -16,6 +16,10 @@ MobileId, OscClient, RegionsDataBase,
 LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
 
 var sonarLoop = util.loop(SonarLoopTime, function () { 
+    media.playSound(CurrentSample);
+}); 
+
+var alarmLoop = util.loop(AlarmLoopTime, function () { 
     media.playSound(CurrentSample);
 }); 
 
@@ -38,15 +42,17 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     
     if (isCurrentLocationValid()){ 
         updateMap();
-        CurrentRegion = -1;
+        var isPositionOutside = true;
         
         for (var i = 0; i < RegionsArray.length; i++){
             
             if (isInsideRegion(i))
-            { 
-               CurrentRegion=RegionsArray[i].id;
-               
+            {  
+               isPositionOutside = false;
                if(regionHasChanged(i)){
+                  CurrentRegion = RegionsArray[i].Id;
+                  console.log("Region: " + CurrentRegion);
+             
                   updateLabels();
                   updateSample();
                   sendDataToServer();
@@ -57,8 +63,9 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
             }
         }
 
-        if(CurrentRegion==-1){
-          
+        if(CurrentRegion!=-1 && isPositionOutside){
+          CurrentRegion = -1;
+          setAlarmSample();
         }
      
     }
@@ -73,7 +80,7 @@ function initializeApp(){
   initializeAttributes();
   initializeOSC();
   createMap();
-  createButtons();
+  createGUI();
 }
 
 function initializeAttributes(){
@@ -119,8 +126,9 @@ function createMap(){
   TownMap.showControls(true);
 }
 
-function createButtons(){
+function createGUI(){
 
+  console.log("Creating GUI...");
   console.log("Creating Labels");
   // Labels to hold lat, lng & city name values of current location
   LatLabel = ui.addText("Latitude : ",10,100,500,100);
@@ -130,7 +138,7 @@ function createButtons(){
   BatteryLifeLabel = ui.addText("Battery Life : ",10,300,200,100);
 
   console.log("Creating Buttons");
-  ui.addButton("Region", 0, 0, 500, 100, function() { 
+  ui.addButton("Sample", 0, 0, 500, 100, function() { 
     media.playSound(CurrentSample);
   });
 }
@@ -193,7 +201,7 @@ function createDataBase(){
   var readData = fileio.loadStrings("data/regions.txt");
     
     for(var i = 0; i < readData.length; i++) { 
-      console.log(readData[i]);  
+      //console.log(readData[i]);  
       var id_ = readData[i].split(",")[0].toString();
       var info = readData[i].split(",")[1];
       info = readData[i].split(";")[0];
@@ -205,7 +213,7 @@ function createDataBase(){
 
       var valuesString = "(" + id_ + ", " +  lat1_ + ", " +  lon1_ + ", " +  lat2_ + ", " +  lon2_ + ", '" +  sampleName_ + "');";
       var dataBaseCommand = "INSERT INTO regions (id, lat1, lon1, lat2, lon2, sampleName) VALUES " + valuesString ;
-      console.log(dataBaseCommand);  
+      //console.log(dataBaseCommand);  
       RegionsDataBase.execSql(dataBaseCommand);
     } 
 
@@ -298,7 +306,7 @@ function isCurrentLocationValid(){
 
 function isInsideRegion(regionId){
     return (CurrentLatitude>=RegionsArray[regionId].Lat1&&CurrentLatitude<=RegionsArray[regionId].Lat2 &&
-    CurrentLongitude>=RegionsArray[regionId].Lon1&&CurrentLongitude<=RegionsArray[regionId].lon2);
+    CurrentLongitude>=RegionsArray[regionId].Lon1&&CurrentLongitude<=RegionsArray[regionId].Lon2);
     
 }
 
@@ -311,14 +319,29 @@ function updateMap(){
   TownMap.showControls(true);
 }
 
+function setAlarmSample(){
+    
+  var sampleName = "alarm1";
+  CurrentSample = "samples/" + sampleName + ".ogg";
+  media.playSound(CurrentSample);
+  alarmLoop.start();
+  sonarLoop.stop();
+  
+}
 function  updateSample(){
+  
+  if(CurrentRegion < 1){
+      return;
+  }
+  
+  alarmLoop.stop();
   ///MAKE A MAP INSTEAD OF AN ARRAY
-  SampleName = RegionsArray[CurrentRegion].SampleName;
-  CurrentSample = "samples/Region" + RegionsArray[CurrentRegion].SampleName + ".ogg";
+  var sampleName = RegionsArray[CurrentRegion-1].SampleName;
+  CurrentSample = "samples/" + sampleName + ".ogg";
   media.playSound(CurrentSample);
   console.log("Play sample: " + CurrentSample);
 
-  if(SampleName == "alarm"){
+  if(sampleName == "sonar1"){
      sonarLoop.start();
   }
   else{
@@ -335,7 +358,7 @@ function sendDataToServer(){
            "&phone=" + MobileId +
            "&bat=" + device.getBatteryLevel() +
             "&region=" + CurrentRegion +
-            "&pos=" + latitude + "," + longitude +
+            "&pos=" + CurrentLatitude + "," + CurrentLongitude +
             "&beacons=" + BeaconId + "," + BeaconStrength;
   network.httpGet(url, function(status, response) { 
       console.log(status + " " + response);   
@@ -353,14 +376,23 @@ function getFormattedDate() {
     if(monthInt<10){month = "0" + month;}
     //console.log("month: " + month);
     var day = d.getDate();
+    var dayInt = parseInt(day);
+    if(dayInt<10){day = "0" + day;}
     //console.log("day: " + day);
     var hours = d.getHours();
+    var hoursInt = parseInt(hours);
+    if(hoursInt<10){hours = "0" + hours;}
     //console.log("hours: " + hours);
     var minutes = d.getMinutes();
+    var minutesInt = parseInt(minutes);
+    if(minutesInt<10){minutes = "0" + minutes;}
     //console.log("minutes: " + minutes);
     var seconds = d.getSeconds();
+    var secondsInt = parseInt(seconds);
+    if(secondsInt<10){seconds = "0" + seconds;}
     //console.log("seconds: " + seconds);
     var formattedString = year+month+day+hours+minutes+seconds;
+    console.log(formattedString);
     return formattedString;    //Return the date          
 }
 
