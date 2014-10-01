@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.52
+*              Version 0.53
 * Author: Imanol Gómez
 *
 */
@@ -12,7 +12,7 @@ var SonarLoop = 1000;
 var CurrentRegion, CurrentSample, TownMap,
 BeaconId, BeaconStrength, RegionsArray,
 CurrentLatitude, CurrentLongitude, CurrentAltitude, CurrentSpeed,
-MobileId, OscClient,
+MobileId, OscClient, RegionsDataBase,
 LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
 
 var sonarLoop = util.loop(SonarLoopTime, function () { 
@@ -22,9 +22,9 @@ var sonarLoop = util.loop(SonarLoopTime, function () {
 //Initialize App
 initializeApp();
 createRegions();
+createDataBase();
 readRegions();
 getDeviceId();
-
 
 //for each GPS update the image and values are changed 
 sensors.startGPS(function (lat, lon, alt, speed, bearing) { 
@@ -64,9 +64,6 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     }
     
 });
-
-
-
 
 
 function initializeApp(){
@@ -176,43 +173,90 @@ function createRegions() {
     fileio.saveStrings("data/regions.txt", data);
 }
 
-function readRegions() {
+function createDataBase(){
 
-    console.log("Reading Regions");
-    //read data and store it in readData
-    var readData = fileio.loadStrings("data/regions.txt");
+  //Create the data base
+  console.log("Creating Data Base");
+  var CREATE_TABLE = "CREATE TABLE regions " + " ( id INT, lat1 REAL, lon1 REAL, lat2 REAL, lon2 REAL, sampleName TEXT);" 
+  var DROP_TABLE = "DROP TABLE IF EXISTS regions;";
+  var dataBaseName = "regions.db"
+  RegionsDataBase = fileio.openSqlLite("data/" + dataBaseName);//it opens the data base if exists otherwise creates one 
+  //if db exists drop the existing table (reset)
+  RegionsDataBase.execSql(DROP_TABLE);
+  //create and insert data
+  RegionsDataBase.execSql(CREATE_TABLE);
+  console.log("Created data base: " + dataBaseName);
+
+  console.log("Inserting regions to data base");
+
+  //read data and store it in readData
+  var readData = fileio.loadStrings("data/regions.txt");
     
     for(var i = 0; i < readData.length; i++) { 
       console.log(readData[i]);  
-      var id = readData[i].split(",")[0];
+      var id_ = readData[i].split(",")[0].toString();
       var info = readData[i].split(",")[1];
-      var lat1 = info.split(" ")[1];
-      var lon1 = info.split(" ")[2];
-      var lat2 = info.split(" ")[3];
-      var lon2 = info.split(" ")[4];
-      var sampleName = info.split(" ")[5];
-      
-      console.log("Region " + id + ": lat1 = " + lat1 + ", lon1 = " + lon1
-        + ", lat2 = " + lat2 + ", lon2 = " + lon2 + ", sample name = " + sampleName);
-        
-      TownMap.addMarker("Region-> " + id +":1", "", lat1, lon1);
-      TownMap.addMarker("Region-> " + id +":2", "", lat1, lon2);
-      TownMap.addMarker("Region-> " + id +":3", "", lat2, lon2);
-      TownMap.addMarker("Region-> " + id +":4", "", lat2, lon1);
-      
-      var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
-      
-      var regionsOSC = [];
-      regionsOSC.push(region.Id);
-      regionsOSC.push(region.Lat1);
-      regionsOSC.push(region.Lon1);
-      regionsOSC.push(region.Lat2);
-      regionsOSC.push(region.Lon2);
-      OscClient.send("/region", regionsOSC);
-      
-      RegionsArray.push(region);
-      
+      info = readData[i].split(";")[0];
+      var lat1_ = info.split(" ")[1].toString();
+      var lon1_ = info.split(" ")[2].toString();
+      var lat2_ = info.split(" ")[3].toString();
+      var lon2_ = info.split(" ")[4].toString();
+      var sampleName_ = info.split(" ")[5].toString();
+
+      var valuesString = "(" + id_ + ", " +  lat1_ + ", " +  lon1_ + ", " +  lat2_ + ", " +  lon2_ + ", '" +  sampleName_ + "');";
+      var dataBaseCommand = "INSERT INTO regions (id, lat1, lon1, lat2, lon2, sampleName) VALUES " + valuesString ;
+      console.log(dataBaseCommand);  
+      RegionsDataBase.execSql(dataBaseCommand);
     } 
+
+    RegionsDataBase.close();
+}
+
+function readRegions() {
+
+    console.log("Reading regions from data base");
+
+    var dataBaseName = "regions.db"
+    RegionsDataBase = fileio.openSqlLite("data/" + dataBaseName);//it opens the data base if exists otherwise creates on
+    console.log("Opening data base: " + dataBaseName);
+    
+    var columns = ["id", "lat1", "lon1", "lat2", "lon2", "sampleName"];
+    var c = RegionsDataBase.query("regions", columns); 
+    console.log("Data base has " + c.getCount() + " entries"); // how many positions
+
+    RegionsArray = new Array(); // empty array
+
+    while (c.moveToNext()) {
+
+       var id = c.getInt(0);
+       var lat1 = c.getFloat(1);
+       var lon1 = c.getFloat(2);
+       var lat2 = c.getFloat(3);
+       var lon2 = c.getFloat(4);
+       var sampleName = c.getString(5);
+    
+       console.log("Region " + id + ": lat1 = " + lat1 + ", lon1 = " + lon1
+        + ", lat2 = " + lat2 + ", lon2 = " + lon2 + ", sample name = " + sampleName);
+
+        TownMap.addMarker("Region-> " + id +":1", "", lat1, lon1);
+        TownMap.addMarker("Region-> " + id +":2", "", lat1, lon2);
+        TownMap.addMarker("Region-> " + id +":3", "", lat2, lon2);
+        TownMap.addMarker("Region-> " + id +":4", "", lat2, lon1);
+        
+        var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
+        
+        var regionsOSC = [];
+        regionsOSC.push(region.Id);
+        regionsOSC.push(region.Lat1);
+        regionsOSC.push(region.Lon1);
+        regionsOSC.push(region.Lat2);
+        regionsOSC.push(region.Lon2);
+        OscClient.send("/region", regionsOSC);
+        
+        RegionsArray.push(region);
+    }    
+    
+    RegionsDataBase.close();
 }
 
 function getDeviceId(){
@@ -298,7 +342,7 @@ function sendDataToServer(){
   });    
 
 }                
-        
+
 function getFormattedDate() {
     var d = new Date();
     var year = d.getFullYear();
