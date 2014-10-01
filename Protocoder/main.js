@@ -1,19 +1,23 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.51
+*              Version 0.52
 * Author: Imanol Gómez
 *
 */
 
 //Global values
 var SonarLoopTime = 1000;
-var CurrentRegion, SampleToPlay, 
+var SonarLoop = 1000;
+var CurrentRegion, CurrentSample, TownMap,
 BeaconId, BeaconStrength, RegionsArray,
-CurrentLatitude, CurrentLongitude, CurrentAltitude, 
+CurrentLatitude, CurrentLongitude, CurrentAltitude, CurrentSpeed,
 MobileId, OscClient,
 LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
 
+var sonarLoop = util.loop(SonarLoopTime, function () { 
+    media.playSound(CurrentSample);
+}); 
 
 //Initialize App
 initializeApp();
@@ -27,6 +31,7 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     CurrentLatitude = lat;
     CurrentLongitude = lon;
     CurrentAltitude = alt;
+    CurrentSpeed = speed;
 
     updateLabels();    
     updateOscValues();
@@ -35,11 +40,11 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
         updateMap();
         CurrentRegion = -1;
         
-        for (var i = 0; i < sectionsArray.length; i++){
+        for (var i = 0; i < RegionsArray.length; i++){
             
             if (isInsideRegion(i))
             { 
-               CurrentRegion=sectionsArray[i].id;
+               CurrentRegion=RegionsArray[i].id;
                
                if(regionHasChanged(i)){
                   updateLabels();
@@ -51,14 +56,18 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
                
             }
         }
+
+        if(CurrentRegion==-1){
+          
+        }
      
     }
     
 });
 
-var sonarLoop = util.loop(SonarLoopTime, function () { 
-    media.playSound(SampleToPlay);
-}); 
+
+
+
 
 function initializeApp(){
 
@@ -76,7 +85,7 @@ function initializeAttributes(){
   media.setVolume(50);
   device.enableVolumeKeys(true);
   CurrentRegion = -1;
-  SampleToPlay = "samples/Region1.ogg"
+  CurrentSample = "samples/Region1.ogg"
   BeaconId = 23;
   BeaconStrength = 0.26;
   RegionsArray = []; // empty array
@@ -85,6 +94,7 @@ function initializeAttributes(){
   CurrentAltitude = 0;
   SonarLoopTime = 1000;
   sonarLoop.stop();
+  
 }
 
 function initializeOSC(){
@@ -105,11 +115,11 @@ function initializeOSC(){
 function createMap(){
 
   console.log("Creating Map");
-  var map = ui.addMap(0, 400, ui.screenWidth, 500);
-  map.moveTo(100 * Math.random(), 100 * Math.random());
-  map.setCenter(1, 12);
-  map.setZoom(18);
-  map.showControls(true);
+  TownMap = ui.addMap(0, 400, ui.screenWidth, 500);
+  TownMap.moveTo(100 * Math.random(), 100 * Math.random());
+  TownMap.setCenter(1, 12);
+  TownMap.setZoom(18);
+  TownMap.showControls(true);
 }
 
 function createButtons(){
@@ -124,7 +134,7 @@ function createButtons(){
 
   console.log("Creating Buttons");
   ui.addButton("Region", 0, 0, 500, 100, function() { 
-    media.playSound(SampleToPlay);
+    media.playSound(CurrentSample);
   });
 }
 
@@ -142,7 +152,7 @@ function createRegions() {
     var lonSection = (totalLon2 - totalLon1)/numColumns;
     
     var id = 1;
-    var data = new Array();
+    var data = [];
     for(var i = 0; i < numRows; i = i+1) {
          for(var j = 0; j < numColumns; j = j+1) {
             var lat1 = totalLat1 + latSection*i;
@@ -176,23 +186,23 @@ function readRegions() {
       console.log(readData[i]);  
       var id = readData[i].split(",")[0];
       var info = readData[i].split(",")[1];
-      var lat1 = info.split(" ")[0];
-      var lon1 = info.split(" ")[1];
-      var lat2 = info.split(" ")[2];
-      var lon2 = info.split(" ")[3];
-      var sampleName = info.split(" ")[4];
+      var lat1 = info.split(" ")[1];
+      var lon1 = info.split(" ")[2];
+      var lat2 = info.split(" ")[3];
+      var lon2 = info.split(" ")[4];
+      var sampleName = info.split(" ")[5];
       
       console.log("Region " + id + ": lat1 = " + lat1 + ", lon1 = " + lon1
         + ", lat2 = " + lat2 + ", lon2 = " + lon2 + ", sample name = " + sampleName);
         
-      map.addMarker("Region-> " + id +":1", "", lat1, lon1);
-      map.addMarker("Region-> " + id +":2", "", lat1, lon2);
-      map.addMarker("Region-> " + id +":3", "", lat2, lon2);
-      map.addMarker("Region-> " + id +":4", "", lat2, lon1);
+      TownMap.addMarker("Region-> " + id +":1", "", lat1, lon1);
+      TownMap.addMarker("Region-> " + id +":2", "", lat1, lon2);
+      TownMap.addMarker("Region-> " + id +":3", "", lat2, lon2);
+      TownMap.addMarker("Region-> " + id +":4", "", lat2, lon1);
       
       var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
       
-      var regionsOSC = new Array();
+      var regionsOSC = [];
       regionsOSC.push(region.Id);
       regionsOSC.push(region.Lat1);
       regionsOSC.push(region.Lon1);
@@ -208,33 +218,33 @@ function readRegions() {
 function getDeviceId(){
   
   //Send Mobile ID
-  var mobileIdArray = new Array();
+  var mobileIdArray = [];
   var info = device.getInfo();
   MobileId = info.id;
+  MobileId = 99;
   mobileIdArray.push(MobileId);
   OscClient.send("/mobileId", mobileIdArray);
-  console.log("Mobile ID: " + mobileIdArray);
   console.log("Device ID -> " + MobileId);
 }
 
 function updateLabels(){
   LatLabel.setText("Latitude : " + CurrentLatitude);
   LonLabel.setText("Longitude : " + CurrentLongitude);
-  AltLabel.setText("Altitude : " + CurrentAltitude);
+  AltLabel.setText("Speed : " + CurrentSpeed);
   RegionLabel.setText("Region : " + CurrentRegion);
-  BatteryLifeLabel.setText("Battery Life : " + device.getBatteryLevel());
+  BatteryLifeLabel.setText("Battery Life : " + parseInt(device.getBatteryLevel()));
   RegionLabel.setText("Region : " + CurrentRegion);
 }
 
 function updateOscValues(){
 
-    var batteryLife = new Array();
+    var batteryLife = [];
     batteryLife.push(device.getBatteryLevel());
     OscClient.send("/batteryLife", batteryLife);
     
-    var geoPosition = new Array();
-    geoPosition.push(latitude);
-    geoPosition.push(longitude);
+    var geoPosition = [];
+    geoPosition.push(CurrentLatitude);
+    geoPosition.push(CurrentLongitude);
     OscClient.send("/position", geoPosition);
 }
 
@@ -242,27 +252,27 @@ function isCurrentLocationValid(){
   return (CurrentLongitude>0&&CurrentLatitude>0);
 }
 
-function isInsideRegion(int regionId){
-    return (CurrentLatitude>=regionsArray[regionId].Lat1&&CurrentLatitude<=regionsArray[regionId].Lat2 &&
-    CurrentLongitude>=regionsArray[regionId].Lon1&&CurrentLongitude<=regionsArray[regionId].lon2);
+function isInsideRegion(regionId){
+    return (CurrentLatitude>=RegionsArray[regionId].Lat1&&CurrentLatitude<=RegionsArray[regionId].Lat2 &&
+    CurrentLongitude>=RegionsArray[regionId].Lon1&&CurrentLongitude<=RegionsArray[regionId].lon2);
     
 }
 
-function regionHasChanged(int regionId){
-    return (CurrentRegion!=regionsArray[regionId].Id);
+function regionHasChanged(regionId){
+    return (CurrentRegion!=RegionsArray[regionId].Id);
 }
 
 function updateMap(){
-  map.moveTo(CurrentLatitude, CurrentLongitude);
-  map.showControls(true);
+  TownMap.moveTo(CurrentLatitude, CurrentLongitude);
+  TownMap.showControls(true);
 }
 
 function  updateSample(){
   ///MAKE A MAP INSTEAD OF AN ARRAY
-  SampleName = regionsArray[CurrentRegion].SampleName;
-  SampleToPlay = "samples/Region" + regionsArray[CurrentRegion].SampleName + ".ogg";
-  media.playSound(SampleToPlay);
-  console.log("Play sample: " + SampleToPlay);
+  SampleName = RegionsArray[CurrentRegion].SampleName;
+  CurrentSample = "samples/Region" + RegionsArray[CurrentRegion].SampleName + ".ogg";
+  media.playSound(CurrentSample);
+  console.log("Play sample: " + CurrentSample);
 
   if(SampleName == "alarm"){
      sonarLoop.start();
