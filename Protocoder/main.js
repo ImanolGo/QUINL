@@ -1,13 +1,13 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.6
+*              Version 0.7
 * Author: Imanol Gómez
 *
 */
 
 //Global values
-var SonarLoopTime = 1000;
+var SonarLoopTime = 3000;
 var AlarmLoopTime = 9000;
 var CurrentRegion, CurrentSample, TownMap,
 BeaconId, BeaconStrength, RegionsArray,
@@ -36,9 +36,10 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     CurrentLongitude = lon;
     CurrentAltitude = alt;
     CurrentSpeed = speed;
-
+  
     updateLabels();    
     updateOscValues();
+    sendDataToServer();
     
     if (isCurrentLocationValid()){ 
         updateMap();
@@ -55,7 +56,7 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
              
                   updateLabels();
                   updateSample();
-                  sendDataToServer();
+                  //sendDataToServer();
                   break;
 
                }  
@@ -89,14 +90,14 @@ function initializeAttributes(){
   media.setVolume(50);
   device.enableVolumeKeys(true);
   CurrentRegion = -1;
-  CurrentSample = "samples/Region1.ogg"
+  CurrentSample = "samples/alarm1.ogg"
   BeaconId = 23;
   BeaconStrength = 0.26;
   RegionsArray = []; // empty array
   CurrentLatitude = 56;
   CurrentLongitude = 13;
   CurrentAltitude = 0;
-  SonarLoopTime = 1000;
+  SonarLoopTime = 2000;
   sonarLoop.stop();
   
 }
@@ -170,6 +171,7 @@ function createRegions() {
                             lon1  + " " +
                             lat2  + " " +
                             lon2  + " " +
+                            //"sonar1;";
                             "Region" + id + ";";
             data.push(regionString);
             console.log(regionString); 
@@ -324,7 +326,9 @@ function setAlarmSample(){
   var sampleName = "alarm1";
   CurrentSample = "samples/" + sampleName + ".ogg";
   media.playSound(CurrentSample);
-  alarmLoop.start();
+  alarmLoop = util.loop(AlarmLoopTime, function () { 
+        media.playSound(CurrentSample);
+  });
   sonarLoop.stop();
   
 }
@@ -334,26 +338,30 @@ function  updateSample(){
       return;
   }
   
-  alarmLoop.stop();
-  ///MAKE A MAP INSTEAD OF AN ARRAY
-  var sampleName = RegionsArray[CurrentRegion-1].SampleName;
-  CurrentSample = "samples/" + sampleName + ".ogg";
-  media.playSound(CurrentSample);
-  console.log("Play sample: " + CurrentSample);
-
+   var sampleName = RegionsArray[CurrentRegion-1].SampleName;
+   CurrentSample = "samples/" + sampleName + ".ogg";
+    
   if(sampleName == "sonar1"){
-     sonarLoop.start();
+        sonarLoop.stop();
+        sonarLoop = util.loop(SonarLoopTime, function () { 
+        media.playSound(CurrentSample);
+        }); 
   }
   else{
-    sonarLoop.stop();
+      alarmLoop.stop();
+      sonarLoop.stop();
+      ///MAKE A MAP INSTEAD OF AN ARRAY
+      media.playSound(CurrentSample);
+      console.log("Play sample: " + CurrentSample);
+      
   }
- 
+  
 }
   
 function sendDataToServer(){
   
   var date = getFormattedDate();
-  console.log("Date: " + date);
+  //console.log("Date: " + date);
   var url = "http://o-a.info/qitnl/track.php?time=" + date +
            "&phone=" + MobileId +
            "&bat=" + device.getBatteryLevel() +
@@ -361,7 +369,8 @@ function sendDataToServer(){
             "&pos=" + CurrentLatitude + "," + CurrentLongitude +
             "&beacons=" + BeaconId + "," + BeaconStrength;
   network.httpGet(url, function(status, response) { 
-      console.log(status + " " + response);   
+      console.log(status + " " + response); 
+      //console.log(status + " " + response); 
   });    
 
 }                
@@ -392,7 +401,7 @@ function getFormattedDate() {
     if(secondsInt<10){seconds = "0" + seconds;}
     //console.log("seconds: " + seconds);
     var formattedString = year+month+day+hours+minutes+seconds;
-    console.log(formattedString);
+    //console.log(formattedString);
     return formattedString;    //Return the date          
 }
 
