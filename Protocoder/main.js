@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.8
+*              Version 0.81
 * Author: Imanol Gómez
 *
 */
@@ -11,7 +11,8 @@ var CurrentRegion, CurrentSample, TownMap, GlobalRegion, OutsideRegion,
 BeaconId, BeaconStrength, RegionsArray,
 CurrentLocation, CurrentBeacon, pd,
 MobileId, OscClient, RegionsDataBase,
-LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
+LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel,
+buttonPlay,buttonStop;
 
 
 //Initialize App
@@ -105,6 +106,15 @@ function createGUI(){
   AltLabel = ui.addText("Altitude : ",10,200,500,100);
   RegionLabel = ui.addText("Region : " + CurrentRegion.Id,10,250,200,100);
   BatteryLifeLabel = ui.addText("Battery Life : "  + parseInt(device.getBatteryLevel()),10,300,200,100);
+  
+  console.log("Creating Buttons");
+  buttonPlay = ui.addButton("Play", ui.screenWidth-330, 10, 300, 100, function(){
+       pd.sendBang("playBang");
+  });
+  
+  buttonStop = ui.addButton("Stop",  ui.screenWidth-330, 130, 300, 100, function(){
+        pd.sendBang("stopBang");
+  });
 }
 
 function initializePureData(){
@@ -265,7 +275,6 @@ function updateRegionSample()
       var region = RegionsArray[i];
       if ((!isGlobalRegion(region)) && (isCurrentLocationInside(region)))
       {  
-          console.log("isCurrentLocationInside(region) = True" );
           if(regionHasChanged(region))
           {
               CurrentRegion = RegionsArray[i];
@@ -278,7 +287,6 @@ function updateRegionSample()
       }
   }
  
-  console.log("isCurrentLocationInside(region) = False" );
   return false;
 }
 
@@ -286,7 +294,6 @@ function updateGlobalSample()
 {
   if(isCurrentLocationInside(GlobalRegion))
   {
-    console.log("isCurrentLocationInside(GlobalRegion) = True" );
     if(regionHasChanged(GlobalRegion))
     {
         CurrentRegion = GlobalRegion;
@@ -298,7 +305,6 @@ function updateGlobalSample()
     return true;
   }
 
-  console.log("isCurrentLocationInside(GlobalRegion) = False" );
   return false;
 }
 
@@ -306,7 +312,6 @@ function updateOutsideSample()
 {
   if(!(isCurrentLocationInside(GlobalRegion)))
   { 
-    console.log("isCurrentLocationInside(OutsideRegion) = True" );
     if(regionHasChanged(OutsideRegion))
     {
         CurrentRegion = OutsideRegion;
@@ -318,7 +323,6 @@ function updateOutsideSample()
     return true;
   }
 
-  console.log("isCurrentLocationInside(OutsideRegion) = False" );
   return false;
 }
 

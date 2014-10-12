@@ -1,7 +1,7 @@
-#N canvas -1 49 1055 472 10;
+#N canvas 58 82 582 490 10;
 #X floatatom 17 47 5 0 0 0 - - -;
 #X obj 13 250 s sampleName;
-#N canvas 554 149 566 544 sampleSelector 1;
+#N canvas 168 46 770 539 sampleSelector 0;
 #X obj 170 179 + 1;
 #X obj 170 211 % 2;
 #X obj 170 112 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
@@ -9,7 +9,7 @@
 #X floatatom 169 242 5 0 0 0 - - -;
 #X obj 170 147 i;
 #X obj 166 282 hradio 15 1 0 2 empty empty empty 0 -8 0 10 -262144
--1 -1 0;
+-1 -1 1;
 #X obj 166 306 select 0 1;
 #X obj 203 281 outlet;
 #X obj 165 32 inlet;
@@ -40,58 +40,55 @@
 #X connect 13 0 15 0;
 #X restore 285 220 pd sampleSelector;
 #X obj 283 256 hradio 15 1 0 2 empty empty empty 0 -8 0 10 -262144
--1 -1 0;
-#N canvas 411 259 536 325 sample1 0;
-#X obj 386 3 inlet;
-#X text 382 -20 Sample Volume;
+-1 -1 1;
+#N canvas 643 107 430 286 sample1 0;
+#X obj 283 10 inlet;
+#X text 279 -13 Sample Volume;
 #X obj 29 50 readsf~;
-#X obj 250 -24 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 172 15 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
 #X obj 30 171 dac~;
 #X obj 30 135 *~ 1;
 #X obj 29 -57 inlet;
-#X obj 216 30 gate 0;
-#X obj 216 0 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1 1
-;
 #X text 24 -87 Sample Name;
-#N canvas 560 163 414 305 loadSample1 1;
+#N canvas 741 160 414 305 loadSample1 0;
 #X obj -107 -141 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj -180 -171 inlet;
 #X obj -188 46 outlet;
 #X obj -106 -171 inlet;
 #X obj -97 44 print sample1;
-#N canvas 561 182 660 531 sampleIdSelector 1;
-#X obj 100 48 inlet;
-#X obj 104 454 outlet;
-#X obj 100 109 sel -1 0 1 2 3 4 5 6 7 8 9 10 11 12;
-#X floatatom 100 79 5 0 0 0 - - -;
-#X msg 100 152 open samples/alarm1.aiff \, 1;
-#X msg 116 191 open samples/sonar1.aiff \, 1;
-#X msg 128 220 open samples/Region1.aiff \, 1;
-#X msg 138 255 open samples/Region2.aiff \, 1;
-#X msg 148 289 open samples/Region3.aiff \, 1;
-#X msg 158 329 open samples/Region4.aiff \, 1;
-#X msg 390 152 open samples/Region5.aiff \, 1;
-#X msg 406 191 open samples/Region6.aiff \, 1;
-#X msg 418 220 open samples/Region7.aiff \, 1;
-#X msg 428 255 open samples/Region8.aiff \, 1;
-#X msg 438 289 open samples/Region9.aiff \, 1;
-#X msg 448 329 open samples/Region10.aiff \, 1;
-#X connect 0 0 3 0;
-#X connect 2 0 4 0;
-#X connect 2 1 5 0;
-#X connect 2 2 6 0;
-#X connect 2 3 7 0;
-#X connect 2 4 8 0;
-#X connect 2 5 9 0;
-#X connect 2 6 10 0;
-#X connect 2 7 11 0;
-#X connect 2 8 12 0;
-#X connect 2 9 13 0;
-#X connect 2 10 14 0;
-#X connect 2 11 15 0;
-#X connect 3 0 2 0;
+#N canvas 561 182 660 531 sampleIdSelector 0;
+#X obj 43 18 inlet;
+#X obj 47 420 outlet;
+#X obj 43 75 sel -1 0 1 2 3 4 5 6 7 8 9 10 11 12;
+#X msg 43 118 open samples/alarm1.aiff \, 1;
+#X msg 59 157 open samples/sonar1.aiff \, 1;
+#X msg 71 186 open samples/Region1.aiff \, 1;
+#X msg 81 221 open samples/Region2.aiff \, 1;
+#X msg 91 255 open samples/Region3.aiff \, 1;
+#X msg 101 295 open samples/Region4.aiff \, 1;
+#X msg 333 118 open samples/Region5.aiff \, 1;
+#X msg 349 157 open samples/Region6.aiff \, 1;
+#X msg 361 186 open samples/Region7.aiff \, 1;
+#X msg 371 221 open samples/Region8.aiff \, 1;
+#X msg 381 255 open samples/Region9.aiff \, 1;
+#X msg 391 295 open samples/Region10.aiff \, 1;
+#X obj 44 46 i;
+#X connect 0 0 15 0;
+#X connect 2 0 3 0;
+#X connect 2 1 4 0;
+#X connect 2 2 5 0;
+#X connect 2 3 6 0;
+#X connect 2 4 7 0;
+#X connect 2 5 8 0;
+#X connect 2 6 9 0;
+#X connect 2 7 10 0;
+#X connect 2 8 11 0;
+#X connect 2 9 12 0;
+#X connect 2 10 13 0;
+#X connect 2 11 14 0;
+#X connect 3 0 1 0;
 #X connect 4 0 1 0;
 #X connect 5 0 1 0;
 #X connect 6 0 1 0;
@@ -103,7 +100,7 @@
 #X connect 12 0 1 0;
 #X connect 13 0 1 0;
 #X connect 14 0 1 0;
-#X connect 15 0 1 0;
+#X connect 15 0 2 0;
 #X restore -181 -100 pd sampleIdSelector;
 #X connect 0 0 5 0;
 #X connect 1 0 5 0;
@@ -111,50 +108,51 @@
 #X connect 5 0 2 0;
 #X connect 5 0 4 0;
 #X restore 29 -11 pd loadSample1;
-#X obj 148 -67 r stopBang;
-#X msg 149 -37 stop;
+#X obj 197 -67 r stopBang;
+#X msg 198 -37 stop;
+#X obj 106 -69 r playBang;
+#X obj 107 -37 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 271 51 == 0;
+#X obj 271 74 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
 #X connect 0 0 5 1;
-#X connect 0 0 8 0;
+#X connect 0 0 13 0;
 #X connect 2 0 5 0;
 #X connect 2 1 3 0;
-#X connect 3 0 7 1;
+#X connect 3 0 8 1;
 #X connect 5 0 4 0;
 #X connect 5 0 4 1;
-#X connect 6 0 10 0;
-#X connect 7 0 10 1;
-#X connect 8 0 7 0;
+#X connect 6 0 8 0;
+#X connect 8 0 2 0;
+#X connect 9 0 10 0;
 #X connect 10 0 2 0;
 #X connect 11 0 12 0;
-#X connect 12 0 2 0;
+#X connect 12 0 8 1;
+#X connect 13 0 14 0;
 #X restore -68 87 pd sample1;
 #X floatatom 230 49 5 0 0 0 - - -;
 #X obj 230 5 r volumeSample2;
 #X obj 349 9 r selectSample1;
 #X obj 458 22 r selectSample2;
-#N canvas 379 193 536 325 sample2 0;
-#X obj 386 3 inlet;
-#X text 382 -20 Sample Volume;
+#N canvas 487 197 395 290 sample2 0;
 #X obj 29 50 readsf~;
-#X obj 250 -24 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
+#X obj 172 33 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
 #X obj 30 171 dac~;
 #X obj 30 126 *~ 1;
 #X text 24 -87 Sample Int;
 #X obj 29 -57 inlet;
-#X obj 216 30 gate 0;
-#X obj 216 0 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 -0
-0.04;
-#N canvas 296 71 301 327 loadSample2 0;
+#N canvas 794 140 301 327 loadSample2 0;
 #X obj -55 -127 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X obj -128 -157 inlet;
 #X obj -136 60 outlet;
 #X obj -54 -157 inlet;
-#N canvas 561 182 660 531 sampleIdSelector 0;
-#X obj 33 4 inlet;
+#N canvas 550 152 660 531 sampleIdSelector 0;
+#X obj 33 8 inlet;
 #X obj 37 410 outlet;
 #X obj 33 65 sel -1 0 1 2 3 4 5 6 7 8 9 10 11 12;
-#X floatatom 33 35 5 0 0 0 - - -;
 #X msg 33 108 open samples/alarm1.aiff \, 1;
 #X msg 49 147 open samples/sonar1.aiff \, 1;
 #X msg 61 176 open samples/Region1.aiff \, 1;
@@ -167,20 +165,21 @@
 #X msg 361 211 open samples/Region8.aiff \, 1;
 #X msg 371 245 open samples/Region9.aiff \, 1;
 #X msg 381 285 open samples/Region10.aiff \, 1;
-#X connect 0 0 3 0;
-#X connect 2 0 4 0;
-#X connect 2 1 5 0;
-#X connect 2 2 6 0;
-#X connect 2 3 7 0;
-#X connect 2 4 8 0;
-#X connect 2 5 9 0;
-#X connect 2 6 10 0;
-#X connect 2 7 11 0;
-#X connect 2 8 12 0;
-#X connect 2 9 13 0;
-#X connect 2 10 14 0;
-#X connect 2 11 15 0;
-#X connect 3 0 2 0;
+#X obj 34 36 i;
+#X connect 0 0 15 0;
+#X connect 2 0 3 0;
+#X connect 2 1 4 0;
+#X connect 2 2 5 0;
+#X connect 2 3 6 0;
+#X connect 2 4 7 0;
+#X connect 2 5 8 0;
+#X connect 2 6 9 0;
+#X connect 2 7 10 0;
+#X connect 2 8 11 0;
+#X connect 2 9 12 0;
+#X connect 2 10 13 0;
+#X connect 2 11 14 0;
+#X connect 3 0 1 0;
 #X connect 4 0 1 0;
 #X connect 5 0 1 0;
 #X connect 6 0 1 0;
@@ -192,7 +191,7 @@
 #X connect 12 0 1 0;
 #X connect 13 0 1 0;
 #X connect 14 0 1 0;
-#X connect 15 0 1 0;
+#X connect 15 0 2 0;
 #X restore -129 -86 pd sampleIdSelector;
 #X obj -45 58 print sample2;
 #X connect 0 0 4 0;
@@ -201,21 +200,30 @@
 #X connect 4 0 2 0;
 #X connect 4 0 5 0;
 #X restore 29 -11 pd loadSample2;
-#X obj 158 -57 r stopBang;
-#X msg 159 -27 stop;
-#X connect 0 0 5 1;
-#X connect 0 0 9 0;
-#X connect 2 0 5 0;
-#X connect 2 1 3 0;
-#X connect 3 0 8 1;
-#X connect 5 0 4 1;
-#X connect 5 0 4 0;
-#X connect 7 0 10 0;
-#X connect 8 0 10 1;
-#X connect 9 0 8 0;
-#X connect 10 0 2 0;
-#X connect 11 0 12 0;
-#X connect 12 0 2 0;
+#X obj 195 -66 r stopBang;
+#X msg 196 -36 stop;
+#X obj 103 -71 r playBang;
+#X obj 104 -42 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 258 18 inlet;
+#X text 254 -5 Sample Volume;
+#X obj 246 59 == 0;
+#X obj 246 82 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X connect 0 0 3 0;
+#X connect 0 1 1 0;
+#X connect 1 0 6 1;
+#X connect 3 0 2 1;
+#X connect 3 0 2 0;
+#X connect 5 0 6 0;
+#X connect 6 0 0 0;
+#X connect 7 0 8 0;
+#X connect 8 0 0 0;
+#X connect 9 0 10 0;
+#X connect 10 0 6 1;
+#X connect 11 0 13 0;
+#X connect 11 0 3 1;
+#X connect 13 0 14 0;
 #X restore 145 89 pd sample2;
 #N canvas 0 22 421 441 sampleCrossFader 0;
 #X obj 30 -18 inlet;
@@ -223,7 +231,7 @@
 #N canvas 638 269 543 405 crossfade 0;
 #X obj 39 17 inlet;
 #X obj 45 53 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
+-1 -1 0 1;
 #X floatatom 43 85 5 0 0 0 - - -;
 #X msg 130 100 1;
 #X obj 48 132 -;
@@ -242,18 +250,18 @@
 #X connect 7 0 8 0;
 #X restore 57 197 pd crossfade;
 #X obj 56 139 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
+-1 -1 0 1;
 #X obj 53 102 line;
 #X text 80 49 Go to 0 in 500ms;
 #X text 258 50 Go to 1 in 500ms;
 #X floatatom 56 167 5 0 0 0 - - -;
 #X obj 63 272 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
+-1 -1 12700 1;
 #X floatatom 60 223 5 0 0 0 - - -;
-#X obj 57 309 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-0.04;
-#X obj 22 180 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X obj 57 309 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
+#X obj 22 180 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+0.04;
 #X obj 149 194 s volumeSample1;
 #X obj 153 250 s volumeSample2;
 #X msg 32 49 1 500;
@@ -304,6 +312,9 @@
 #X obj 592 61 s stopBang;
 #X obj 591 29 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
+#X obj 671 27 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 672 59 s playBang;
 #X connect 0 0 4 1;
 #X connect 2 0 3 0;
 #X connect 5 0 9 1;
@@ -327,3 +338,4 @@
 #X connect 29 0 31 0;
 #X connect 30 0 31 0;
 #X connect 33 0 32 0;
+#X connect 34 0 35 0;
