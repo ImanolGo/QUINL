@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.72
+*              Version 0.73
 * Author: Imanol Gómez
 *
 */
@@ -24,26 +24,27 @@ createDataBase();
 readRegions();
 getDeviceId();
 
+
 //for each GPS update the image and values are changed 
 sensors.startGPS(function (lat, lon, alt, speed, bearing) { 
     
     updateLocation(lat, lon, alt, speed, bearing);
 
-    if (!isCurrentLocationValid()){ 
-        return;
-    }
+    // if (!isCurrentLocationValid()){ 
+    //     return;
+    // }
 
-    if(updateRegionSample()){
-      return;
-    }
+    // if(updateRegionSample()){
+    //   return;
+    // }
 
-    if(updateGlobalSample()){
-      return;
-    }
+    // if(updateGlobalSample()){
+    //   return;
+    // }
 
-    if(updateOutsideSample()){
-      return;
-    }    
+    // if(updateOutsideSample()){
+    //   return;
+    // }    
 });
 
 
@@ -104,8 +105,8 @@ function createGUI(){
   LatLabel = ui.addText("Latitude : ",10,100,500,100);
   LonLabel = ui.addText("Longitude : ",10,150,500,100);
   AltLabel = ui.addText("Altitude : ",10,200,500,100);
-  RegionLabel = ui.addText("Region : ",10,250,200,100);
-  BatteryLifeLabel = ui.addText("Battery Life : ",10,300,200,100);
+  RegionLabel = ui.addText("Region : " + CurrentRegion.Id,10,250,200,100);
+  BatteryLifeLabel = ui.addText("Battery Life : "  + parseInt(device.getBatteryLevel()),10,300,200,100);
 }
 
 function createRegions() {
@@ -322,12 +323,11 @@ function getDeviceId(){
 }
 
 function updateLabels(){
-  LatLabel.setText("Latitude : " + CurrentLatitude);
-  LonLabel.setText("Longitude : " + CurrentLongitude);
-  AltLabel.setText("Speed : " + CurrentSpeed);
-  RegionLabel.setText("Region : " + CurrentRegion);
+  LatLabel.setText("Latitude : " + CurrentLocation.Latitude);
+  LonLabel.setText("Longitude : " + CurrentLocation.Longitude);
+  AltLabel.setText("Altitude : " + CurrentLocation.Altitude);
+  RegionLabel.setText("Region : " +  CurrentRegion.Id);
   BatteryLifeLabel.setText("Battery Life : " + parseInt(device.getBatteryLevel()));
-  RegionLabel.setText("Region : " + CurrentRegion);
 }
 
 function updateOscValues(){
@@ -347,9 +347,9 @@ function updateLocation(lat, lon, alt, speed, bearing)
     CurrentLocation = {Latitude: lat, Longitude: lon, Altitude: alt, Accuracy: 0, Speed: speed};
     
     updateLabels();    
-    updateOscValues();
-    sendDataToServer();
-    updateMap();
+    //updateOscValues();
+    //sendDataToServer();
+    //updateMap();
 }
 
 function isCurrentLocationValid(){
