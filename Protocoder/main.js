@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.71
+*              Version 0.72
 * Author: Imanol Gómez
 *
 */
@@ -19,7 +19,7 @@ var pd = media.initPDPatch("loopSample.pd", function(data) {
 
 //Initialize App
 initializeApp();
-createRegions();
+//createRegions();
 createDataBase();
 readRegions();
 getDeviceId();
@@ -178,10 +178,13 @@ function createDataBase(){
   var readData = fileio.loadStrings("data/regions.txt");
     
     for(var i = 0; i < readData.length; i++) { 
-      //console.log(readData[i]);  
+      console.log(readData[i]);  
       var id_ = readData[i].split(",")[0].toString();
       var info = readData[i].split(",")[1];
       info = readData[i].split(";")[0];
+      if(info.length<=0){
+          break;
+      }
       var lat1_ = info.split(" ")[1].toString();
       var lon1_ = info.split(" ")[2].toString();
       var lat2_ = info.split(" ")[3].toString();
@@ -255,7 +258,7 @@ function updateRegionSample()
       var region = RegionsArray[i];
       if (!isGlobalRegion(region) && isInsideRegion(region))
       {  
-          if(regionHasChanged(region)))
+          if(regionHasChanged(region))
           {
               CurrentRegion = RegionsArray[i];
               console.log("Region: " + CurrentRegion.Id);
@@ -272,9 +275,9 @@ function updateRegionSample()
 
 function updateGlobalSample()
 {
-  if(isInsideRegion(GlobalRegion)))
+  if(isInsideRegion(GlobalRegion))
   {
-    if(regionHasChanged(GlobalRegion)))
+    if(regionHasChanged(GlobalRegion))
     {
         CurrentRegion = GlobalRegion;
         console.log("Region: " + CurrentRegion.Id);
@@ -290,9 +293,9 @@ function updateGlobalSample()
 
 function updateAlarmSample()
 {
-  if(!isInsideRegion(GlobalRegion)))
+  if(!isInsideRegion(GlobalRegion))
   {
-    if(regionHasChanged(OutsideRegion)))
+    if(regionHasChanged(OutsideRegion))
     {
         CurrentRegion = OutsideRegion;
         console.log("Region: " + CurrentRegion.Id);
@@ -402,8 +405,8 @@ function  updateSample(){
   
   var sampleName = CurrentRegion.SampleName;
   pd.sendMessage("sampleName", sampleName);
-  console.log("Play sample: " sampleName);
-  
+  console.log("Play sample: " + sampleName);
+
 }
   
 function sendDataToServer(){
