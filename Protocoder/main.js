@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.75
+*              Version 0.8
 * Author: Imanol Gómez
 *
 */
@@ -30,7 +30,11 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     if (!isCurrentLocationValid()){ 
         return;
     }
-
+    
+    if(updateOutsideSample()){
+      return;
+    }
+    
     if(updateRegionSample()){
       return;
     }
@@ -38,10 +42,6 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     if(updateGlobalSample()){
       return;
     }
-
-    if(updateOutsideSample()){
-      return;
-    }    
 });
 
 
@@ -62,7 +62,7 @@ function initializeAttributes(){
   media.setVolume(50);
   device.enableVolumeKeys(true);
   GlobalRegion = {Id: 0, Lat1: 0, Lon1: 0, Lat2: 0, Lon2: 0, SampleName: "sonar1"};
-  CurrentRegion = GlobalRegion;
+  CurrentRegion = {Id: -10, Lat1: 0, Lon1: 0, Lat2: 0, Lon2: 0, SampleName: "sonar1"};
   OutsideRegion = {Id: -1, Lat1: 0, Lon1: 0, Lat2: 0, Lon2: 0, SampleName: "alarm1"};
   CurrentLocation = {Latitude: 56, Longitude: 13, Altitude: 0, Accuracy: 0, Speed: 0};
   CurrentBeacon = {Id: 23, Strength: 0.26};
@@ -239,8 +239,8 @@ function readRegions() {
         TownMap.addMarker("Region-> " + id +":4", "", lat2, lon1);
         
         var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
-
-        if(region.Id = 0){ // Id 0 is being used for the global region
+        
+        if(region.Id == GlobalRegion.Id){ // Id 0 is being used for the global region
           GlobalRegion = region;
         }
         
@@ -263,8 +263,9 @@ function updateRegionSample()
    for (var i = 0; i < RegionsArray.length; i++)
    {
       var region = RegionsArray[i];
-      if (!isGlobalRegion(region) && isInsideRegion(region))
+      if ((!isGlobalRegion(region)) && (isCurrentLocationInside(region)))
       {  
+          console.log("isCurrentLocationInside(region) = True" );
           if(regionHasChanged(region))
           {
               CurrentRegion = RegionsArray[i];
@@ -276,14 +277,16 @@ function updateRegionSample()
           return true;
       }
   }
-
+ 
+  console.log("isCurrentLocationInside(region) = False" );
   return false;
 }
 
 function updateGlobalSample()
 {
-  if(isInsideRegion(GlobalRegion))
+  if(isCurrentLocationInside(GlobalRegion))
   {
+    console.log("isCurrentLocationInside(GlobalRegion) = True" );
     if(regionHasChanged(GlobalRegion))
     {
         CurrentRegion = GlobalRegion;
@@ -295,13 +298,15 @@ function updateGlobalSample()
     return true;
   }
 
+  console.log("isCurrentLocationInside(GlobalRegion) = False" );
   return false;
 }
 
 function updateOutsideSample()
 {
-  if(!isInsideRegion(GlobalRegion))
-  {
+  if(!(isCurrentLocationInside(GlobalRegion)))
+  { 
+    console.log("isCurrentLocationInside(OutsideRegion) = True" );
     if(regionHasChanged(OutsideRegion))
     {
         CurrentRegion = OutsideRegion;
@@ -313,6 +318,7 @@ function updateOutsideSample()
     return true;
   }
 
+  console.log("isCurrentLocationInside(OutsideRegion) = False" );
   return false;
 }
 
@@ -354,7 +360,7 @@ function updateLocation(lat, lon, alt, speed, bearing)
     
     updateLabels();    
     //updateOscValues();
-    //sendDataToServer();
+    sendDataToServer();
     updateMap();
 }
 
@@ -367,16 +373,10 @@ function isCurrentRegionGlobal(){
     CurrentLocation.Longitude>=GlobalRegion.Lon1&&CurrentLocation.Longitude<=GlobalRegion.Lon2);
 }
 
-function isInsideRegion(region){
+function isCurrentLocationInside(region){
 
-    for (var i = 0; i < RegionsArray.length; i++){
-      if(RegionsArray[i].Id == region.Id){
-         return (CurrentLocation.Latitude>=region.Lat1&&CurrentLocation.Latitude<=region.Lat2 &&
+    return (CurrentLocation.Latitude>=region.Lat1&&CurrentLocation.Latitude<=region.Lat2 &&
             CurrentLocation.Longitude>=region.Lon1&&CurrentLocation.Longitude<=region.Lon2);
-      }
-    }
-
-    return false;
 }
 
 function regionHasChanged(region){
@@ -384,7 +384,7 @@ function regionHasChanged(region){
 }
 
 function isRegionUpdatable(region){
-   return (isInsideRegion(region.Id) && regionHasChanged(region.Id));
+   return (isCurrentLocationInside(region.Id) && regionHasChanged(region.Id));
 }
 
 function updateMap(){
@@ -415,9 +415,9 @@ function sendDataToServer(){
             "&region=" + CurrentRegion.Id +
             "&pos=" + CurrentLocation.Latitude + "," + CurrentLocation.Longitude +
             "&beacons=" + BeaconId + "," + BeaconStrength;
-    console.log(url); 
+    //console.log(url); 
   network.httpGet(url, function(status, response) { 
-      console.log(status + " " + response); 
+      //console.log(status + " " + response); 
       //console.log(status + " " + response); 
   });    
 
