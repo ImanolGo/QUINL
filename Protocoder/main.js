@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.74
+*              Version 0.75
 * Author: Imanol Gómez
 *
 */
@@ -9,13 +9,10 @@
 //Global values
 var CurrentRegion, CurrentSample, TownMap, GlobalRegion, OutsideRegion,
 BeaconId, BeaconStrength, RegionsArray,
-CurrentLocation, CurrentBeacon,
+CurrentLocation, CurrentBeacon, pd,
 MobileId, OscClient, RegionsDataBase,
 LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
 
-var pd = media.initPDPatch("loopSample.pd", function(data) { 
-    console.log(data);
-});
 
 //Initialize App
 initializeApp();
@@ -30,21 +27,21 @@ sensors.startGPS(function (lat, lon, alt, speed, bearing) {
     
     updateLocation(lat, lon, alt, speed, bearing);
 
-    // if (!isCurrentLocationValid()){ 
-    //     return;
-    // }
+    if (!isCurrentLocationValid()){ 
+        return;
+    }
 
-    // if(updateRegionSample()){
-    //   return;
-    // }
+    if(updateRegionSample()){
+      return;
+    }
 
-    // if(updateGlobalSample()){
-    //   return;
-    // }
+    if(updateGlobalSample()){
+      return;
+    }
 
-    // if(updateOutsideSample()){
-    //   return;
-    // }    
+    if(updateOutsideSample()){
+      return;
+    }    
 });
 
 
@@ -53,6 +50,7 @@ function initializeApp(){
   console.log("Starting QUINL");
 
   initializeAttributes();
+  initializePureData();
   initializeOSC();
   createMap();
   createGUI();
@@ -107,6 +105,14 @@ function createGUI(){
   AltLabel = ui.addText("Altitude : ",10,200,500,100);
   RegionLabel = ui.addText("Region : " + CurrentRegion.Id,10,250,200,100);
   BatteryLifeLabel = ui.addText("Battery Life : "  + parseInt(device.getBatteryLevel()),10,300,200,100);
+}
+
+function initializePureData(){
+    var patchName = "loopSample.pd";
+    console.log("Initialize Pure Data Patch: " + patchName);
+    pd = media.initPDPatch(patchName, function(data) { 
+        console.log(data);
+    });
 }
 
 function createRegions() {
@@ -292,7 +298,7 @@ function updateGlobalSample()
   return false;
 }
 
-function updateAlarmSample()
+function updateOutsideSample()
 {
   if(!isInsideRegion(GlobalRegion))
   {
@@ -348,7 +354,7 @@ function updateLocation(lat, lon, alt, speed, bearing)
     
     updateLabels();    
     //updateOscValues();
-    sendDataToServer();
+    //sendDataToServer();
     updateMap();
 }
 
@@ -390,21 +396,11 @@ function isGlobalRegion(region){
   return (GlobalRegion.Id==region.Id);
 }
 
-function setAlarmSample(){
-    
-  var sampleName = "alarm1";
-  CurrentSample = "samples/" + sampleName + ".ogg";
-  media.playSound(CurrentSample);
-  alarmLoop = util.loop(AlarmLoopTime, function () { 
-        media.playSound(CurrentSample);
-  });
-  sonarLoop.stop();
-  
-}
 function  updateSample(){
   
   var sampleName = CurrentRegion.SampleName;
   pd.sendMessage("sampleName", sampleName);
+  pd.sendFloat("regionId", CurrentRegion.Id);
   console.log("Play sample: " + sampleName);
 
 }
