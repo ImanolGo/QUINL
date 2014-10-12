@@ -1,27 +1,21 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.7
+*              Version 0.71
 * Author: Imanol Gómez
 *
 */
 
 //Global values
-var SonarLoopTime = 3000;
-var AlarmLoopTime = 9000;
-var CurrentRegion, CurrentSample, TownMap,
+var CurrentRegion, CurrentSample, TownMap, GlobalRegion, OutsideRegion,
 BeaconId, BeaconStrength, RegionsArray,
-CurrentLatitude, CurrentLongitude, CurrentAltitude, CurrentSpeed,
+CurrentLocation, CurrentBeacon,
 MobileId, OscClient, RegionsDataBase,
 LatLabel,LonLabel,AltLabel,RegionLabel,BatteryLifeLabel;
 
-var sonarLoop = util.loop(SonarLoopTime, function () { 
-    media.playSound(CurrentSample);
-}); 
-
-var alarmLoop = util.loop(AlarmLoopTime, function () { 
-    media.playSound(CurrentSample);
-}); 
+var pd = media.initPDPatch("loopSample.pd", function(data) { 
+    console.log(data);
+});
 
 //Initialize App
 initializeApp();
@@ -32,45 +26,24 @@ getDeviceId();
 
 //for each GPS update the image and values are changed 
 sensors.startGPS(function (lat, lon, alt, speed, bearing) { 
-    CurrentLatitude = lat;
-    CurrentLongitude = lon;
-    CurrentAltitude = alt;
-    CurrentSpeed = speed;
-  
-    updateLabels();    
-    updateOscValues();
-    sendDataToServer();
     
-    if (isCurrentLocationValid()){ 
-        updateMap();
-        var isPositionOutside = true;
-        
-        for (var i = 0; i < RegionsArray.length; i++){
-            
-            if (isInsideRegion(i))
-            {  
-               isPositionOutside = false;
-               if(regionHasChanged(i)){
-                  CurrentRegion = RegionsArray[i].Id;
-                  console.log("Region: " + CurrentRegion);
-             
-                  updateLabels();
-                  updateSample();
-                  //sendDataToServer();
-                  break;
+    updateLocation(lat, lon, alt, speed, bearing);
 
-               }  
-               
-            }
-        }
-
-        if(CurrentRegion!=-1 && isPositionOutside){
-          CurrentRegion = -1;
-          setAlarmSample();
-        }
-     
+    if (!isCurrentLocationValid()){ 
+        return;
     }
-    
+
+    if(updateRegionSample()){
+      return;
+    }
+
+    if(updateGlobalSample()){
+      return;
+    }
+
+    if(updateOutsideSample()){
+      return;
+    }    
 });
 
 
@@ -89,16 +62,12 @@ function initializeAttributes(){
   console.log("Setup initial attributes");
   media.setVolume(50);
   device.enableVolumeKeys(true);
-  CurrentRegion = -1;
-  CurrentSample = "samples/alarm1.ogg"
-  BeaconId = 23;
-  BeaconStrength = 0.26;
+  GlobalRegion = {Id: 0, Lat1: 0, Lon1: 0, Lat2: 0, Lon2: 0, SampleName: "sonar1"};
+  CurrentRegion = GlobalRegion;
+  OutsideRegion = {Id: -1, Lat1: 0, Lon1: 0, Lat2: 0, Lon2: 0, SampleName: "alarm1"};
+  CurrentLocation = {Latitude: 56, Longitude: 13, Altitude: 0, Accuracy: 0, Speed: 0};
+  CurrentBeacon = {Id: 23, Strength: 0.26};
   RegionsArray = []; // empty array
-  CurrentLatitude = 56;
-  CurrentLongitude = 13;
-  CurrentAltitude = 0;
-  SonarLoopTime = 2000;
-  sonarLoop.stop();
   
 }
 
@@ -137,28 +106,35 @@ function createGUI(){
   AltLabel = ui.addText("Altitude : ",10,200,500,100);
   RegionLabel = ui.addText("Region : ",10,250,200,100);
   BatteryLifeLabel = ui.addText("Battery Life : ",10,300,200,100);
-
-  console.log("Creating Buttons");
-  ui.addButton("Sample", 0, 0, 500, 100, function() { 
-    media.playSound(CurrentSample);
-  });
 }
 
 function createRegions() {
     //Create the data base
     console.log("Creating Regions");
     
-    var totalLat1 = 52.55592;
-    var totalLat2 = 52.55783; 
-    var totalLon1 = 13.38136;
-    var totalLon2 = 13.38533;
+    var globalLat1 = 52.55592;
+    var globalLat2 = 52.55783; 
+    var globalLon1 = 13.38136;
+    var globalLon2 = 13.38533;
     var numColumns = 4;
     var numRows = 3;
     var latSection = (totalLat2 - totalLat1)/numRows;
     var lonSection = (totalLon2 - totalLon1)/numColumns;
-    
-    var id = 1;
+    var id = 0;
     var data = [];
+
+    //Create the global region. Outside here the mobile phone is not suppose to be
+    var regionString = id  + ", " +
+                            globalLat1  + " " +
+                            globalLon1  + " " +
+                            globalLat2  + " " +
+                            globalLon2  + " " +
+                            "sonar1;";
+    data.push(regionString);
+    console.log(regionString); 
+    id = id + 1; 
+
+    //Create specific regions
     for(var i = 0; i < numRows; i = i+1) {
          for(var j = 0; j < numColumns; j = j+1) {
             var lat1 = totalLat1 + latSection*i;
@@ -171,7 +147,6 @@ function createRegions() {
                             lon1  + " " +
                             lat2  + " " +
                             lon2  + " " +
-                            //"sonar1;";
                             "Region" + id + ";";
             data.push(regionString);
             console.log(regionString); 
@@ -254,6 +229,10 @@ function readRegions() {
         TownMap.addMarker("Region-> " + id +":4", "", lat2, lon1);
         
         var region = {Id: id, Lat1: lat1, Lon1: lon1, Lat2: lat2, Lon2: lon2, SampleName: sampleName};
+
+        if(region.Id = 0){ // Id 0 is being used for the global region
+          GlobalRegion = region;
+        }
         
         var regionsOSC = [];
         regionsOSC.push(region.Id);
@@ -267,6 +246,64 @@ function readRegions() {
     }    
     
     RegionsDataBase.close();
+}
+
+function updateRegionSample()
+{
+   for (var i = 0; i < RegionsArray.length; i++)
+   {
+      var region = RegionsArray[i];
+      if (!isGlobalRegion(region) && isInsideRegion(region))
+      {  
+          if(regionHasChanged(region)))
+          {
+              CurrentRegion = RegionsArray[i];
+              console.log("Region: " + CurrentRegion.Id);
+              updateLabels();
+              updateSample();
+          }
+           
+          return true;
+      }
+  }
+
+  return false;
+}
+
+function updateGlobalSample()
+{
+  if(isInsideRegion(GlobalRegion)))
+  {
+    if(regionHasChanged(GlobalRegion)))
+    {
+        CurrentRegion = GlobalRegion;
+        console.log("Region: " + CurrentRegion.Id);
+        updateLabels();
+        updateSample();
+    }
+     
+    return true;
+  }
+
+  return false;
+}
+
+function updateAlarmSample()
+{
+  if(!isInsideRegion(GlobalRegion)))
+  {
+    if(regionHasChanged(OutsideRegion)))
+    {
+        CurrentRegion = OutsideRegion;
+        console.log("Region: " + CurrentRegion.Id);
+        updateLabels();
+        updateSample();
+    }
+     
+    return true;
+  }
+
+  return false;
 }
 
 function getDeviceId(){
@@ -302,23 +339,52 @@ function updateOscValues(){
     OscClient.send("/position", geoPosition);
 }
 
-function isCurrentLocationValid(){
-  return (CurrentLongitude>0&&CurrentLatitude>0);
-}
-
-function isInsideRegion(regionId){
-    return (CurrentLatitude>=RegionsArray[regionId].Lat1&&CurrentLatitude<=RegionsArray[regionId].Lat2 &&
-    CurrentLongitude>=RegionsArray[regionId].Lon1&&CurrentLongitude<=RegionsArray[regionId].Lon2);
+function updateLocation(lat, lon, alt, speed, bearing)
+{
+    CurrentLocation = {Latitude: lat, Longitude: lon, Altitude: alt, Accuracy: 0, Speed: speed};
     
+    updateLabels();    
+    updateOscValues();
+    sendDataToServer();
+    updateMap();
 }
 
-function regionHasChanged(regionId){
-    return (CurrentRegion!=RegionsArray[regionId].Id);
+function isCurrentLocationValid(){
+  return (CurrentLocation.Longitude>0&&CurrentLocation.Latitude>0);
+}
+
+function isCurrentRegionGlobal(){
+    return (CurrentLocation.Latitude>=GlobalRegion.Lat1&&CurrentLocation.Latitude<=GlobalRegion.Lat2 &&
+    CurrentLocation.Longitude>=GlobalRegion.Lon1&&CurrentLocation.Longitude<=GlobalRegion.Lon2);
+}
+
+function isInsideRegion(region){
+
+    for (var i = 0; i < RegionsArray.length; i++){
+      if(RegionsArray[i].Id == region.Id){
+         return (CurrentLocation.Latitude>=region.Lat1&&CurrentLocation.Latitude<=region.Lat2 &&
+            CurrentLocation.Longitude>=region.Lon1&&CurrentLocation.Longitude<=region.Lon2);
+      }
+    }
+
+    return false;
+}
+
+function regionHasChanged(region){
+    return (CurrentRegion.Id!=region.Id);
+}
+
+function isRegionUpdatable(region){
+   return (isInsideRegion(region.Id) && regionHasChanged(region.Id));
 }
 
 function updateMap(){
   TownMap.moveTo(CurrentLatitude, CurrentLongitude);
   TownMap.showControls(true);
+}
+
+function isGlobalRegion(region){
+  return (GlobalRegion.Id==region.Id);
 }
 
 function setAlarmSample(){
@@ -334,27 +400,9 @@ function setAlarmSample(){
 }
 function  updateSample(){
   
-  if(CurrentRegion < 1){
-      return;
-  }
-  
-   var sampleName = RegionsArray[CurrentRegion-1].SampleName;
-   CurrentSample = "samples/" + sampleName + ".ogg";
-    
-  if(sampleName == "sonar1"){
-        sonarLoop.stop();
-        sonarLoop = util.loop(SonarLoopTime, function () { 
-        media.playSound(CurrentSample);
-        }); 
-  }
-  else{
-      alarmLoop.stop();
-      sonarLoop.stop();
-      ///MAKE A MAP INSTEAD OF AN ARRAY
-      media.playSound(CurrentSample);
-      console.log("Play sample: " + CurrentSample);
-      
-  }
+  var sampleName = CurrentRegion.SampleName;
+  pd.sendMessage("sampleName", sampleName);
+  console.log("Play sample: " sampleName);
   
 }
   

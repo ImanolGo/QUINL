@@ -1,46 +1,7 @@
-#N canvas 285 114 832 519 10;
-#N canvas 638 269 543 405 crossfade 0;
-#X obj 39 17 inlet;
-#X obj 45 53 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
-#X floatatom 43 85 5 0 0 0 - - -;
-#X msg 130 100 1;
-#X obj 48 132 -;
-#X floatatom 48 168 5 0 0 0 - - -;
-#X obj 49 200 * -1;
-#X floatatom 49 231 5 0 0 0 - - -;
-#X obj 48 262 outlet;
-#X connect 0 0 1 0;
-#X connect 1 0 2 0;
-#X connect 2 0 3 0;
-#X connect 2 0 4 0;
-#X connect 3 0 4 1;
-#X connect 4 0 5 0;
-#X connect 5 0 6 0;
-#X connect 6 0 7 0;
-#X connect 7 0 8 0;
-#X restore 369 121 pd crossfade;
-#X obj 368 63 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 12700 1;
-#X obj 365 26 line;
-#X text 392 -27 Go to 0 in 500ms;
-#X text 570 -26 Go to 1 in 500ms;
-#X floatatom 368 91 5 0 0 0 - - -;
-#X obj 375 196 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
--1 -1 0 1;
-#X floatatom 372 147 5 0 0 0 - - -;
+#N canvas 134 41 1034 553 10;
 #X floatatom 17 47 5 0 0 0 - - -;
-#X obj 369 233 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
-0.04;
-#X obj 334 104 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
-1;
-#X msg -118 -86 \; pd dsp \$1;
-#X obj -118 -118 tgl 30 0 empty empty Audio:On/Off 33 26 0 10 -259648
--1 -1 0 1;
 #X obj 13 250 s sampleName;
-#X obj 461 118 s volumeSample1;
-#X obj 465 174 s volumeSample2;
-#N canvas 601 106 566 544 sampleSelector 1;
+#N canvas 601 106 566 544 sampleSelector 0;
 #X obj 170 179 + 1;
 #X obj 170 211 % 2;
 #X obj 170 112 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
@@ -79,17 +40,11 @@
 #X connect 16 0 2 0;
 #X connect 16 1 13 1;
 #X connect 16 1 15 1;
-#X restore 348 335 pd sampleSelector;
-#X obj 346 371 hradio 15 1 0 2 empty empty empty 0 -8 0 10 -262144
+#X restore 285 220 pd sampleSelector;
+#X obj 283 256 hradio 15 1 0 2 empty empty empty 0 -8 0 10 -262144
 -1 -1 0;
-#X obj 348 302 r sampleName;
-#X msg 344 -27 1 500;
-#X msg 522 -26 0 500;
-#X obj 343 -60 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 521 -57 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#N canvas 414 264 536 325 sample1 0;
+#X obj 285 187 r sampleName;
+#N canvas 414 264 536 325 sample1 1;
 #X obj 386 3 inlet;
 #X text 382 -20 Sample Volume;
 #X obj 29 50 readsf~;
@@ -112,18 +67,18 @@
 #X obj -189 -180 inlet;
 #X obj -188 46 outlet;
 #X obj 37 -178 inlet;
-#X obj -192 -100 sprintf open samples/%s;
 #X obj -97 44 print sample1;
-#X connect 0 0 7 0;
+#X obj -192 -100 sprintf open samples/%s.aiff;
+#X connect 0 0 8 0;
 #X connect 1 0 5 0;
-#X connect 1 0 8 0;
+#X connect 1 0 7 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
-#X connect 4 0 7 0;
+#X connect 4 0 8 0;
 #X connect 6 0 0 0;
-#X connect 7 0 3 0;
-#X connect 7 0 5 0;
-#X connect 7 0 8 0;
+#X connect 8 0 3 0;
+#X connect 8 0 5 0;
+#X connect 8 0 7 0;
 #X restore 29 -11 pd loadSample1;
 #X connect 0 0 5 1;
 #X connect 0 0 8 0;
@@ -141,11 +96,9 @@
 #X floatatom 230 49 5 0 0 0 - - -;
 #X obj 130 5 r sampleName2;
 #X obj 230 5 r volumeSample2;
-#X obj 343 -96 r selectSample1;
-#X obj 521 -93 r selectSample2;
-#X msg 15 197 Region1.aiff;
-#X msg 108 198 Region2.aiff;
-#N canvas 379 193 536 325 sample2 0;
+#X obj 349 9 r selectSample1;
+#X obj 458 22 r selectSample2;
+#N canvas 379 193 536 325 sample2 1;
 #X obj 386 3 inlet;
 #X text 382 -20 Sample Volume;
 #X obj 29 50 readsf~;
@@ -158,7 +111,7 @@
 #X obj 216 30 gate 0;
 #X obj 216 0 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 -0
 0.04;
-#N canvas 296 71 414 305 loadSample2 0;
+#N canvas 296 71 414 305 loadSample2 1;
 #X obj 36 -148 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
 -1 -1;
 #X msg -87 -17 1;
@@ -168,18 +121,18 @@
 #X obj -189 -180 inlet;
 #X obj -188 46 outlet;
 #X obj 37 -178 inlet;
-#X obj -192 -100 sprintf open samples/%s;
 #X obj -100 48 print sample2;
-#X connect 0 0 7 0;
+#X obj -192 -100 sprintf open samples/%s.aiff;
+#X connect 0 0 8 0;
 #X connect 1 0 5 0;
-#X connect 1 0 8 0;
+#X connect 1 0 7 0;
 #X connect 2 0 1 0;
 #X connect 3 0 2 0;
-#X connect 4 0 7 0;
+#X connect 4 0 8 0;
 #X connect 6 0 0 0;
-#X connect 7 0 3 0;
-#X connect 7 0 5 0;
-#X connect 7 0 8 0;
+#X connect 8 0 3 0;
+#X connect 8 0 5 0;
+#X connect 8 0 7 0;
 #X restore 29 -11 pd loadSample2;
 #X connect 0 0 5 1;
 #X connect 0 0 9 0;
@@ -192,29 +145,88 @@
 #X connect 9 0 8 0;
 #X connect 10 0 2 0;
 #X restore 145 89 pd sample2;
-#X connect 0 0 7 0;
-#X connect 1 0 5 0;
-#X connect 1 0 10 0;
-#X connect 2 0 1 0;
-#X connect 5 0 0 0;
-#X connect 5 0 14 0;
-#X connect 6 0 9 0;
-#X connect 7 0 6 0;
-#X connect 7 0 15 0;
-#X connect 8 0 23 1;
-#X connect 12 0 11 0;
-#X connect 16 0 17 0;
-#X connect 18 0 16 0;
-#X connect 19 0 2 0;
-#X connect 20 0 2 0;
-#X connect 21 0 19 0;
-#X connect 22 0 20 0;
-#X connect 24 0 23 0;
-#X connect 25 0 8 0;
-#X connect 26 0 33 1;
-#X connect 27 0 33 0;
-#X connect 28 0 26 0;
-#X connect 29 0 21 0;
-#X connect 30 0 22 0;
-#X connect 31 0 13 0;
-#X connect 32 0 13 0;
+#N canvas 0 22 421 441 sampleCrossFader 0;
+#X obj 30 -18 inlet;
+#X obj 210 -12 inlet;
+#N canvas 638 269 543 405 crossfade 0;
+#X obj 39 17 inlet;
+#X obj 45 53 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 12700 1;
+#X floatatom 43 85 5 0 0 0 - - -;
+#X msg 130 100 1;
+#X obj 48 132 -;
+#X floatatom 48 168 5 0 0 0 - - -;
+#X obj 49 200 * -1;
+#X floatatom 49 231 5 0 0 0 - - -;
+#X obj 48 262 outlet;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 2 0 4 0;
+#X connect 3 0 4 1;
+#X connect 4 0 5 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 7 0 8 0;
+#X restore 57 197 pd crossfade;
+#X obj 56 139 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 12700 1;
+#X obj 53 102 line;
+#X text 80 49 Go to 0 in 500ms;
+#X text 258 50 Go to 1 in 500ms;
+#X floatatom 56 167 5 0 0 0 - - -;
+#X obj 63 272 hsl 128 15 0 1 0 0 empty empty empty -2 -8 0 10 -262144
+-1 -1 0 1;
+#X floatatom 60 223 5 0 0 0 - - -;
+#X obj 57 309 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+0.04;
+#X obj 22 180 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+1;
+#X obj 149 194 s volumeSample1;
+#X obj 153 250 s volumeSample2;
+#X msg 32 49 1 500;
+#X msg 210 50 0 500;
+#X obj 31 16 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X obj 209 19 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+-1;
+#X text 206 -36 Select Sample 2;
+#X text 27 -40 Select Sample 1;
+#X connect 0 0 16 0;
+#X connect 1 0 17 0;
+#X connect 2 0 9 0;
+#X connect 3 0 7 0;
+#X connect 3 0 11 0;
+#X connect 4 0 3 0;
+#X connect 7 0 2 0;
+#X connect 7 0 12 0;
+#X connect 8 0 10 0;
+#X connect 9 0 8 0;
+#X connect 9 0 13 0;
+#X connect 14 0 4 0;
+#X connect 15 0 4 0;
+#X connect 16 0 14 0;
+#X connect 17 0 15 0;
+#X restore 347 53 pd sampleCrossFader;
+#X symbolatom 435 249 27 0 0 0 - - -;
+#X obj 435 181 r sampleName;
+#X text 433 271 Current Sample;
+#X obj 435 213 prepend symbol;
+#X msg -80 195 sonar1;
+#X msg 15 197 Region1;
+#X msg 108 198 Region2;
+#X connect 0 0 5 1;
+#X connect 2 0 3 0;
+#X connect 4 0 2 0;
+#X connect 6 0 5 0;
+#X connect 7 0 0 0;
+#X connect 8 0 13 1;
+#X connect 9 0 13 0;
+#X connect 10 0 8 0;
+#X connect 11 0 14 0;
+#X connect 12 0 14 1;
+#X connect 16 0 18 0;
+#X connect 18 0 15 0;
+#X connect 19 0 1 0;
+#X connect 20 0 1 0;
+#X connect 21 0 1 0;
