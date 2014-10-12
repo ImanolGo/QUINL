@@ -1,7 +1,7 @@
 /*
 * 
 * Description: Quiet is the new loud.
-*              Version 0.73
+*              Version 0.74
 * Author: Imanol Gómez
 *
 */
@@ -337,8 +337,8 @@ function updateOscValues(){
     OscClient.send("/batteryLife", batteryLife);
     
     var geoPosition = [];
-    geoPosition.push(CurrentLatitude);
-    geoPosition.push(CurrentLongitude);
+    geoPosition.push(CurrentLocation.Latitude);
+    geoPosition.push(CurrentLocation.Longitude);
     OscClient.send("/position", geoPosition);
 }
 
@@ -348,8 +348,8 @@ function updateLocation(lat, lon, alt, speed, bearing)
     
     updateLabels();    
     //updateOscValues();
-    //sendDataToServer();
-    //updateMap();
+    sendDataToServer();
+    updateMap();
 }
 
 function isCurrentLocationValid(){
@@ -382,7 +382,7 @@ function isRegionUpdatable(region){
 }
 
 function updateMap(){
-  TownMap.moveTo(CurrentLatitude, CurrentLongitude);
+  TownMap.moveTo(CurrentLocation.Latitude, CurrentLocation.Longitude);
   TownMap.showControls(true);
 }
 
@@ -416,9 +416,10 @@ function sendDataToServer(){
   var url = "http://o-a.info/qitnl/track.php?time=" + date +
            "&phone=" + MobileId +
            "&bat=" + device.getBatteryLevel() +
-            "&region=" + CurrentRegion +
-            "&pos=" + CurrentLatitude + "," + CurrentLongitude +
+            "&region=" + CurrentRegion.Id +
+            "&pos=" + CurrentLocation.Latitude + "," + CurrentLocation.Longitude +
             "&beacons=" + BeaconId + "," + BeaconStrength;
+    console.log(url); 
   network.httpGet(url, function(status, response) { 
       console.log(status + " " + response); 
       //console.log(status + " " + response); 
