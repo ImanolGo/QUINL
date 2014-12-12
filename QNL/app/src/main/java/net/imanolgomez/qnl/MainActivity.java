@@ -37,11 +37,6 @@ import java.util.Locale;
  * app, displays the current location, the current address, and the status of the location client
  * and updating services.
  *
- * {@link #getLocation} gets the current location using the Location Services getLastLocation()
- * function. {@link #getAddress} calls geocoding to get a street address for the current location.
- * {@link #startUpdates} sends a request to Location Services to send periodic location updates to
- * the Activity.
- * {@link #stopUpdates} cancels previous periodic update requests.
  *
  * The update interval is hard-coded to be 5 seconds.
  */
@@ -58,7 +53,6 @@ public class MainActivity extends FragmentActivity implements
 
     // Handles to UI widgets
     private TextView mLatLng;
-    private TextView mAddress;
     private ProgressBar mActivityIndicator;
     private TextView mConnectionState;
     private TextView mConnectionStatus;
@@ -74,7 +68,7 @@ public class MainActivity extends FragmentActivity implements
      * method handleRequestSuccess of LocationUpdateReceiver.
      *
      */
-    boolean mUpdatesRequested = false;
+    boolean mUpdatesRequested = true;
 
     /*
      * Initialize the Activity
@@ -84,41 +78,8 @@ public class MainActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get handles to the UI view objects
-        mLatLng = (TextView) findViewById(R.id.lat_lng);
-        mAddress = (TextView) findViewById(R.id.address);
-        mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
-        mConnectionState = (TextView) findViewById(R.id.text_connection_state);
-        mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
-
-        // Create a new global location parameters object
-        mLocationRequest = LocationRequest.create();
-
-        /*
-         * Set the update interval
-         */
-        mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
-
-        // Use high accuracy
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-        // Set the interval ceiling to one minute
-        mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-
-        // Note that location updates are off until the user turns them on
-        mUpdatesRequested = false;
-
-        // Open Shared Preferences
-        mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-
-        // Get an editor
-        mEditor = mPrefs.edit();
-
-        /*
-         * Create a new location client, using the enclosing class to
-         * handle callbacks.
-         */
-        mLocationClient = new LocationClient(this, this, this);
+        this.initializeViews();
+        this.initializeLocationParameters();
 
     }
 
@@ -268,86 +229,6 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    /**
-     * Invoked by the "Get Location" button.
-     *
-     * Calls getLastLocation() to get the current location
-     *
-     * @param v The view object associated with this method, in this case a Button.
-     */
-    public void getLocation(View v) {
-
-        // If Google Play Services is available
-        if (servicesConnected()) {
-
-            // Get the current location
-            Location currentLocation = mLocationClient.getLastLocation();
-
-            // Display the current location in the UI
-            mLatLng.setText(LocationUtils.getLatLng(this, currentLocation));
-        }
-    }
-
-    /**
-     * Invoked by the "Get Address" button.
-     * Get the address of the current location, using reverse geocoding. This only works if
-     * a geocoding service is available.
-     *
-     * @param v The view object associated with this method, in this case a Button.
-     */
-    // For Eclipse with ADT, suppress warnings about Geocoder.isPresent()
-    @SuppressLint("NewApi")
-    public void getAddress(View v) {
-
-        // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent()) {
-            // No geocoder is present. Issue an error message
-            Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        if (servicesConnected()) {
-
-            // Get the current location
-            Location currentLocation = mLocationClient.getLastLocation();
-
-            // Turn the indefinite activity indicator on
-            mActivityIndicator.setVisibility(View.VISIBLE);
-
-            // Start the background task
-            (new MainActivity.GetAddressTask(this)).execute(currentLocation);
-        }
-    }
-
-    /**
-     * Invoked by the "Start Updates" button
-     * Sends a request to start location updates
-     *
-     * @param v The view object associated with this method, in this case a Button.
-     */
-    public void startUpdates(View v) {
-        mUpdatesRequested = true;
-
-        if (servicesConnected()) {
-            startPeriodicUpdates();
-        }
-    }
-
-    /**
-     * Invoked by the "Stop Updates" button
-     * Sends a request to remove location updates
-     * request them.
-     *
-     * @param v The view object associated with this method, in this case a Button.
-     */
-    public void stopUpdates(View v) {
-        mUpdatesRequested = false;
-
-        if (servicesConnected()) {
-            stopPeriodicUpdates();
-        }
-    }
-
     /*
      * Called by Location Services when the request to connect the
      * client finishes successfully. At this point, you can
@@ -443,129 +324,44 @@ public class MainActivity extends FragmentActivity implements
         mConnectionState.setText(R.string.location_updates_stopped);
     }
 
-    /**
-     * An AsyncTask that calls getFromLocation() in the background.
-     * The class uses the following generic types:
-     * Location - A {@link android.location.Location} object containing the current location,
-     *            passed as the input parameter to doInBackground()
-     * Void     - indicates that progress units are not used by this subclass
-     * String   - An address passed to onPostExecute()
-     */
-    protected class GetAddressTask extends AsyncTask<Location, Void, String> {
+    protected void initializeViews() {
 
-        // Store the context passed to the AsyncTask when the system instantiates it.
-        Context localContext;
+        // Get handles to the UI view objects
+        mLatLng = (TextView) findViewById(R.id.lat_lng);
+        mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
+        mConnectionState = (TextView) findViewById(R.id.text_connection_state);
+        mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
+    }
 
-        // Constructor called by the system to instantiate the task
-        public GetAddressTask(Context context) {
+    protected void initializeLocationParameters(){
+        // Create a new global location parameters object
+        mLocationRequest = LocationRequest.create();
 
-            // Required by the semantics of AsyncTask
-            super();
-
-            // Set a Context for the background task
-            localContext = context;
-        }
-
-        /**
-         * Get a geocoding service instance, pass latitude and longitude to it, format the returned
-         * address, and return the address to the UI thread.
+        /*
+         * Set the update interval
          */
-        @Override
-        protected String doInBackground(Location... params) {
-            /*
-             * Get a new geocoding service instance, set for localized addresses. This example uses
-             * android.location.Geocoder, but other geocoders that conform to address standards
-             * can also be used.
-             */
-            Geocoder geocoder = new Geocoder(localContext, Locale.getDefault());
+        mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
 
-            // Get the current location from the input parameter list
-            Location location = params[0];
+        // Use high accuracy
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-            // Create a list to contain the result address
-            List <Address> addresses = null;
+        // Set the interval ceiling to one minute
+        mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
-            // Try to get an address for the current location. Catch IO or network problems.
-            try {
+        // Note that location updates are off until the user turns them on
+        mUpdatesRequested = false;
 
-                /*
-                 * Call the synchronous getFromLocation() method with the latitude and
-                 * longitude of the current location. Return at most 1 address.
-                 */
-                addresses = geocoder.getFromLocation(location.getLatitude(),
-                        location.getLongitude(), 1
-                );
+        // Open Shared Preferences
+        mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
 
-                // Catch network or other I/O problems.
-            } catch (IOException exception1) {
+        // Get an editor
+        mEditor = mPrefs.edit();
 
-                // Log an error and return an error message
-                Log.e(LocationUtils.APPTAG, getString(R.string.IO_Exception_getFromLocation));
-
-                // print the stack trace
-                exception1.printStackTrace();
-
-                // Return an error message
-                return (getString(R.string.IO_Exception_getFromLocation));
-
-                // Catch incorrect latitude or longitude values
-            } catch (IllegalArgumentException exception2) {
-
-                // Construct a message containing the invalid arguments
-                String errorString = getString(
-                        R.string.illegal_argument_exception,
-                        location.getLatitude(),
-                        location.getLongitude()
-                );
-                // Log the error and print the stack trace
-                Log.e(LocationUtils.APPTAG, errorString);
-                exception2.printStackTrace();
-
-                //
-                return errorString;
-            }
-            // If the reverse geocode returned an address
-            if (addresses != null && addresses.size() > 0) {
-
-                // Get the first address
-                Address address = addresses.get(0);
-
-                // Format the first line of address
-                String addressText = getString(R.string.address_output_string,
-
-                        // If there's a street address, add it
-                        address.getMaxAddressLineIndex() > 0 ?
-                                address.getAddressLine(0) : "",
-
-                        // Locality is usually a city
-                        address.getLocality(),
-
-                        // The country of the address
-                        address.getCountryName()
-                );
-
-                // Return the text
-                return addressText;
-
-                // If there aren't any addresses, post a message
-            } else {
-                return getString(R.string.no_address_found);
-            }
-        }
-
-        /**
-         * A method that's called once doInBackground() completes. Set the text of the
-         * UI element that displays the address. This method runs on the UI thread.
+        /*
+         * Create a new location client, using the enclosing class to
+         * handle callbacks.
          */
-        @Override
-        protected void onPostExecute(String address) {
-
-            // Turn off the progress bar
-            mActivityIndicator.setVisibility(View.GONE);
-
-            // Set the address in the UI
-            mAddress.setText(address);
-        }
+        mLocationClient = new LocationClient(this, this, this);
     }
 
     /**
