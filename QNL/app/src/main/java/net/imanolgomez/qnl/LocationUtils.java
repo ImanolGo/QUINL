@@ -88,5 +88,28 @@ public final class LocationUtils {
             return EMPTY_STRING;
         }
     }
+
+    /**
+     * Get the accuracy from the Location object returned by
+     * Location Services.
+     *
+     * @param currentLocation A Location object containing the current location
+     * @return The latitude and longitude of the current location, or null if no
+     * location is available.
+     */
+    public static String getAccuracy(Context context, Location currentLocation) {
+        // If the location is valid
+        if (currentLocation != null) {
+
+            // Return the latitude and longitude as strings
+            return context.getString(
+                    R.string.accuracy_string,
+                    currentLocation.getAccuracy());
+        } else {
+
+            // Otherwise, return the empty string
+            return EMPTY_STRING;
+        }
+    }
 }
 

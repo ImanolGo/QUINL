@@ -34,11 +34,32 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/text_connection_status"
+        android:id="@+id/accuracy_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/label_lat_lng"
+        android:text="@string/accuracy"
+        android:textIsSelectable="true"
+        android:layout_marginLeft="10dp"
+        android:textSize="20sp" />/>
+
+    <TextView
+        android:id="@+id/accuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/accuracy_label"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/accuracy_label"
+        android:textIsSelectable="true"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/text_connection_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/accuracy_label"
         android:text="@string/unknown"
         android:textIsSelectable="true"
         android:layout_marginLeft="10dp" />

@@ -13,6 +13,10 @@
     <!-- Address format -->
     <string name="address_output_string">%1$s %2$s %3$s</string>
 
+    <!-- Accuracy format -->
+    <string name="accuracy_string">%1$.2fm</string>
+
+
     <!-- Latitude, longitude format -->
     <string name="latitude_longitude">%1$.8f, %2$.8f</string>
 
@@ -22,6 +26,7 @@
     <!-- Labels -->
     <string name="latlng">Lat/Long:</string>
     <string name="address">Address:</string>
+    <string name="accuracy">Accuracy:</string>
 
     <!-- Messages -->
     <string name="connected">Client connected</string>

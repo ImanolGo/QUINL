@@ -53,9 +53,11 @@ public class MainActivity extends FragmentActivity implements
 
     // Handles to UI widgets
     private TextView mLatLng;
+    private TextView mAccuracyView;
     private ProgressBar mActivityIndicator;
     private TextView mConnectionState;
     private TextView mConnectionStatus;
+    private DeviceInfoManager mDeviceInfoManager;
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -77,10 +79,7 @@ public class MainActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        this.initializeViews();
-        this.initializeLocationParameters();
-
+        this.initialize();
     }
 
     /*
@@ -303,6 +302,7 @@ public class MainActivity extends FragmentActivity implements
 
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, location));
+        mAccuracyView.setText(LocationUtils.getAccuracy(this, location));
     }
 
     /**
@@ -324,10 +324,21 @@ public class MainActivity extends FragmentActivity implements
         mConnectionState.setText(R.string.location_updates_stopped);
     }
 
+    protected void initialize(){
+        this.initializeDeviceInfo();
+        this.initializeViews();
+        this.initializeLocationParameters();
+    }
+
+    protected void initializeDeviceInfo(){
+        mDeviceInfoManager = new DeviceInfoManager(this);
+    }
+
     protected void initializeViews() {
 
         // Get handles to the UI view objects
         mLatLng = (TextView) findViewById(R.id.lat_lng);
+        mAccuracyView = (TextView) findViewById(R.id.accuracy);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         mConnectionState = (TextView) findViewById(R.id.text_connection_state);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
