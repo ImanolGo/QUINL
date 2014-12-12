@@ -8,13 +8,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 import android.content.IntentSender;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -23,14 +19,10 @@ import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * This the app's main Activity. It provides buttons for requesting the various features of the
@@ -45,6 +37,8 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
 
+    private static final String TAG = "MainActivity";
+
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
 
@@ -58,6 +52,7 @@ public class MainActivity extends FragmentActivity implements
     private TextView mConnectionState;
     private TextView mConnectionStatus;
     private DeviceInfoManager mDeviceInfoManager;
+    private LocationInfoManager mLocationInfoManager;
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -300,6 +295,12 @@ public class MainActivity extends FragmentActivity implements
         // Report to the UI that the location was updated
         mConnectionStatus.setText(R.string.location_updated);
 
+        //Set the current location to the LocationInfoManager
+        mLocationInfoManager.setCurrentLocation(location);
+
+        //Set the tracking data
+        new SendTrackingData().execute();
+
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, location));
         mAccuracyView.setText(LocationUtils.getAccuracy(this, location));
@@ -325,13 +326,14 @@ public class MainActivity extends FragmentActivity implements
     }
 
     protected void initialize(){
-        this.initializeDeviceInfo();
+        this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
     }
 
-    protected void initializeDeviceInfo(){
-        mDeviceInfoManager = new DeviceInfoManager(this);
+    protected void initializeManagers(){
+        mDeviceInfoManager = DeviceInfoManager.get(this);
+        mLocationInfoManager = LocationInfoManager.get();
     }
 
     protected void initializeViews() {
@@ -373,6 +375,19 @@ public class MainActivity extends FragmentActivity implements
          * handle callbacks.
          */
         mLocationClient = new LocationClient(this, this, this);
+    }
+
+    private class SendTrackingData extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                String result = new ServerCommunicator(getApplicationContext()).sendTrackingData();
+                Log.i(TAG, "Fetched contents from tracking data: " + result);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Failed to send tracking data ", ioe);
+            }
+            return null;
+        }
     }
 
     /**
