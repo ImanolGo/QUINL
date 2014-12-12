@@ -30,6 +30,7 @@ public class ServerCommunicator {
     private static final String BATTERY_LEVEL = "bat=";
     private static final String REGION = "region=";
     private static final String POSITION = "pos=";
+    private static final String ACCURACY = "accuracy=";
 
     Context mAppContext;
 
@@ -64,6 +65,7 @@ public class ServerCommunicator {
 
     public String sendTrackingData() throws IOException {
         String trackingUrl = buildTrackingUrl();
+        Log.i(TAG,trackingUrl);
         return getUrl(trackingUrl);
     }
 
@@ -74,9 +76,11 @@ public class ServerCommunicator {
         String url = ENDPOINT + "?" +
                 TIME + deviceInfoManager.getTime() + "&" +
                 DEVICE_ID + deviceInfoManager.getDeviceId() + "&" +
+                BATTERY_LEVEL + deviceInfoManager.getBatteryLevel() + "&" +
                 REGION + locationInfoManager.getRegionId() + "&" +
                 POSITION + locationInfoManager.getCurrentLocation().getLatitude() + "," +
-                locationInfoManager.getCurrentLocation().getLongitude();
+                locationInfoManager.getCurrentLocation().getLongitude() + "&" +
+                ACCURACY  + locationInfoManager.getCurrentLocation().getAccuracy();
 
         return url;
     }
