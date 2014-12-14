@@ -15,34 +15,31 @@ import java.util.HashMap;
  * An class defining a path within a route
  */
 
-public class Route extends RouteElement{
+public class Route extends BasicElement {
 
     private Date mStartTime;
     private Date mEndTime;
 
-    private HashMap<Integer, Zone> mZones;
+    private HashMap<Integer, Region> mRegions;
 
     /**
-     * @param id The RouteElement's request ID
-     * @param name The RouteElement's human readable name.
-     * @param version The RouteElement's revision version.
+     * @param basicElement The BasicElement's attributes.
      */
-    public Route(
-            int id,
-            String name,
-            double version) {
 
-        super(id,name,version);
-        mZones =  new HashMap<Integer, Zone>();
+    public Route(
+            BasicElement basicElement) {
+
+        super(basicElement.getId(), basicElement.getName(), basicElement.getVersion());
+        mRegions =  new HashMap<Integer, Region>();
     }
 
-    public void addZone(Zone zone) {
-        mZones.put(zone.getId(), zone);
+    public void addRegion(Region region) {
+        mRegions.put(region.getId(), region);
     }
 
     public boolean isInside(Location loc) {
-        for (Zone zone : mZones.values()) {
-            if(zone.isInside(loc)){
+        for (Region region : mRegions.values()) {
+            if(region.isInside(loc)){
                 return true;
             }
         }
