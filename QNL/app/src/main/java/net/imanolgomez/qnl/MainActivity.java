@@ -7,6 +7,11 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
 import android.content.IntentSender;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -51,8 +56,16 @@ public class MainActivity extends FragmentActivity implements
     private ProgressBar mActivityIndicator;
     private TextView mConnectionState;
     private TextView mConnectionStatus;
+
+    //Handled Managers
     private DeviceInfoManager mDeviceInfoManager;
     private LocationInfoManager mLocationInfoManager;
+
+    // Handles Open Street Map
+    private MapView mMapView;
+    private MapController   mMapController;
+    private MyLocationNewOverlay mMyLocationOverlay;
+
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -304,6 +317,9 @@ public class MainActivity extends FragmentActivity implements
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, location));
         mAccuracyView.setText(LocationUtils.getAccuracy(this, location));
+
+        // Set Center of Google OMS
+        mMapController.setCenter(new GeoPoint(location.getLatitude(),location.getLongitude()));
     }
 
     /**
@@ -329,6 +345,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
+        this.initializeOSM();
     }
 
     protected void initializeManagers(){
@@ -346,6 +363,18 @@ public class MainActivity extends FragmentActivity implements
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
     }
 
+    protected void initializeOSM() {
+
+        mMapView = (MapView) findViewById(R.id.mapview);
+        //mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
+        mMapView.setBuiltInZoomControls(true);
+        mMapController = (MapController) mMapView.getController();
+        mMapController.setZoom(18);
+        GeoPoint gPt = new GeoPoint(52.5167,13.3833);
+        mMapController.setCenter(gPt);
+
+    }
+
     protected void initializeLocationParameters(){
         // Create a new global location parameters object
         mLocationRequest = LocationRequest.create();
@@ -360,6 +389,10 @@ public class MainActivity extends FragmentActivity implements
 
         // Set the interval ceiling to one minute
         mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+
+        // Set Set the minimum displacement between location updates in meters. By default this is 0.
+        mLocationRequest.setSmallestDisplacement(LocationUtils.MIN_DISPLACEMENT);
+
 
         // Note that location updates are off until the user turns them on
         mUpdatesRequested = false;
@@ -382,7 +415,7 @@ public class MainActivity extends FragmentActivity implements
         protected Void doInBackground(Void... params) {
             try {
                 String result = new ServerCommunicator(getApplicationContext()).sendTrackingData();
-                Log.i(TAG, "Fetched contents from tracking data: " + result);
+                //Log.i(TAG, "Fetched contents from tracking data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }

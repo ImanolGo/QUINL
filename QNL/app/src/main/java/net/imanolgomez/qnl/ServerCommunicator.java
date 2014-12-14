@@ -65,7 +65,7 @@ public class ServerCommunicator {
 
     public String sendTrackingData() throws IOException {
         String trackingUrl = buildTrackingUrl();
-        Log.i(TAG,trackingUrl);
+        //Log.i(TAG,trackingUrl);
         return getUrl(trackingUrl);
     }
 
