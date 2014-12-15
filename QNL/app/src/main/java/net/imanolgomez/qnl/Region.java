@@ -11,7 +11,6 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -23,7 +22,7 @@ public class Region extends RouteElement {
     public enum RegionType {ZONE, ROOM, PATH};
 
     private final RegionType mRegionType;
-    private HashMap<Integer, Section> mSegments;
+    private HashMap<Integer, Section> mSections;
 
     /**
      * @param basicElement The RouteElement's basic attributes.
@@ -35,7 +34,7 @@ public class Region extends RouteElement {
 
         super(basicElement);
 
-        mSegments = new  HashMap<Integer, Section>();
+        mSections = new  HashMap<Integer, Section>();
         mRegionType = regionType;
     }
 
@@ -70,12 +69,13 @@ public class Region extends RouteElement {
             return;
         }
 
-        mSegments.put(section.getId(), section);
+        mSections.put(section.getId(), section);
+        Log.i("createSegmentsFromJson", "Added section:" + section.getId() + " to region: " + getId());
     }
 
     public boolean isInside(Location loc) {
-        for (Section segment : mSegments.values()) {
-            if(segment.isInside(loc)){
+        for (Section section : mSections.values()) {
+            if(section.isInside(loc)){
                 return true;
             }
         }
@@ -129,7 +129,6 @@ public class Region extends RouteElement {
                 JSONObject regionJson  = regionsJson.getJSONObject(key);
                 Section section = createSectionFromJsonObject(regionJson);
                 if(section!=null){
-                    Log.i("createSegmentsFromJson", "Added section:" + section.getId() + " to region: " + getId());
                     addSection(section);
                 }
                 //Log.i("createSegmentsFromJson", "Single region names:" + regionJson.names());

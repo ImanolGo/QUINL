@@ -24,10 +24,6 @@ public class RouteManager {
     private static final String REGION = "zone.php";
     private static final String SPOT = "beacon.php";
 
-    private static final String TAG_NAME = "name";
-    private static final String TAG_VERSION = "version";
-    private static final String TAG_ID = "id";
-
     Context mAppContext;
     private HashMap<Integer, Route> mRoutes;
 
@@ -111,7 +107,6 @@ public class RouteManager {
         protected void onPostExecute(String result) {
             createSingleRegion(result);
         }
-
     }
 
     private void createRoutes(String routeInfo) {
@@ -133,7 +128,6 @@ public class RouteManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void createRegions(String regionInfo) {
@@ -151,7 +145,6 @@ public class RouteManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void createSingleRegion(String singleRegionInfo) {
@@ -173,7 +166,7 @@ public class RouteManager {
         if(route==null){
             return;
         }
-
+        Log.i(TAG,"Added Route: " + route.getId());
         mRoutes.put(route.getId(), route);
     }
 
