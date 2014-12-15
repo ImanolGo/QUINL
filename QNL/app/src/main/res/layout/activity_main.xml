@@ -74,15 +74,78 @@
         android:textIsSelectable="true"
         android:layout_marginLeft="10dp" />
 
+    <TextView
+        android:id="@+id/label_route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/routeLabel"
+        android:layout_below="@+id/text_connection_state"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/route"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_route"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/label_route"
+        android:textIsSelectable="true"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/label_region"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/regionLabel"
+        android:layout_below="@+id/label_route"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/region"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_region"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/label_region"
+        android:textIsSelectable="true"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/label_sample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/sampleLabel"
+        android:layout_below="@+id/label_region"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/sample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_sample"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/label_sample"
+        android:textIsSelectable="true"
+        android:textSize="20sp" />
+
+
     <org.osmdroid.views.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
+        android:layout_marginTop="20dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/text_connection_state" />
+        android:layout_below="@+id/label_sample" />
 
 </RelativeLayout>
 

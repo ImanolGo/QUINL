@@ -63,9 +63,8 @@ public class Route extends BasicElement {
     }
 
     public boolean isInside(Location loc) {
-        Log.i(TAG, "Route Id: " + getId() + " isInside");
         mCurrentRegion = null;
-
+        
         for (Region region : mRooms.values()) {
             if(region.isInside(loc)){
                 mCurrentRegion = region;

@@ -189,4 +189,13 @@ public class SoundManager {
         mSamples.put(sample.getId(), sample);
     }
 
+    public Sample getSampleFromId(int sampleId){
+        if(mSamples.containsKey(sampleId)){
+            return mSamples.get(sampleId);
+        }
+
+        return null;
+    }
+
+
 }

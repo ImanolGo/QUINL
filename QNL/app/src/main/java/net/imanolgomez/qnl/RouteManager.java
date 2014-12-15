@@ -206,4 +206,12 @@ public class RouteManager {
     public Region getCurrentRegion() {
         return mCurrentRegion;
     }
+
+    public Route getRouteFromId(int routeId){
+        if(mRoutes.containsKey(routeId)){
+            return mRoutes.get(routeId);
+        }
+
+        return null;
+    }
 }

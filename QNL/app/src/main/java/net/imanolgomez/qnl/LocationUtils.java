@@ -114,5 +114,43 @@ public final class LocationUtils {
             return EMPTY_STRING;
         }
     }
+
+    public static String getRegion(Context context, Region currentRegion) {
+        // If the location is valid
+        if (currentRegion != null) {
+
+            return currentRegion.getName();
+
+        } else {
+
+            // Otherwise, return None String
+            return "None";
+        }
+    }
+
+    public static String getRoute(Context context, Region currentRegion) {
+        // If the location is valid
+
+        if (currentRegion == null) { return "None";}
+
+        Route route = RouteManager.get(context).getRouteFromId(currentRegion.getRouteId());
+
+        if (route == null) { return "None";}
+
+        return route.getName();
+    }
+
+    public static String getSample(Context context, Region currentRegion) {
+        // If the location is valid
+
+        if (currentRegion == null) { return "None";}
+
+        Sample sample = SoundManager.get(context).getSampleFromId(currentRegion.getSampleId());
+
+        if (sample == null) { return "None";}
+
+        return sample.getName();
+
+    }
 }
 

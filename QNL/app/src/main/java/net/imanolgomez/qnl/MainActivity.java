@@ -56,6 +56,9 @@ public class MainActivity extends FragmentActivity implements
     private ProgressBar mActivityIndicator;
     private TextView mConnectionState;
     private TextView mConnectionStatus;
+    private TextView mRegionText;
+    private TextView mRouteText;
+    private TextView mSampleText;
 
     //Handled Managers
     private DeviceInfoManager mDeviceInfoManager;
@@ -316,12 +319,19 @@ public class MainActivity extends FragmentActivity implements
         //Set the tracking data
         new SendTrackingData().execute();
 
-        // In the UI, set the latitude and longitude to the value received
-        mLatLng.setText(LocationUtils.getLatLng(this, location));
-        mAccuracyView.setText(LocationUtils.getAccuracy(this, location));
+        updateTextLabels();
 
         // Set Center of Google OMS
         mMapController.setCenter(new GeoPoint(location.getLatitude(),location.getLongitude()));
+    }
+
+    private void updateTextLabels(){
+        // In the UI, set the latitude and longitude to the value received
+        mLatLng.setText(LocationUtils.getLatLng(this, mLocationManager.getCurrentLocation()));
+        mAccuracyView.setText(LocationUtils.getAccuracy(this, mLocationManager.getCurrentLocation()));
+        mRouteText.setText(LocationUtils.getRoute(this,mLocationManager.getCurrentRegion()));
+        mRegionText.setText(LocationUtils.getRegion(this,mLocationManager.getCurrentRegion()));
+        mSampleText.setText(LocationUtils.getSample(this,mLocationManager.getCurrentRegion()));
     }
 
     /**
@@ -362,6 +372,9 @@ public class MainActivity extends FragmentActivity implements
         // Get handles to the UI view objects
         mLatLng = (TextView) findViewById(R.id.lat_lng);
         mAccuracyView = (TextView) findViewById(R.id.accuracy);
+        mRouteText = (TextView) findViewById(R.id.route);
+        mRegionText = (TextView) findViewById(R.id.region);
+        mSampleText = (TextView) findViewById(R.id.sample);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         mConnectionState = (TextView) findViewById(R.id.text_connection_state);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);

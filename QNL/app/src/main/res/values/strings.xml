@@ -27,6 +27,10 @@
     <string name="latlng">Lat/Long:</string>
     <string name="address">Address:</string>
     <string name="accuracy">Accuracy:</string>
+    <string name="routeLabel">Route:</string>
+    <string name="regionLabel">Region:</string>
+    <string name="sampleLabel">Sample:</string>
+
 
     <!-- Messages -->
     <string name="connected">Client connected</string>
