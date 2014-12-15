@@ -50,47 +50,4 @@ public class BasicElement {
         this.mVersion = version;
     }
 
-    /**
-     * A single Section object, defined by its coordinates.
-     */
-     class Section {
-        // Instance variables
-        private final int mId;
-        private final Location mLocationSW;
-        private final Location mLocationNE;
-
-        /**
-         * @param sectionId The Section's request ID
-         * @param locationSW Location of the Section's South-West coordinates.
-         * @param locationNE Location of the Section's North-East coordinates.
-         */
-        public Section(
-                int sectionId,
-                Location locationSW,
-                Location locationNE ) {
-
-            // Set the instance fields from the constructor
-            this.mId = sectionId;
-            this.mLocationSW = locationSW;
-            this.mLocationNE = locationNE;
-        }
-        // Instance field getters
-        public int getId() {
-            return mId;
-        }
-
-        public Location getLocationSW() {
-            return mLocationSW;
-        }
-
-        public Location getLocationNE() {
-            return mLocationNE;
-        }
-
-        public boolean isInside(Location loc) {
-            return (loc.getLatitude()>= mLocationSW.getLatitude()&&loc.getLatitude()<=mLocationNE.getLatitude() &&
-                    loc.getLongitude()>=mLocationSW.getLongitude()&&loc.getLongitude()<=mLocationNE.getLongitude());
-        }
-    }
-
 }

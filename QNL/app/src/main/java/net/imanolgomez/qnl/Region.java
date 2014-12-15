@@ -6,6 +6,10 @@ package net.imanolgomez.qnl;
 
 
 import android.location.Location;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 /**
@@ -37,7 +41,33 @@ public class Region extends RouteElement {
         return mRegionType;
     }
 
-    public void addSegment(Section section) {
+    private static RegionType getTypeFromString(String typeStr) {
+
+        RegionType regionType;
+
+        switch (typeStr.toLowerCase()) {
+            case "path":
+                regionType = RegionType.ZONE;
+                break;
+            case "zone":
+                regionType = RegionType.ZONE;
+                break;
+            case "room":
+                regionType = RegionType.ROOM;
+                break;
+            default:
+                regionType = RegionType.ZONE;
+                break;
+        }
+
+        return regionType;
+    }
+
+    public void addSection(Section section) {
+        if(section==null){
+            return;
+        }
+
         mSegments.put(section.getId(), section);
     }
 
@@ -49,5 +79,56 @@ public class Region extends RouteElement {
         }
         return false;
     }
+
+    public static Region createRegionFromJson(String jsonStr){
+
+        try {
+            JSONObject reader = new JSONObject(jsonStr);
+            JSONObject zoneJson  = reader.getJSONObject("zone");
+
+            int id = zoneJson.getInt(TAG_ID);
+            int sampleId = zoneJson.getInt(TAG_SAMPLE_ID);
+            int routeId = zoneJson.getInt(TAG_ROUTE_ID);
+            double version = zoneJson.getDouble(TAG_VERSION);
+            String name = zoneJson.getString(TAG_NAME);
+            double volume = zoneJson.getDouble(TAG_VOLUME);
+            boolean loop = zoneJson.getBoolean(TAG_LOOP);
+            RegionType regionType = getTypeFromString(zoneJson.getString(TAG_TYPE));
+
+            BasicElement basicElement = new BasicElement(id,name,version);
+            Region region = new Region(basicElement,regionType);
+            region.setLoop(loop);region.setSampleId(sampleId);region.setVolume(volume); region.setRouteId(routeId);
+            return region;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void createSegmentsFromJson(String jsonStr){
+
+        try {
+            JSONObject reader = new JSONObject(jsonStr);
+            JSONArray regionsJson  = reader.getJSONArray("regions");
+
+            // looping through All Contacts
+            for (int i = 0; i < regionsJson.length(); i++) {
+                JSONObject c = regionsJson.getJSONObject(i);
+
+                Section section = createSectionFromJsonObject(c);
+                if(section!=null){
+                    addSection(section);
+                }
+            }
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
 
 }

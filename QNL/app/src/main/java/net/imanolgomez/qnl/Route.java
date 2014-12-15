@@ -34,6 +34,10 @@ public class Route extends BasicElement {
     }
 
     public void addRegion(Region region) {
+        if(region==null){
+            return;
+        }
+
         mRegions.put(region.getId(), region);
     }
 

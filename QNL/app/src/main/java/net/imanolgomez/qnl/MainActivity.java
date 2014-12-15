@@ -60,6 +60,8 @@ public class MainActivity extends FragmentActivity implements
     //Handled Managers
     private DeviceInfoManager mDeviceInfoManager;
     private LocationInfoManager mLocationInfoManager;
+    private SoundManager mSoundManager;
+    private RouteManager mRouteManager;
 
     // Handles Open Street Map
     private MapView mMapView;
@@ -351,6 +353,8 @@ public class MainActivity extends FragmentActivity implements
     protected void initializeManagers(){
         mDeviceInfoManager = DeviceInfoManager.get(this);
         mLocationInfoManager = LocationInfoManager.get();
+        mRouteManager = RouteManager.get(this);
+        mSoundManager = SoundManager.get(this);
     }
 
     protected void initializeViews() {
