@@ -2,6 +2,7 @@ package net.imanolgomez.qnl;
 
 
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -23,6 +24,8 @@ public class RouteManager {
     private static final String REGION = "zone.php";
     private static final String SPOT = "beacon.php";
 
+    private Region mCurrentRegion;
+
     Context mAppContext;
     private HashMap<Integer, Route> mRoutes;
 
@@ -30,7 +33,6 @@ public class RouteManager {
 
     private RouteManager(Context appContext) {
         mAppContext = appContext;
-        mRoutes = new HashMap<Integer, Route>();
         this.initialize();
     }
 
@@ -43,22 +45,42 @@ public class RouteManager {
     }
 
     private void initialize(){
-        //Set the tracking data
+        initializeAttributes();
         new retrieveRoutes().execute();
         new retrieveRegions().execute();
     }
 
-    private class retrieveRoutes extends AsyncTask<Void,Void,Void> {
+    private void initializeAttributes(){
+        mRoutes = new HashMap<Integer, Route>();
+        mCurrentRegion = null;
+    }
+
+    public void updateLocation(Location currentLocation){
+
+        mCurrentRegion = null;
+        for (Route route : mRoutes.values()) {
+            if(route.isInside(currentLocation)){
+                mCurrentRegion = route.getCurrentRegion();
+                return;
+            }
+        }
+    }
+
+    private class retrieveRoutes extends AsyncTask<Void,Void,String> {
+        String result;
         @Override
-        protected Void doInBackground(Void... params) {
+        protected String doInBackground(Void... params) {
             try {
-                String result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+ROUTE+"?list=1");
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+ROUTE+"?list=1");
                 Log.i(TAG, "Retrieving routes data: " + result);
-                createRoutes(result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
-            return null;
+            return result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            createRoutes(result);
         }
 
     }
@@ -181,4 +203,7 @@ public class RouteManager {
 
     }
 
+    public Region getCurrentRegion() {
+        return mCurrentRegion;
+    }
 }

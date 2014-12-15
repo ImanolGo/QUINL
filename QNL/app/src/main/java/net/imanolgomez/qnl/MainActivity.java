@@ -352,7 +352,7 @@ public class MainActivity extends FragmentActivity implements
 
     protected void initializeManagers(){
         mDeviceInfoManager = DeviceInfoManager.get(this);
-        mLocationManager = LocationManager.get();
+        mLocationManager = LocationManager.get(this);
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
     }

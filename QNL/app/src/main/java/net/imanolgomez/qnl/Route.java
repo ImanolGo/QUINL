@@ -6,6 +6,7 @@ package net.imanolgomez.qnl;
 
 
 import android.location.Location;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 
 public class Route extends BasicElement {
 
+    public static final String TAG = "Route";
+
     private Date mStartTime;
     private Date mEndTime;
 
@@ -24,6 +27,8 @@ public class Route extends BasicElement {
     private HashMap<Integer, Region> mZones;
     private HashMap<Integer, Region> mPaths;
     private HashMap<Integer, Region> mRooms;
+
+    private Region mCurrentRegion;
 
     /**
      * @param basicElement The BasicElement's attributes.
@@ -33,7 +38,19 @@ public class Route extends BasicElement {
             BasicElement basicElement) {
 
         super(basicElement.getId(), basicElement.getName(), basicElement.getVersion());
+        initialize();
+    }
+
+    private void initialize(){
+        initializeAttributes();
+    }
+
+    private void initializeAttributes(){
         mRegions =  new HashMap<Integer, Region>();
+        mZones =  new HashMap<Integer, Region>();
+        mPaths =  new HashMap<Integer, Region>();
+        mRooms =  new HashMap<Integer, Region>();
+        mCurrentRegion = null;
     }
 
     public void addRegion(Region region) {
@@ -46,11 +63,30 @@ public class Route extends BasicElement {
     }
 
     public boolean isInside(Location loc) {
-        for (Region region : mRegions.values()) {
+        Log.i(TAG, "Route Id: " + getId() + " isInside");
+        mCurrentRegion = null;
+
+        for (Region region : mRooms.values()) {
             if(region.isInside(loc)){
+                mCurrentRegion = region;
                 return true;
             }
         }
+
+        for (Region region : mZones.values()) {
+            if(region.isInside(loc)){
+                mCurrentRegion = region;
+                return true;
+            }
+        }
+
+        for (Region region : mPaths.values()) {
+            if(region.isInside(loc)){
+                mCurrentRegion = region;
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -82,5 +118,9 @@ public class Route extends BasicElement {
 
 
         }
+    }
+
+    public Region getCurrentRegion() {
+        return mCurrentRegion;
     }
 }

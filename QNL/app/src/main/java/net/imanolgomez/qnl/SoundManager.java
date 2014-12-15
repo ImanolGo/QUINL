@@ -147,8 +147,9 @@ public class SoundManager {
      }
 
     public void playSample(int sampleId) {
-        playSample(sampleId, false);
+        playSample(sampleId, true);
     }
+
 
     public void playSample(int sampleId, boolean setLooping) {
 
