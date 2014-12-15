@@ -59,7 +59,7 @@ public class MainActivity extends FragmentActivity implements
 
     //Handled Managers
     private DeviceInfoManager mDeviceInfoManager;
-    private LocationInfoManager mLocationInfoManager;
+    private LocationManager mLocationManager;
     private SoundManager mSoundManager;
     private RouteManager mRouteManager;
 
@@ -310,8 +310,8 @@ public class MainActivity extends FragmentActivity implements
         // Report to the UI that the location was updated
         mConnectionStatus.setText(R.string.location_updated);
 
-        //Set the current location to the LocationInfoManager
-        mLocationInfoManager.setCurrentLocation(location);
+        //Set the current location to the LocationManager
+        mLocationManager.updateLocation(location);
 
         //Set the tracking data
         new SendTrackingData().execute();
@@ -352,7 +352,7 @@ public class MainActivity extends FragmentActivity implements
 
     protected void initializeManagers(){
         mDeviceInfoManager = DeviceInfoManager.get(this);
-        mLocationInfoManager = LocationInfoManager.get();
+        mLocationManager = LocationManager.get();
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
     }

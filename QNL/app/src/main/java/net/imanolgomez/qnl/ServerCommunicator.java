@@ -64,16 +64,16 @@ public class ServerCommunicator {
 
     private String buildTrackingUrl(){
         DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
-        LocationInfoManager locationInfoManager = LocationInfoManager.get();
+        LocationManager locationManager = LocationManager.get();
 
         String url = ENDPOINT + "?" +
                 TIME + deviceInfoManager.getTime() + "&" +
                 DEVICE_ID + deviceInfoManager.getDeviceId() + "&" +
                 BATTERY_LEVEL + deviceInfoManager.getBatteryLevel() + "&" +
-                REGION + locationInfoManager.getRegionId() + "&" +
-                POSITION + locationInfoManager.getCurrentLocation().getLatitude() + "," +
-                locationInfoManager.getCurrentLocation().getLongitude() + "&" +
-                ACCURACY  + locationInfoManager.getCurrentLocation().getAccuracy();
+                REGION + locationManager.getCurrentRegionId() + "&" +
+                POSITION + locationManager.getCurrentLocation().getLatitude() + "," +
+                locationManager.getCurrentLocation().getLongitude() + "&" +
+                ACCURACY  + locationManager.getCurrentLocation().getAccuracy();
 
         return url;
     }

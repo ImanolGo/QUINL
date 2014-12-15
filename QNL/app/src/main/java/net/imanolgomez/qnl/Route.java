@@ -21,6 +21,9 @@ public class Route extends BasicElement {
     private Date mEndTime;
 
     private HashMap<Integer, Region> mRegions;
+    private HashMap<Integer, Region> mZones;
+    private HashMap<Integer, Region> mPaths;
+    private HashMap<Integer, Region> mRooms;
 
     /**
      * @param basicElement The BasicElement's attributes.
@@ -39,6 +42,7 @@ public class Route extends BasicElement {
         }
 
         mRegions.put(region.getId(), region);
+        addRegionhHierarchically(region);
     }
 
     public boolean isInside(Location loc) {
@@ -48,5 +52,35 @@ public class Route extends BasicElement {
             }
         }
         return false;
+    }
+
+    private void addRegionhHierarchically(Region region) {
+        if(region==null){
+            return;
+        }
+
+        switch (region.getRegionType()){
+
+            case PATH: {
+                mPaths.put(region.getId(), region);
+                break;
+            }
+
+            case ROOM: {
+                mRooms.put(region.getId(), region);
+                break;
+            }
+
+            case ZONE: {
+                mZones.put(region.getId(), region);
+                break;
+            }
+
+            default: {
+                mPaths.put(region.getId(), region);
+            }
+
+
+        }
     }
 }

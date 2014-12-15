@@ -131,6 +131,11 @@ public class SoundManager {
         Sample sample = Sample.createSampleFromJson(sampleInfo);
         if (sample != null) {
             addSample(sample);
+
+           /* Log.i(TAG,"Sample id: " + sample.getId());
+            Log.i(TAG,"Sample name: " + sample.getName());
+            Log.i(TAG,"Sample version: " + sample.getVersion());
+            Log.i(TAG,"Sample sampleId: " + sample.getUrl());*/
         }
     }
 
@@ -142,6 +147,10 @@ public class SoundManager {
      }
 
     public void playSample(int sampleId) {
+        playSample(sampleId, false);
+    }
+
+    public void playSample(int sampleId, boolean setLooping) {
 
         if(!mSamples.containsKey(sampleId)){
             Log.e(TAG,"PlaySample-> No key found with Id: " + sampleId);
@@ -153,6 +162,7 @@ public class SoundManager {
         try {
             String uri = SAMPLES_ABSOLUTE_PATH + mSamples.get(sampleId).getName();
             mPlayer = new MediaPlayer();
+            mPlayer.setLooping(setLooping);
             mPlayer.setDataSource(uri);
             mPlayer.prepare();
 
