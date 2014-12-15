@@ -7,10 +7,7 @@ package net.imanolgomez.qnl;
 
 import android.location.Location;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * An abstract class, providing the fundamental methods and member variables for each element of a Route
@@ -63,7 +60,7 @@ public class RouteElement extends BasicElement{
         return mVolume;
     }
 
-    public boolean isLoop() {
+    public boolean isLooping() {
         return mLoop;
     }
 

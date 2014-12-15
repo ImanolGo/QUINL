@@ -73,8 +73,8 @@ public class RouteManager {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+ROUTE+"?list=1");
-                //Log.i(TAG, "Retrieving routes data: " + result);
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+REGION+"?list=1");
+                Log.i(TAG, "Retrieving region data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
@@ -96,6 +96,7 @@ public class RouteManager {
             for (String url : urls) {
                 try {
                     result = new ServerCommunicator(mAppContext).getUrl(url);
+                    Log.i(TAG, "Retrieving region data from: " + url);
                     //Log.i(TAG, "Retrieving routes data: " + result);
                 } catch (IOException ioe) {
                     Log.e(TAG, "Failed to retrieve data: " + url , ioe);
@@ -142,7 +143,7 @@ public class RouteManager {
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
                 if(!key.equals("list of zones")){
-                    String url = ENDPOINT+ROUTE+"?zone=" + key;
+                    String url = ENDPOINT+REGION+"?zone=" + key;
                     new getRegionInfo().execute(url);
                 }
             }
@@ -156,7 +157,14 @@ public class RouteManager {
     private void createSingleRegion(String singleRegionInfo) {
         Region region = Region.createRegionFromJson(singleRegionInfo);
         if (region != null) {
-            region.createSegmentsFromJson(singleRegionInfo);
+            /*Log.i(TAG,"Region id: " + region.getId());
+            Log.i(TAG,"Region name: " + region.getName());
+            Log.i(TAG,"Region version: " + region.getVersion());
+            Log.i(TAG,"Region sampleId: " + region.getSampleId());
+            Log.i(TAG,"Region routeId: " + region.getRouteId());
+            Log.i(TAG,"Region volume: " + region.getVolume());
+            Log.i(TAG,"Region loop: " + region.isLooping());*/
+            region.createSectionFromJson(singleRegionInfo);
             addRegion(region);
         }
     }
@@ -175,6 +183,7 @@ public class RouteManager {
         }
 
         if(mRoutes.containsKey(region.getRouteId())){
+            Log.i(TAG,"Added Region: " + region.getId() + " to route: " + region.getRouteId());
             mRoutes.get(region.getRouteId()).addRegion(region);
         }
 

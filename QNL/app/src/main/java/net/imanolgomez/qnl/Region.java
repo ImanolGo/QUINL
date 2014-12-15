@@ -6,10 +6,12 @@ package net.imanolgomez.qnl;
 
 
 import android.location.Location;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -92,7 +94,11 @@ public class Region extends RouteElement {
             double version = zoneJson.getDouble(TAG_VERSION);
             String name = zoneJson.getString(TAG_NAME);
             double volume = zoneJson.getDouble(TAG_VOLUME);
-            boolean loop = zoneJson.getBoolean(TAG_LOOP);
+            int intBoolean = zoneJson.getInt(TAG_LOOP);
+            boolean loop = true;
+            if(intBoolean==0){
+                loop = false;
+            }
             RegionType regionType = getTypeFromString(zoneJson.getString(TAG_TYPE));
 
             BasicElement basicElement = new BasicElement(id,name,version);
@@ -106,21 +112,41 @@ public class Region extends RouteElement {
         }
     }
 
-    public void createSegmentsFromJson(String jsonStr){
+    public void createSectionFromJson(String jsonStr){
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
-            JSONArray regionsJson  = reader.getJSONArray("regions");
+            JSONObject regionsJson  = reader.getJSONObject("regions");
+            //Log.i("createSegmentsFromJson", "Json names:" + regionsJson.names());
+            //Log.i("createSegmentsFromJson", "Json names type:" + regionsJson.names().getClass().getName());
+            //Log.i("createSegmentsFromJson", "Json regions length:" + regionsJson.length());
+
+            JSONArray regionsNumbers = regionsJson.names();
+
+            for (int i = 0; i < regionsJson.length(); i++) {
+                String key = regionsNumbers.getString(i);
+                //Log.i("createSegmentsFromJson", "Json regionsNumbers:" + key);
+                JSONObject regionJson  = regionsJson.getJSONObject(key);
+                Section section = createSectionFromJsonObject(regionJson);
+                if(section!=null){
+                    Log.i("createSegmentsFromJson", "Added section:" + section.getId() + " to region: " + getId());
+                    addSection(section);
+                }
+                //Log.i("createSegmentsFromJson", "Single region names:" + regionJson.names());
+            }
+
+
 
             // looping through All Contacts
-            for (int i = 0; i < regionsJson.length(); i++) {
+            /*for (int i = 0; i < regionsJson.length(); i++) {
                 JSONObject c = regionsJson.getJSONObject(i);
+                Log.i("createSegmentsFromJson", "Json names:" + c.names());
 
                 Section section = createSectionFromJsonObject(c);
                 if(section!=null){
                     addSection(section);
                 }
-            }
+            }*/
 
 
         } catch (Exception e) {
