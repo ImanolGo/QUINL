@@ -11,38 +11,38 @@ import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 
-    private static final String TABLE_ROUTES = "routes";
-    private static final String COLUMN_ROUTE_ID = "route_id";
-    private static final String COLUMN_ROUTE_NAME = "route_name";
-    private static final String COLUMN_ROUTE_VERSION= "route_version";
+    public static final String TABLE_ROUTES = "routes";
+    public static final String COLUMN_ROUTE_ID = "route_id";
+    public static final String COLUMN_ROUTE_NAME = "route_name";
+    public static final String COLUMN_ROUTE_VERSION= "route_version";
 
-    private static final String TABLE_SECTIONS = "sections";
-    private static final String COLUMN_SECTION_ID = "section_id";
-    private static final String COLUMN_SECTION_LAT1 = "section_lat1";
-    private static final String COLUMN_SECTION_LAT2 = "section_lat2";
-    private static final String COLUMN_SECTION_LON1 = "section_lon1";
-    private static final String COLUMN_SECTION_LON2 = "section_lon2";
+    public static final String TABLE_SECTIONS = "sections";
+    public static final String COLUMN_SECTION_ID = "section_id";
+    public static final String COLUMN_SECTION_LAT1 = "section_lat1";
+    public static final String COLUMN_SECTION_LAT2 = "section_lat2";
+    public static final String COLUMN_SECTION_LON1 = "section_lon1";
+    public static final String COLUMN_SECTION_LON2 = "section_lon2";
 
-    private static final String TABLE_REGIONS = "regions";
-    private static final String COLUMN_REGION_ID = "region_id";
-    private static final String COLUMN_REGION_NAME = "region_name";
-    private static final String COLUMN_REGION_VERSION= "region_version";
-    private static final String COLUMN_REGION_LOOP= "region_loop";
-    private static final String COLUMN_REGION_VOLUME= "region_volume";
-    private static final String COLUMN_REGION_TYPE= "region_type";
+    public static final String TABLE_REGIONS = "regions";
+    public static final String COLUMN_REGION_ID = "region_id";
+    public static final String COLUMN_REGION_NAME = "region_name";
+    public static final String COLUMN_REGION_VERSION= "region_version";
+    public static final String COLUMN_REGION_LOOP= "region_loop";
+    public static final String COLUMN_REGION_VOLUME= "region_volume";
+    public static final String COLUMN_REGION_TYPE= "region_type";
 
-    private static final String TABLE_SAMPLES = "samples";
-    private static final String COLUMN_SAMPLE_ID= "sample_id";
-    private static final String COLUMN_SAMPLE_VERSION= "sample_version";
-    private static final String COLUMN_SAMPLE_NAME= "sample_name";
+    public static final String TABLE_SAMPLES = "samples";
+    public static final String COLUMN_SAMPLE_ID= "sample_id";
+    public static final String COLUMN_SAMPLE_VERSION= "sample_version";
+    public static final String COLUMN_SAMPLE_NAME= "sample_name";
 
-    private static final String TABLE_BEACONS = "beacons";
-    private static final String COLUMN_BEACON_ID = "beacon_id";
-    private static final String COLUMN_BEACON_NAME = "beacon_name";
-    private static final String COLUMN_BEACON_VERSION= "beacon_version";
-    private static final String COLUMN_BEACON_LOOP= "beacon_loop";
-    private static final String COLUMN_BEACON_VOLUME= "beacon_volume";
-    private static final String COLUMN_BEACON_RADIUS= "beacon_radius";
+    public static final String TABLE_BEACONS = "beacons";
+    public static final String COLUMN_BEACON_ID = "beacon_id";
+    public static final String COLUMN_BEACON_NAME = "beacon_name";
+    public static final String COLUMN_BEACON_VERSION= "beacon_version";
+    public static final String COLUMN_BEACON_LOOP= "beacon_loop";
+    public static final String COLUMN_BEACON_VOLUME= "beacon_volume";
+    public static final String COLUMN_BEACON_RADIUS= "beacon_radius";
 
 
     private static final String DATABASE_NAME = "qnl.db";
@@ -118,11 +118,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion + ", which will destroy all old data");
 
-        /*db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ROUTES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SAMPLES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REGIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEACONS);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTIONS);*/
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTIONS);
         onCreate(db);
     }
 
