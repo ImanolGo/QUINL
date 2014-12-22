@@ -59,7 +59,7 @@ public class Route extends BasicElement {
         }
 
         mRegions.put(region.getId(), region);
-        addRegionhHierarchically(region);
+        addRegionHierarchically(region);
     }
 
     public boolean isInside(Location loc) {
@@ -89,7 +89,7 @@ public class Route extends BasicElement {
         return false;
     }
 
-    private void addRegionhHierarchically(Region region) {
+    private void addRegionHierarchically(Region region) {
         if(region==null){
             return;
         }

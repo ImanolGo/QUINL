@@ -10,6 +10,58 @@ import android.location.Location;
 import org.json.JSONObject;
 
 /**
+ * A single Section object, defined by its coordinates.
+ */
+class Section {
+    // Instance variables
+    private final int mId;
+    private final int mRegionId;
+    private final Location mLocation1;
+    private final Location mLocation2;
+
+    /**
+     * @param sectionId The Section's request ID
+     * @param location1 Location of the Section's South-West coordinates.
+     * @param location2 Location of the Section's North-East coordinates.
+     * @param regionId The region's Id to whom it belongs.
+     */
+    public Section(
+            int sectionId,
+            Location location1,
+            Location location2,
+            int regionId) {
+
+        // Set the instance fields from the constructor
+        this.mId = sectionId;
+        this.mLocation1 = location1;
+        this.mLocation2 = location2;
+        this.mRegionId = regionId;
+    }
+
+    // Instance field getters
+    public int getId() {
+        return mId;
+    }
+
+    public int getRegionId() {
+        return mRegionId;
+    }
+
+    public Location getLocation1() {
+        return mLocation1;
+    }
+
+    public Location getLocation2() {
+        return mLocation2;
+    }
+
+    public boolean isInside(Location loc) {
+        return (loc.getLatitude()>= mLocation1.getLatitude()&&loc.getLatitude()<=mLocation2.getLatitude() &&
+                loc.getLongitude()>= mLocation1.getLongitude()&&loc.getLongitude()<=mLocation2.getLongitude());
+    }
+}
+
+/**
  * An abstract class, providing the fundamental methods and member variables for each element of a Route
  */
 
@@ -64,6 +116,15 @@ public class RouteElement extends BasicElement{
         return mLoop;
     }
 
+    public int getLoopInt() {
+        if(mLoop){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+
     public void setSampleId(int sampleId) {
         this.mSampleId = sampleId;
     }
@@ -78,50 +139,6 @@ public class RouteElement extends BasicElement{
 
     public void setRouteId(int routeId) {
         this.mRouteId = routeId;
-    }
-
-    /**
-     * A single Section object, defined by its coordinates.
-     */
-    class Section {
-        // Instance variables
-        private final int mId;
-        private final Location mLocation1;
-        private final Location mLocation2;
-
-        /**
-         * @param sectionId The Section's request ID
-         * @param location1 Location of the Section's South-West coordinates.
-         * @param location2 Location of the Section's North-East coordinates.
-         */
-        public Section(
-                int sectionId,
-                Location location1,
-                Location location2 ) {
-
-            // Set the instance fields from the constructor
-            this.mId = sectionId;
-            this.mLocation1 = location1;
-            this.mLocation2 = location2;
-        }
-
-        // Instance field getters
-        public int getId() {
-            return mId;
-        }
-
-        public Location getLocation1() {
-            return mLocation1;
-        }
-
-        public Location getLocation2() {
-            return mLocation2;
-        }
-
-        public boolean isInside(Location loc) {
-            return (loc.getLatitude()>= mLocation1.getLatitude()&&loc.getLatitude()<=mLocation2.getLatitude() &&
-                    loc.getLongitude()>= mLocation1.getLongitude()&&loc.getLongitude()<=mLocation2.getLongitude());
-        }
     }
 
     protected Section createSectionFromJsonObject(JSONObject c){
@@ -141,7 +158,7 @@ public class RouteElement extends BasicElement{
             location2.setLatitude(lat2);
             location2.setLongitude(lon2);
 
-            Section section = new Section(id,location1,location2);
+            Section section = new Section(id,location1,location2, getId());
             return section;
 
         } catch (Exception e) {

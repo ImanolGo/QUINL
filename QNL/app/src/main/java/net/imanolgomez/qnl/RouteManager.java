@@ -180,7 +180,7 @@ public class RouteManager {
             Log.i(TAG,"Region routeId: " + region.getRouteId());
             Log.i(TAG,"Region volume: " + region.getVolume());
             Log.i(TAG,"Region loop: " + region.isLooping());*/
-            region.createSectionFromJson(singleRegionInfo);
+            region.createSectionsFromJson(singleRegionInfo, mDBManager);
             addRegion(region);
         }
     }
@@ -205,6 +205,7 @@ public class RouteManager {
         if(mRoutes.containsKey(region.getRouteId())){
             Log.i(TAG,"Added Region: " + region.getId() + " to route: " + region.getRouteId());
             mRoutes.get(region.getRouteId()).addRegion(region);
+            mDBManager.insertRegion(region);
         }
 
     }

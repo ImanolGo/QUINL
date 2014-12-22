@@ -64,6 +64,7 @@ public class MainActivity extends FragmentActivity implements
     private DeviceInfoManager mDeviceInfoManager;
     private LocationManager mLocationManager;
     private SoundManager mSoundManager;
+    private DBManager mDBManager;
     private RouteManager mRouteManager;
 
     // Handles Open Street Map
@@ -109,6 +110,10 @@ public class MainActivity extends FragmentActivity implements
 
         // After disconnect() is called, the client is considered "dead".
         mLocationClient.disconnect();
+
+        if(mDBManager!=null){
+            mDBManager.close();
+        }
 
         super.onStop();
     }
@@ -156,6 +161,10 @@ public class MainActivity extends FragmentActivity implements
         } else {
             mEditor.putBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
             mEditor.commit();
+        }
+
+        if(mDBManager!=null){
+            mDBManager.open();
         }
 
     }
@@ -365,6 +374,7 @@ public class MainActivity extends FragmentActivity implements
         mLocationManager = LocationManager.get(this);
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
+        mDBManager = DBManager.get(this);
     }
 
     protected void initializeViews() {

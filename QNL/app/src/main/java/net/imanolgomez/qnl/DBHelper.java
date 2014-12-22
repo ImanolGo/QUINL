@@ -59,8 +59,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_REGION_NAME + " text, "
             + COLUMN_REGION_TYPE + " text, "
             + COLUMN_REGION_VERSION + " real, "
-            + COLUMN_ROUTE_ID + " integer"
-            + COLUMN_SAMPLE_ID + " integer"
+            + COLUMN_ROUTE_ID + " integer, "
+            + COLUMN_SAMPLE_ID + " integer, "
             + COLUMN_REGION_LOOP + " integer, "
             + COLUMN_REGION_VOLUME + " real);";
 
@@ -75,6 +75,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_SECTIONS_TABLE = "create table "
             + TABLE_SECTIONS + "("
             + COLUMN_SECTION_ID + " integer primary key, "
+            + COLUMN_REGION_ID + " integer, "
             + COLUMN_SECTION_LAT1 + " real, "
             + COLUMN_SECTION_LAT2 + " real, "
             + COLUMN_SECTION_LON1 + " real, "
@@ -86,8 +87,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_BEACON_ID + " integer primary key, "
             + COLUMN_BEACON_NAME + " text, "
             + COLUMN_BEACON_VERSION + " real, "
-            + COLUMN_ROUTE_ID + " integer"
-            + COLUMN_SAMPLE_ID + " integer"
+            + COLUMN_ROUTE_ID + " integer, "
+            + COLUMN_SAMPLE_ID + " integer, "
             + COLUMN_BEACON_RADIUS + " real, "
             + COLUMN_BEACON_LOOP + " integer, "
             + COLUMN_BEACON_VOLUME + " real);";

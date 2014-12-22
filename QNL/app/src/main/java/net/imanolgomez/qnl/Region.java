@@ -42,13 +42,35 @@ public class Region extends RouteElement {
         return mRegionType;
     }
 
+    public String getRegionTypeString() {
+
+        String regionTypeStr;
+
+        switch (mRegionType) {
+            case PATH:
+                regionTypeStr = "path";
+                break;
+            case ZONE:
+                regionTypeStr = "zone";
+                break;
+            case ROOM:
+                regionTypeStr = "room";
+                break;
+            default:
+                regionTypeStr = "zone";
+                break;
+        }
+
+        return regionTypeStr;
+    }
+
     private static RegionType getTypeFromString(String typeStr) {
 
         RegionType regionType;
 
         switch (typeStr.toLowerCase()) {
             case "path":
-                regionType = RegionType.ZONE;
+                regionType = RegionType.PATH;
                 break;
             case "zone":
                 regionType = RegionType.ZONE;
@@ -112,7 +134,7 @@ public class Region extends RouteElement {
         }
     }
 
-    public void createSectionFromJson(String jsonStr){
+    public void createSectionsFromJson(String jsonStr, DBManager dbManager){
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
@@ -130,6 +152,9 @@ public class Region extends RouteElement {
                 Section section = createSectionFromJsonObject(regionJson);
                 if(section!=null){
                     addSection(section);
+                    if(dbManager!=null) {
+                        dbManager.insertSection(section);
+                    }
                 }
                 //Log.i("createSegmentsFromJson", "Single region names:" + regionJson.names());
             }
