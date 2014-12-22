@@ -5,11 +5,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.io.File;
+
 /**
  * Created by imanolgo on 22/12/14.
  */
 
 public class DBHelper extends SQLiteOpenHelper {
+
+    public static String TAG = "DBHelper";
 
     public static final String TABLE_ROUTES = "routes";
     public static final String COLUMN_ROUTE_ID = "route_id";
@@ -55,8 +59,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_REGION_NAME + " text, "
             + COLUMN_REGION_TYPE + " text, "
             + COLUMN_REGION_VERSION + " real, "
-            + COLUMN_ROUTE_ID + " integer references run(" + COLUMN_ROUTE_ID + ")"
-            + COLUMN_SAMPLE_ID + " integer references run(" + COLUMN_SAMPLE_ID + ")"
+            + COLUMN_ROUTE_ID + " integer"
+            + COLUMN_SAMPLE_ID + " integer"
             + COLUMN_REGION_LOOP + " integer, "
             + COLUMN_REGION_VOLUME + " real);";
 
@@ -82,8 +86,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_BEACON_ID + " integer primary key, "
             + COLUMN_BEACON_NAME + " text, "
             + COLUMN_BEACON_VERSION + " real, "
-            + COLUMN_BEACON_ID + " integer references run(" + COLUMN_ROUTE_ID + ")"
-            + COLUMN_SAMPLE_ID + " integer references run(" + COLUMN_SAMPLE_ID + ")"
+            + COLUMN_ROUTE_ID + " integer"
+            + COLUMN_SAMPLE_ID + " integer"
             + COLUMN_BEACON_RADIUS + " real, "
             + COLUMN_BEACON_LOOP + " integer, "
             + COLUMN_BEACON_VOLUME + " real);";
@@ -97,15 +101,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     public DBHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
+        super(context, DBManager.DB_ABSOLUTE_PATH + File.separator + DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase database) {
+        Log.i(TAG, "CREATE_ROUTES_TABLE");
         database.execSQL(CREATE_ROUTES_TABLE);
+        Log.i(TAG, "CREATE_SAMPLES_TABLE");
         database.execSQL(CREATE_SAMPLES_TABLE);
+        Log.i(TAG, "CREATE_REGIONS_TABLE");
         database.execSQL(CREATE_REGIONS_TABLE);
+        Log.i(TAG, "CREATE_BEACONS_TABLE");
         database.execSQL(CREATE_BEACONS_TABLE);
+        Log.i(TAG, "CREATE_SECTIONS_TABLE");
         database.execSQL(CREATE_SECTIONS_TABLE);
     }
 

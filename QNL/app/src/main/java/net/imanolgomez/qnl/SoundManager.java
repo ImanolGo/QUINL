@@ -31,6 +31,8 @@ public class SoundManager {
     public static String TAG = "SoundManager";
     private static final String ENDPOINT = "http://www.o-a.info/qnl/lib/sound.php";
 
+    private DBManager mDBManager;
+
     private HashMap<Integer, Sample> mSamples;
 
     private static SoundManager sSoundManager;
@@ -52,6 +54,7 @@ public class SoundManager {
     }
 
     private void initialize(){
+        mDBManager = DBManager.get(mAppContext);
         createSamplesFolder();
         new retrieveSamples().execute();
     }
@@ -187,6 +190,10 @@ public class SoundManager {
 
         Log.i(TAG,"Added Sample: " + sample.getId());
         mSamples.put(sample.getId(), sample);
+
+        if(mDBManager!=null){
+            mDBManager.insertSample(sample);
+        }
     }
 
     public Sample getSampleFromId(int sampleId){

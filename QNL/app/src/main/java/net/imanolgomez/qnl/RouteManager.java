@@ -25,6 +25,7 @@ public class RouteManager {
     private static final String SPOT = "beacon.php";
 
     private Region mCurrentRegion;
+    private DBManager mDBManager;
 
     Context mAppContext;
     private HashMap<Integer, Route> mRoutes;
@@ -53,6 +54,7 @@ public class RouteManager {
     private void initializeAttributes(){
         mRoutes = new HashMap<Integer, Route>();
         mCurrentRegion = null;
+        mDBManager = DBManager.get(mAppContext);
     }
 
     public void updateLocation(Location currentLocation){
@@ -189,6 +191,10 @@ public class RouteManager {
         }
         Log.i(TAG,"Added Route: " + route.getId());
         mRoutes.put(route.getId(), route);
+
+        if(mDBManager!=null){
+            mDBManager.insertRoute(route);
+        }
     }
 
     private void addRegion(Region region){
