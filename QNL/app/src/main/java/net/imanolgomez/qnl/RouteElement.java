@@ -86,23 +86,23 @@ public class RouteElement extends BasicElement{
     class Section {
         // Instance variables
         private final int mId;
-        private final Location mLocationSW;
-        private final Location mLocationNE;
+        private final Location mLocation1;
+        private final Location mLocation2;
 
         /**
          * @param sectionId The Section's request ID
-         * @param locationSW Location of the Section's South-West coordinates.
-         * @param locationNE Location of the Section's North-East coordinates.
+         * @param location1 Location of the Section's South-West coordinates.
+         * @param location2 Location of the Section's North-East coordinates.
          */
         public Section(
                 int sectionId,
-                Location locationSW,
-                Location locationNE ) {
+                Location location1,
+                Location location2 ) {
 
             // Set the instance fields from the constructor
             this.mId = sectionId;
-            this.mLocationSW = locationSW;
-            this.mLocationNE = locationNE;
+            this.mLocation1 = location1;
+            this.mLocation2 = location2;
         }
 
         // Instance field getters
@@ -110,17 +110,17 @@ public class RouteElement extends BasicElement{
             return mId;
         }
 
-        public Location getLocationSW() {
-            return mLocationSW;
+        public Location getLocation1() {
+            return mLocation1;
         }
 
-        public Location getLocationNE() {
-            return mLocationNE;
+        public Location getLocation2() {
+            return mLocation2;
         }
 
         public boolean isInside(Location loc) {
-            return (loc.getLatitude()>= mLocationSW.getLatitude()&&loc.getLatitude()<=mLocationNE.getLatitude() &&
-                    loc.getLongitude()>=mLocationSW.getLongitude()&&loc.getLongitude()<=mLocationNE.getLongitude());
+            return (loc.getLatitude()>= mLocation1.getLatitude()&&loc.getLatitude()<=mLocation2.getLatitude() &&
+                    loc.getLongitude()>= mLocation1.getLongitude()&&loc.getLongitude()<=mLocation2.getLongitude());
         }
     }
 
@@ -133,15 +133,15 @@ public class RouteElement extends BasicElement{
             double lon1 = c.getDouble(TAG_LON_1);
             double lon2 = c.getDouble(TAG_LON_2);
 
-            Location locationSW = new Location("");
-            locationSW.setLatitude(lat1);
-            locationSW.setLongitude(lon1);
+            Location location1 = new Location("");
+            location1.setLatitude(lat1);
+            location1.setLongitude(lon1);
 
-            Location locationNE = new Location("");
-            locationSW.setLatitude(lat2);
-            locationSW.setLongitude(lon2);
+            Location location2 = new Location("");
+            location2.setLatitude(lat2);
+            location2.setLongitude(lon2);
 
-            Section section = new Section(id,locationSW,locationNE);
+            Section section = new Section(id,location1,location2);
             return section;
 
         } catch (Exception e) {

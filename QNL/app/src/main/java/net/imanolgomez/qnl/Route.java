@@ -64,7 +64,7 @@ public class Route extends BasicElement {
 
     public boolean isInside(Location loc) {
         mCurrentRegion = null;
-        
+
         for (Region region : mRooms.values()) {
             if(region.isInside(loc)){
                 mCurrentRegion = region;

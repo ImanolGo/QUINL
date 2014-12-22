@@ -53,7 +53,7 @@ public class DeviceInfoManager {
 
         TelephonyManager tManager = (TelephonyManager)mAppContext.getSystemService(Context.TELEPHONY_SERVICE);
         mDeviceId = tManager.getDeviceId();
-        mDeviceId = "99";
+        mDeviceId = "102";
     }
 
     private void logValues(){

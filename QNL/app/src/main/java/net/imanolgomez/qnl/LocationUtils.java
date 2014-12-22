@@ -55,7 +55,7 @@ public final class LocationUtils {
     public static final int FAST_CEILING_IN_SECONDS = 1;
 
     // The minimum displacement between location updates in meters
-    public static final int MIN_DISPLACEMENT = 2;
+    public static final int MIN_DISPLACEMENT = 0;
 
     // Update interval in milliseconds
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS =
