@@ -13,92 +13,92 @@ import java.io.File;
 
 public class DBHelper extends SQLiteOpenHelper {
 
+    // Logcat tag
     public static String TAG = "DBHelper";
 
-    public static final String TABLE_ROUTES = "routes";
-    public static final String COLUMN_ROUTE_ID = "route_id";
-    public static final String COLUMN_ROUTE_NAME = "route_name";
-    public static final String COLUMN_ROUTE_VERSION= "route_version";
-
-    public static final String TABLE_SECTIONS = "sections";
-    public static final String COLUMN_SECTION_ID = "section_id";
-    public static final String COLUMN_SECTION_LAT1 = "section_lat1";
-    public static final String COLUMN_SECTION_LAT2 = "section_lat2";
-    public static final String COLUMN_SECTION_LON1 = "section_lon1";
-    public static final String COLUMN_SECTION_LON2 = "section_lon2";
-
-    public static final String TABLE_REGIONS = "regions";
-    public static final String COLUMN_REGION_ID = "region_id";
-    public static final String COLUMN_REGION_NAME = "region_name";
-    public static final String COLUMN_REGION_VERSION= "region_version";
-    public static final String COLUMN_REGION_LOOP= "region_loop";
-    public static final String COLUMN_REGION_VOLUME= "region_volume";
-    public static final String COLUMN_REGION_TYPE= "region_type";
-
-    public static final String TABLE_SAMPLES = "samples";
-    public static final String COLUMN_SAMPLE_ID= "sample_id";
-    public static final String COLUMN_SAMPLE_VERSION= "sample_version";
-    public static final String COLUMN_SAMPLE_NAME= "sample_name";
-
-    public static final String TABLE_BEACONS = "beacons";
-    public static final String COLUMN_BEACON_ID = "beacon_id";
-    public static final String COLUMN_BEACON_NAME = "beacon_name";
-    public static final String COLUMN_BEACON_VERSION= "beacon_version";
-    public static final String COLUMN_BEACON_LOOP= "beacon_loop";
-    public static final String COLUMN_BEACON_VOLUME= "beacon_volume";
-    public static final String COLUMN_BEACON_RADIUS= "beacon_radius";
-
-
+    // Database
     private static final String DATABASE_NAME = "qnl.db";
     private static final int DATABASE_VERSION = 1;
+
+    // table names
+    public static final String TABLE_ROUTES = "routes";
+    public static final String TABLE_SECTIONS = "sections";
+    public static final String TABLE_REGIONS = "regions";
+    public static final String TABLE_SAMPLES = "samples";
+    public static final String TABLE_BEACONS = "beacons";
+
+    // Common column names
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_VERSION = "version";
+    public static final String COLUMN_NAME = "name";
+
+    // Shared column ID names
+    public static final String COLUMN_ROUTE_ID = "route_id";
+    public static final String COLUMN_REGION_ID = "region_id";
+    public static final String COLUMN_SAMPLE_ID= "sample_id";
+
+    // Coordinates column names
+    public static final String COLUMN_LAT1 = "lat1";
+    public static final String COLUMN_LAT2 = "lat2";
+    public static final String COLUMN_LON1 = "lon1";
+    public static final String COLUMN_LON2 = "lon2";
+
+    // Region column names
+    public static final String COLUMN_LOOP= "loop";
+    public static final String COLUMN_VOLUME= "volume";
+    public static final String COLUMN_REGION_TYPE= "region_type";
+
+    // Region column names
+    public static final String COLUMN_BEACON_RADIUS= "beacon_radius";
+
 
     // Regions table creation sql statement
     private static final String CREATE_REGIONS_TABLE = "create table "
             + TABLE_REGIONS + "("
-            + COLUMN_REGION_ID + " integer primary key, "
-            + COLUMN_REGION_NAME + " text, "
+            + COLUMN_ID + " integer primary key, "
+            + COLUMN_NAME + " text, "
             + COLUMN_REGION_TYPE + " text, "
-            + COLUMN_REGION_VERSION + " real, "
+            + COLUMN_VERSION + " real, "
             + COLUMN_ROUTE_ID + " integer, "
             + COLUMN_SAMPLE_ID + " integer, "
-            + COLUMN_REGION_LOOP + " integer, "
-            + COLUMN_REGION_VOLUME + " real);";
+            + COLUMN_LOOP + " integer, "
+            + COLUMN_VOLUME + " real);";
 
     // Routes table creation sql statement
     private static final String CREATE_ROUTES_TABLE = "create table "
             + TABLE_ROUTES + "("
-            + COLUMN_ROUTE_ID + " integer primary key, "
-            + COLUMN_ROUTE_NAME + " text, "
-            + COLUMN_ROUTE_VERSION + " real);";
+            + COLUMN_ID + " integer primary key, "
+            + COLUMN_NAME + " text, "
+            + COLUMN_VERSION + " real);";
 
     // Sections table creation sql statement
     private static final String CREATE_SECTIONS_TABLE = "create table "
             + TABLE_SECTIONS + "("
-            + COLUMN_SECTION_ID + " integer primary key, "
+            + COLUMN_ID + " integer primary key, "
             + COLUMN_REGION_ID + " integer, "
-            + COLUMN_SECTION_LAT1 + " real, "
-            + COLUMN_SECTION_LAT2 + " real, "
-            + COLUMN_SECTION_LON1 + " real, "
-            + COLUMN_SECTION_LON2 + " real);";
+            + COLUMN_LAT1 + " real, "
+            + COLUMN_LAT2 + " real, "
+            + COLUMN_LON1 + " real, "
+            + COLUMN_LON2 + " real);";
 
     // Beacons table creation sql statement
     private static final String CREATE_BEACONS_TABLE = "create table "
             + TABLE_BEACONS + "("
-            + COLUMN_BEACON_ID + " integer primary key, "
-            + COLUMN_BEACON_NAME + " text, "
-            + COLUMN_BEACON_VERSION + " real, "
+            + COLUMN_ID + " integer primary key, "
+            + COLUMN_NAME + " text, "
+            + COLUMN_VERSION + " real, "
             + COLUMN_ROUTE_ID + " integer, "
             + COLUMN_SAMPLE_ID + " integer, "
             + COLUMN_BEACON_RADIUS + " real, "
-            + COLUMN_BEACON_LOOP + " integer, "
-            + COLUMN_BEACON_VOLUME + " real);";
+            + COLUMN_LOOP + " integer, "
+            + COLUMN_VOLUME + " real);";
 
     // Samples table creation sql statement
     private static final String CREATE_SAMPLES_TABLE = "create table "
             + TABLE_SAMPLES + "("
-            + COLUMN_SAMPLE_ID + " integer primary key, "
-            + COLUMN_SAMPLE_NAME + " text, "
-            + COLUMN_SAMPLE_VERSION + " real);";
+            + COLUMN_ID + " integer primary key, "
+            + COLUMN_NAME + " text, "
+            + COLUMN_VERSION + " real);";
 
 
     public DBHelper(Context context) {

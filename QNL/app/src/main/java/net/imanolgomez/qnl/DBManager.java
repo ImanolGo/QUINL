@@ -53,9 +53,9 @@ public class DBManager {
     {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(mHelper.COLUMN_ROUTE_NAME, route.getName());
-        contentValues.put(mHelper.COLUMN_ROUTE_ID, route.getId());
-        contentValues.put(mHelper.COLUMN_ROUTE_VERSION, route.getVersion());
+        contentValues.put(mHelper.COLUMN_NAME, route.getName());
+        contentValues.put(mHelper.COLUMN_ID, route.getId());
+        contentValues.put(mHelper.COLUMN_VERSION, route.getVersion());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_ROUTES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
         return true;
@@ -75,9 +75,9 @@ public class DBManager {
         Log.i(TAG, "insertSample");
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(mHelper.COLUMN_SAMPLE_NAME, sample.getName());
-        contentValues.put(mHelper.COLUMN_SAMPLE_ID, sample.getId());
-        contentValues.put(mHelper.COLUMN_SAMPLE_VERSION, sample.getVersion());
+        contentValues.put(mHelper.COLUMN_NAME, sample.getName());
+        contentValues.put(mHelper.COLUMN_ID, sample.getId());
+        contentValues.put(mHelper.COLUMN_VERSION, sample.getVersion());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_SAMPLES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
         return true;
@@ -88,14 +88,14 @@ public class DBManager {
         Log.i(TAG, "insertRegion");
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(mHelper.COLUMN_REGION_NAME, region.getName());
-        contentValues.put(mHelper.COLUMN_REGION_ID, region.getId());
-        contentValues.put(mHelper.COLUMN_REGION_VERSION, region.getVersion());
+        contentValues.put(mHelper.COLUMN_NAME, region.getName());
+        contentValues.put(mHelper.COLUMN_ID, region.getId());
+        contentValues.put(mHelper.COLUMN_VERSION, region.getVersion());
         contentValues.put(mHelper.COLUMN_SAMPLE_ID, region.getSampleId());
         contentValues.put(mHelper.COLUMN_ROUTE_ID, region.getRouteId());
-        contentValues.put(mHelper.COLUMN_REGION_VOLUME, region.getVolume());
+        contentValues.put(mHelper.COLUMN_VOLUME, region.getVolume());
         contentValues.put(mHelper.COLUMN_REGION_TYPE, region.getRegionTypeString());
-        contentValues.put(mHelper.COLUMN_REGION_LOOP, region.getLoopInt());
+        contentValues.put(mHelper.COLUMN_LOOP, region.getLoopInt());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_REGIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
         return true;
@@ -106,12 +106,12 @@ public class DBManager {
         Log.i(TAG, "insertSection");
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(mHelper.COLUMN_SECTION_ID, section.getId());
+        contentValues.put(mHelper.COLUMN_ID, section.getId());
         contentValues.put(mHelper.COLUMN_REGION_ID, section.getRegionId());
-        contentValues.put(mHelper.COLUMN_SECTION_LAT1, section.getLocation1().getLatitude());
-        contentValues.put(mHelper.COLUMN_SECTION_LAT2, section.getLocation2().getLatitude());
-        contentValues.put(mHelper.COLUMN_SECTION_LON1, section.getLocation1().getLongitude());
-        contentValues.put(mHelper.COLUMN_SECTION_LON2, section.getLocation2().getLongitude());
+        contentValues.put(mHelper.COLUMN_LAT1, section.getLocation1().getLatitude());
+        contentValues.put(mHelper.COLUMN_LAT2, section.getLocation2().getLatitude());
+        contentValues.put(mHelper.COLUMN_LON1, section.getLocation1().getLongitude());
+        contentValues.put(mHelper.COLUMN_LON2, section.getLocation2().getLongitude());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_SECTIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
         return true;
