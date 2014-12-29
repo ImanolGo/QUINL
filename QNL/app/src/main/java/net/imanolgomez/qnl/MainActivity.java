@@ -8,9 +8,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.util.ResourceProxyImpl;
 import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 
 import android.content.IntentSender;
 import android.location.Location;
@@ -49,6 +52,7 @@ public class MainActivity extends FragmentActivity implements
 
     // Stores the current instantiation of the location client in this object
     private LocationClient mLocationClient;
+
 
     // Handles to UI widgets
     private TextView mLatLng;
@@ -399,6 +403,17 @@ public class MainActivity extends FragmentActivity implements
         mMapController.setZoom(18);
         GeoPoint gPt = new GeoPoint(52.5167,13.3833);
         mMapController.setCenter(gPt);
+
+        //GpsMyLocationProvider can be replaced by your own class. It provides the position information through GPS or Cell towers.
+        GpsMyLocationProvider imlp = new GpsMyLocationProvider(this.getBaseContext());
+        //minimum distance for update
+        imlp.setLocationUpdateMinDistance(1000);
+        //minimum time for update
+        imlp.setLocationUpdateMinTime(60000);
+        ResourceProxyImpl resProxyImp = new ResourceProxyImpl(this);
+        mMyLocationOverlay = new MyLocationNewOverlay(imlp , mMapView, resProxyImp);
+        mMyLocationOverlay.setDrawAccuracyEnabled(true);
+        mMapView.getOverlays().add(mMyLocationOverlay);
 
     }
 
