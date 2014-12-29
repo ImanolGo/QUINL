@@ -7,13 +7,6 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.util.ResourceProxyImpl;
-import org.osmdroid.views.MapController;
-import org.osmdroid.views.MapView;
-
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 
 import android.content.IntentSender;
 import android.location.Location;
@@ -70,11 +63,7 @@ public class MainActivity extends FragmentActivity implements
     private SoundManager mSoundManager;
     private DBManager mDBManager;
     private RouteManager mRouteManager;
-
-    // Handles Open Street Map
-    private MapView mMapView;
-    private MapController   mMapController;
-    private MyLocationNewOverlay mMyLocationOverlay;
+    private MapManager mMapManager;
 
 
     // Handle to SharedPreferences for this app
@@ -334,8 +323,7 @@ public class MainActivity extends FragmentActivity implements
 
         updateTextLabels();
 
-        // Set Center of Google OMS
-        mMapController.setCenter(new GeoPoint(location.getLatitude(),location.getLongitude()));
+        mMapManager.updateLocation(location);
     }
 
     private void updateTextLabels(){
@@ -370,12 +358,12 @@ public class MainActivity extends FragmentActivity implements
         this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
-        this.initializeOSM();
     }
 
     protected void initializeManagers(){
         mDeviceInfoManager = DeviceInfoManager.get(this);
         mLocationManager = LocationManager.get(this);
+        mMapManager = MapManager.get(getFragmentManager());
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
         mDBManager = DBManager.get(this);
@@ -394,28 +382,6 @@ public class MainActivity extends FragmentActivity implements
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);
     }
 
-    protected void initializeOSM() {
-
-        mMapView = (MapView) findViewById(R.id.mapview);
-        //mMapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
-        mMapView.setBuiltInZoomControls(true);
-        mMapController = (MapController) mMapView.getController();
-        mMapController.setZoom(18);
-        GeoPoint gPt = new GeoPoint(52.5167,13.3833);
-        mMapController.setCenter(gPt);
-
-        //GpsMyLocationProvider can be replaced by your own class. It provides the position information through GPS or Cell towers.
-        GpsMyLocationProvider imlp = new GpsMyLocationProvider(this.getBaseContext());
-        //minimum distance for update
-        imlp.setLocationUpdateMinDistance(1000);
-        //minimum time for update
-        imlp.setLocationUpdateMinTime(60000);
-        ResourceProxyImpl resProxyImp = new ResourceProxyImpl(this);
-        mMyLocationOverlay = new MyLocationNewOverlay(imlp , mMapView, resProxyImp);
-        mMyLocationOverlay.setDrawAccuracyEnabled(true);
-        mMapView.getOverlays().add(mMyLocationOverlay);
-
-    }
 
     protected void initializeLocationParameters(){
         // Create a new global location parameters object
