@@ -24,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * This the app's main Activity. It provides buttons for requesting the various features of the
@@ -64,6 +66,11 @@ public class MainActivity extends FragmentActivity implements
     private DBManager mDBManager;
     private RouteManager mRouteManager;
     private MapManager mMapManager;
+    private BeaconManager mBeaconManager;
+
+    // BeaconManager utilities
+    static int mBluetoothUpdateTime = 2000;
+    BeaconFoundCallback mBeaconCallback;
 
 
     // Handle to SharedPreferences for this app
@@ -358,6 +365,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
+        this.initializeBluetooth();
     }
 
     protected void initializeManagers(){
@@ -367,6 +375,29 @@ public class MainActivity extends FragmentActivity implements
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
         mDBManager = DBManager.get(this);
+    }
+
+    protected void initializeBluetooth(){
+
+        mBeaconCallback = new BeaconFoundCallback()
+        {
+            @Override
+            public void onNearestBeaconChanged(final GeloBeacon nearestBeacon) {
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                       mBeaconManager.foundBeacon(nearestBeacon);
+                    }
+                });
+            }
+        };
+
+
+        mBeaconManager.startScanningForBeacons(mBeaconCallback);
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new UpdateBluetoothTask(), 0, mBluetoothUpdateTime);
+
     }
 
     protected void initializeViews() {
@@ -428,6 +459,20 @@ public class MainActivity extends FragmentActivity implements
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
             return null;
+        }
+    }
+
+    class UpdateBluetoothTask extends TimerTask {
+        @Override
+        public  void run() {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("TimerTask", "UpdateBuetoothTask");
+                    mBeaconManager.stopScanningForBeacons();
+                    mBeaconManager.startScanningForBeacons(mBeaconCallback);
+                }
+            });
         }
     }
 
