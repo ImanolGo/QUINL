@@ -1,6 +1,7 @@
 package net.imanolgomez.qnl;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -26,6 +27,7 @@ public class RouteManager {
 
     private Region mCurrentRegion;
     private DBManager mDBManager;
+    private MapManager mMapManager;
 
     Context mAppContext;
     private HashMap<Integer, Route> mRoutes;
@@ -55,6 +57,25 @@ public class RouteManager {
         mRoutes = new HashMap<Integer, Route>();
         mCurrentRegion = null;
         mDBManager = DBManager.get(mAppContext);
+        getMapManager();
+
+    }
+
+    private void getMapManager(){
+
+        try{
+
+            Activity activity = (Activity) mAppContext;
+
+            mMapManager = MapManager.get(activity.getFragmentManager());
+
+            // If using the Support lib.
+            // return activity.getSupportFragmentManager();
+
+        } catch (ClassCastException e) {
+            Log.d(TAG, "Can't get the fragment manager with this");
+        }
+
     }
 
     public void updateLocation(Location currentLocation){
@@ -180,7 +201,7 @@ public class RouteManager {
             Log.i(TAG,"Region routeId: " + region.getRouteId());
             Log.i(TAG,"Region volume: " + region.getVolume());
             Log.i(TAG,"Region loop: " + region.isLooping());*/
-            region.createSectionsFromJson(singleRegionInfo, mDBManager);
+            region.createSectionsFromJson(singleRegionInfo, mDBManager,mMapManager);
             addRegion(region);
         }
     }
@@ -192,9 +213,7 @@ public class RouteManager {
         Log.i(TAG,"Added Route: " + route.getId());
         mRoutes.put(route.getId(), route);
 
-        if(mDBManager!=null){
-            mDBManager.insertRoute(route);
-        }
+        mDBManager.insertRoute(route);
     }
 
     private void addRegion(Region region){

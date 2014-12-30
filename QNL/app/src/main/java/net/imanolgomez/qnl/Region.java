@@ -134,7 +134,7 @@ public class Region extends RouteElement {
         }
     }
 
-    public void createSectionsFromJson(String jsonStr, DBManager dbManager){
+    public void createSectionsFromJson(String jsonStr, DBManager dbManager, MapManager mapManager){
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
@@ -155,6 +155,10 @@ public class Region extends RouteElement {
                     if(dbManager!=null) {
                         dbManager.insertSection(section);
                     }
+                    if(mapManager!=null) {
+                        mapManager.addSection(section);
+                    }
+
                 }
                 //Log.i("createSegmentsFromJson", "Single region names:" + regionJson.names());
             }
@@ -178,7 +182,5 @@ public class Region extends RouteElement {
         }
 
     }
-
-
 
 }
