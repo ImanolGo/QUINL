@@ -29,6 +29,7 @@ class GeloBeacon {
         this.accuracy = calculateAccuracy();
     }
 
+   
     public void updateRSSI (int rssi) {
         this.rssi = rssi;
         this.accuracy = calculateAccuracy();
