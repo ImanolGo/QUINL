@@ -16,7 +16,6 @@ import java.sql.SQLException;
 
 
 public class DBManager {
-
     public static String TAG = "DBManager";
     public static final String DB_RELATIVE_PATH = "/QNL/Database/";
     public static final String DB_ABSOLUTE_PATH = Environment.getExternalStorageDirectory() + DB_RELATIVE_PATH;
