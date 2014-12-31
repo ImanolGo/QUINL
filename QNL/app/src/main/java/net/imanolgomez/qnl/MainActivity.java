@@ -319,27 +319,32 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(Location location) {
 
-        // Report to the UI that the location was updated
-        mConnectionStatus.setText(R.string.location_updated);
+       updateManagers(location);
+       updateTextLabels();
+       sendTrackingData();
 
-        //Set the current location to the LocationManager
-        mLocationManager.updateLocation(location);
-
-        //Set the tracking data
-        new SendTrackingData().execute();
-
-        updateTextLabels();
-
-        mMapManager.updateLocation(location);
     }
 
     private void updateTextLabels(){
+        // Report to the UI that the location was updated
+        mConnectionStatus.setText(R.string.location_updated);
+
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, mLocationManager.getCurrentLocation()));
         mAccuracyView.setText(LocationUtils.getAccuracy(this, mLocationManager.getCurrentLocation()));
         mRouteText.setText(LocationUtils.getRoute(this,mLocationManager.getCurrentRegion()));
         mRegionText.setText(LocationUtils.getRegion(this,mLocationManager.getCurrentRegion()));
         mSampleText.setText(LocationUtils.getSample(this,mLocationManager.getCurrentRegion()));
+    }
+
+    private void updateManagers(Location location){
+        mBeaconManager.updateScanningForBeacons();
+        mLocationManager.updateLocation(location);
+        mMapManager.updateLocation(mLocationManager.getCurrentLocation());
+    }
+
+    private void sendTrackingData(){
+        new SendTrackingData().execute();
     }
 
     /**
@@ -394,10 +399,6 @@ public class MainActivity extends FragmentActivity implements
 
 
         mBeaconManager.startScanningForBeacons(mBeaconCallback);
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new UpdateBluetoothTask(), 0, mBluetoothUpdateTime);
-
     }
 
     protected void initializeViews() {
@@ -459,20 +460,6 @@ public class MainActivity extends FragmentActivity implements
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
             return null;
-        }
-    }
-
-    class UpdateBluetoothTask extends TimerTask {
-        @Override
-        public  void run() {
-            MainActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e("TimerTask", "UpdateBuetoothTask");
-                    mBeaconManager.stopScanningForBeacons();
-                    mBeaconManager.startScanningForBeacons(mBeaconCallback);
-                }
-            });
         }
     }
 

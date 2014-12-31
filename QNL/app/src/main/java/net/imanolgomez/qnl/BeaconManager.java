@@ -29,7 +29,6 @@ class GeloBeacon {
         this.accuracy = calculateAccuracy();
     }
 
-   
     public void updateRSSI (int rssi) {
         this.rssi = rssi;
         this.accuracy = calculateAccuracy();
@@ -110,6 +109,13 @@ public class BeaconManager {
         nearestBeacon = null;
         if (mBluetoothManager != null) {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
+        }
+    }
+
+    public void updateScanningForBeacons() {
+        //Check to see if the device supports Bluetooth and that it's turned on
+        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+            mBluetoothAdapter.startLeScan(mLeScanCallback);
         }
     }
 
