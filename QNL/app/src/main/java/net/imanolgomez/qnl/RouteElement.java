@@ -73,9 +73,6 @@ public class RouteElement extends BasicElement{
     private double mVolume;
     private boolean mLoop;
 
-    protected static final String TAG_NAME = "name";
-    protected static final String TAG_VERSION = "version";
-    protected static final String TAG_ID = "id";
     protected static final String TAG_LOOP = "loop";
     protected static final String TAG_SAMPLE_ID = "play";
     protected static final String TAG_VOLUME = "volume";

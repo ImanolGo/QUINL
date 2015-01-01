@@ -13,6 +13,10 @@ import android.location.Location;
 
 public class BasicElement {
 
+    protected static final String TAG_NAME = "name";
+    protected static final String TAG_VERSION = "version";
+    protected static final String TAG_ID = "id";
+
     // Instance variables
     private  int mId;
     private  String mName;

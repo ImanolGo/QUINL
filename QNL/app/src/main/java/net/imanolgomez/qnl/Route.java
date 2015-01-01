@@ -8,6 +8,8 @@ package net.imanolgomez.qnl;
 import android.location.Location;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.HashMap;
 
@@ -87,6 +89,26 @@ public class Route extends BasicElement {
         }
 
         return false;
+    }
+
+    public static Route createRouteFromJson(String jsonStr){
+
+        try {
+            JSONObject reader = new JSONObject(jsonStr);
+            JSONObject zoneJson  = reader.getJSONObject("route");
+
+            int id = zoneJson.getInt(TAG_ID);
+            double version = zoneJson.getDouble(TAG_VERSION);
+            String name = zoneJson.getString(TAG_NAME);
+
+            BasicElement basicElement = new BasicElement(id,name,version);
+            Route route = new Route(basicElement);
+            return route;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     private void addRegionHierarchically(Region region) {

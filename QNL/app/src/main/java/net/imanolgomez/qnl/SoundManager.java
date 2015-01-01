@@ -71,7 +71,7 @@ public class SoundManager {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+"?list=1");
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+"?versions=1");
                 Log.i(TAG, "Retrieving sample data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
@@ -112,16 +112,15 @@ public class SoundManager {
 
     }
 
+
     private void createSamples(String regionInfo) {
         try {
             JSONObject reader = new JSONObject(regionInfo);
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                if(!key.equals("list of sounds")){
-                    String url = ENDPOINT + "?sound=" + key;
-                    new getSampleInfo().execute(url);
-                }
+                String url = ENDPOINT + "?sound=" + key;
+                new getSampleInfo().execute(url);
             }
 
         } catch (Exception e) {
@@ -188,7 +187,7 @@ public class SoundManager {
             return;
         }
 
-        Log.i(TAG,"Added Sample: " + sample.getId());
+        Log.i(TAG,"Added Sample: " + sample.getId() + ", " + sample.getName());
         mSamples.put(sample.getId(), sample);
 
         if(mDBManager!=null){

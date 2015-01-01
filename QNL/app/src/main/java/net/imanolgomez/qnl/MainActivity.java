@@ -338,7 +338,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     private void updateManagers(Location location){
-        mBeaconManager.updateScanningForBeacons();
+        //mBeaconManager.updateScanningForBeacons();
         mLocationManager.updateLocation(location);
         mMapManager.updateLocation(mLocationManager.getCurrentLocation());
     }
@@ -370,7 +370,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
-        this.initializeBluetooth();
+        //this.initializeBluetooth();
     }
 
     protected void initializeManagers(){

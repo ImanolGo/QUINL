@@ -94,7 +94,7 @@ public class RouteManager {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+ROUTE+"?list=1");
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+ROUTE+"?versions=1");
                 Log.i(TAG, "Retrieving routes data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
@@ -113,7 +113,7 @@ public class RouteManager {
         @Override
         protected String doInBackground(Void... params) {
             try {
-                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+REGION+"?list=1");
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+REGION+"?versions=1");
                 Log.i(TAG, "Retrieving region data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
@@ -126,6 +126,31 @@ public class RouteManager {
             createRegions(result);
         }
 
+    }
+
+    private class getRouteInfo extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String result = EMPTY_STRING;
+            for (String url : urls) {
+                try {
+                    result = new ServerCommunicator(mAppContext).getUrl(url);
+                    Log.i(TAG, "Retrieving route data from: " + url);
+                    //Log.i(TAG, "Retrieving routes data: " + result);
+                } catch (IOException ioe) {
+                    Log.e(TAG, "Failed to retrieve route info data: " + url , ioe);
+                }
+
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            createSingleRoute(result);
+        }
     }
 
     private class getRegionInfo extends AsyncTask<String,Void,String> {
@@ -159,14 +184,8 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                if(!key.equals("list of routes")){
-                    int id = Integer.parseInt(key);
-                    double version = 1.0;
-                    String name = reader.getString(key);
-                    BasicElement basicElement = new BasicElement(id,name,version);
-                    Route route = new Route(basicElement);
-                    addRoute(route);
-                }
+                String url = ENDPOINT+ROUTE+"?route=" + key;
+                new getRouteInfo().execute(url);
             }
 
         } catch (Exception e) {
@@ -180,14 +199,23 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                if(!key.equals("list of zones")){
-                    String url = ENDPOINT+REGION+"?zone=" + key;
-                    new getRegionInfo().execute(url);
-                }
+                String url = ENDPOINT+REGION+"?zone=" + key;
+                new getRegionInfo().execute(url);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void createSingleRoute(String singleRouteInfo) {
+        Route route = Route.createRouteFromJson(singleRouteInfo);
+        if (route != null) {
+            /*Log.i(TAG,"Route id: " + route.getId());
+            Log.i(TAG,"Route name: " + route.getName());
+            Log.i(TAG,"Route version: " + route.getVersion());*/
+
+            addRoute(route);
         }
     }
 
@@ -210,7 +238,7 @@ public class RouteManager {
         if(route==null){
             return;
         }
-        Log.i(TAG,"Added Route: " + route.getId());
+        Log.i(TAG,"Added Route: " + route.getId() + ", " + route.getName());
         mRoutes.put(route.getId(), route);
 
         mDBManager.insertRoute(route);

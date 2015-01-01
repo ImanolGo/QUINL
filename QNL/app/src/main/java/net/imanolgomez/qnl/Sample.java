@@ -13,9 +13,7 @@ import org.json.JSONObject;
 
 public class Sample extends BasicElement {
 
-    protected static final String TAG_NAME = "file";
-    protected static final String TAG_VERSION = "version";
-    protected static final String TAG_ID = "id";
+    protected static final String TAG_FILE_NAME = "file";
     protected static final String ENDPOINT = "http://www.o-a.info/qnl/lib/sounds/";
 
     private String m_url;
@@ -43,12 +41,12 @@ public class Sample extends BasicElement {
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
-            JSONObject zoneJson  = reader.getJSONObject("sound");
+            JSONObject sampleJson  = reader.getJSONObject("sound");
 
 
-            int id = zoneJson.getInt(TAG_ID);
-            double version = zoneJson.getDouble(TAG_VERSION);
-            String name = zoneJson.getString(TAG_NAME);
+            int id = sampleJson.getInt(TAG_ID);
+            double version = sampleJson.getDouble(TAG_VERSION);
+            String name = sampleJson.getString(TAG_FILE_NAME);
             String url = ENDPOINT + name;
 
             BasicElement basicElement = new BasicElement(id,name,version);
