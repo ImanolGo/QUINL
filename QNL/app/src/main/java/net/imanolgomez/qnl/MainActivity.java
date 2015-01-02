@@ -17,6 +17,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -32,8 +33,6 @@ import java.util.TimerTask;
  * app, displays the current location, the current address, and the status of the location client
  * and updating services.
  *
- *
- * The update interval is hard-coded to be 5 seconds.
  */
 public class MainActivity extends FragmentActivity implements
         LocationListener,
@@ -69,8 +68,9 @@ public class MainActivity extends FragmentActivity implements
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    static int mBluetoothUpdateTime = 2000;
+    int BLUETOOTH_SCAN_PERIOD = (int)LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS/2;
     BeaconFoundCallback mBeaconCallback;
+    private Handler mHandler;
 
 
     // Handle to SharedPreferences for this app
@@ -338,7 +338,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     private void updateManagers(Location location){
-        //mBeaconManager.updateScanningForBeacons();
+        scanBeacons(true);
         mLocationManager.updateLocation(location);
         mMapManager.updateLocation(mLocationManager.getCurrentLocation());
     }
@@ -370,7 +370,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeManagers();
         this.initializeViews();
         this.initializeLocationParameters();
-        //this.initializeBluetooth();
+        this.initializeBluetooth();
     }
 
     protected void initializeManagers(){
@@ -380,9 +380,11 @@ public class MainActivity extends FragmentActivity implements
         mRouteManager = RouteManager.get(this);
         mSoundManager = SoundManager.get(this);
         mDBManager = DBManager.get(this);
+        mBeaconManager = BeaconManager.get(this);
     }
 
     protected void initializeBluetooth(){
+        mHandler = new Handler();
 
         mBeaconCallback = new BeaconFoundCallback()
         {
@@ -392,6 +394,7 @@ public class MainActivity extends FragmentActivity implements
                     @Override
                     public void run() {
                        mBeaconManager.foundBeacon(nearestBeacon);
+                       scanBeacons(false);
                     }
                 });
             }
@@ -460,6 +463,21 @@ public class MainActivity extends FragmentActivity implements
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
             return null;
+        }
+    }
+
+    private void scanBeacons(final boolean enable) {
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mBeaconManager.stopScanningForBeacons();
+                }
+            }, BLUETOOTH_SCAN_PERIOD);
+            mBeaconManager.startScanningForBeacons(mBeaconCallback);
+        } else {
+            mBeaconManager.stopScanningForBeacons();
         }
     }
 

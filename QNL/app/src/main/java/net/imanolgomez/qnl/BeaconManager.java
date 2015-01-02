@@ -112,13 +112,6 @@ public class BeaconManager {
         }
     }
 
-    public void updateScanningForBeacons() {
-        //Check to see if the device supports Bluetooth and that it's turned on
-        if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
-        }
-    }
-
     public void startScanningForBeacons(BeaconFoundCallback callback) {
         //Check to see if the device supports Bluetooth and that it's turned on
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
@@ -135,7 +128,7 @@ public class BeaconManager {
     }
 
     public void foundBeacon(GeloBeacon nearestBeacon){
-
+        Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy );
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
