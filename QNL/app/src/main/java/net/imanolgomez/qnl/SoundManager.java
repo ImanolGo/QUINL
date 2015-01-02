@@ -126,7 +126,6 @@ public class SoundManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void createSingleSample(String sampleInfo) {

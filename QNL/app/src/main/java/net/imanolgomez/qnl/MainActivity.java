@@ -25,8 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * This the app's main Activity. It provides buttons for requesting the various features of the
@@ -389,7 +387,7 @@ public class MainActivity extends FragmentActivity implements
         mBeaconCallback = new BeaconFoundCallback()
         {
             @Override
-            public void onNearestBeaconChanged(final GeloBeacon nearestBeacon) {
+            public void onNearestBeaconChanged(final Beacon nearestBeacon) {
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -399,9 +397,6 @@ public class MainActivity extends FragmentActivity implements
                 });
             }
         };
-
-
-        mBeaconManager.startScanningForBeacons(mBeaconCallback);
     }
 
     protected void initializeViews() {

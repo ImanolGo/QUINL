@@ -9,65 +9,9 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.HashMap;
 
-/**
- * Representation of an iBeacon
- */
-class GeloBeacon {
-    String uuid;
-    int major;
-    int minor;
-    int rssi;
-    int txPower;
-    double accuracy;
-
-    public GeloBeacon(String uuid, int major, int minor, int rssi) {
-        this.uuid = uuid;
-        this.major = major;
-        this.minor = minor;
-        this.rssi = rssi;
-        this.txPower = -65;
-        this.accuracy = calculateAccuracy();
-    }
-
-    public void updateRSSI (int rssi) {
-        this.rssi = rssi;
-        this.accuracy = calculateAccuracy();
-    }
-
-    public boolean equals (GeloBeacon beacon) {
-        if (beacon.major == this.major && beacon.minor == this.minor) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public void setAccuracy(int _accuracy){
-        this.accuracy = _accuracy;
-    }
-
-    public boolean isNear(double distance){
-        return (distance <= this.accuracy);
-    }
-
-    private double calculateAccuracy() {
-        if (this.rssi == 0) {
-            return -1.0; // if we cannot determine accuracy, return -1.
-        }
-
-        double ratio = this.rssi*1.0/this.txPower;
-        if (ratio < 1.0) {
-            return Math.pow(ratio,10);
-        }
-        else {
-            double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
-            return accuracy;
-        }
-    }
-}
 
 interface BeaconFoundCallback {
-    void onNearestBeaconChanged(GeloBeacon nearestBeacon);
+    void onNearestBeaconChanged(Beacon nearestBeacon);
 }
 
 /**
@@ -84,11 +28,10 @@ public class BeaconManager {
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private BeaconFoundCallback mCallback;
-    private GeloBeacon nearestBeacon;
 
     private Context mAppContext;
 
-    private HashMap<Integer, GeloBeacon> mRoutes;
+    private HashMap<Integer, Beacon> mRoutes;
 
     private BeaconManager(Context appContext) {
         mAppContext = appContext;
@@ -106,7 +49,6 @@ public class BeaconManager {
         Log.i(TAG, "Initialize");
 
         mBluetoothManager = (BluetoothManager) mAppContext.getSystemService(Context.BLUETOOTH_SERVICE);
-        nearestBeacon = null;
         if (mBluetoothManager != null) {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
         }
@@ -127,8 +69,8 @@ public class BeaconManager {
         }
     }
 
-    public void foundBeacon(GeloBeacon nearestBeacon){
-        Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy );
+    public void foundBeacon(Beacon nearestBeacon){
+        Log.i(TAG, "Beacon-> id: " + nearestBeacon.getId() + ", accuracy: " + nearestBeacon.getAccuracy() );
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -146,19 +88,10 @@ public class BeaconManager {
                 int minor = ((scanRecord[27] & 0xFF) << 8)
                         | (scanRecord[28] & 0xFF);
 
-                GeloBeacon beacon = new GeloBeacon(UUIDHex, major, minor, rssi);
-
-                //RSSI values increase towards zero as the source gets closer to the reciever
-                if (nearestBeacon == null || beacon.rssi > nearestBeacon.rssi) {
-                    nearestBeacon = beacon;
-                    //notify the application that a beacon is closer
-                    mCallback.onNearestBeaconChanged(beacon);
-                    //If the beacon we found  is the current nearest, update the RSSI. You may have
-                    //gotten closer or further away and you don't want to remember an old RSSI
-                }else if (beacon.equals(nearestBeacon)) {
-                    mCallback.onNearestBeaconChanged(beacon);
-                    nearestBeacon.updateRSSI(beacon.rssi);
-                }
+                BasicElement basicElement = new BasicElement(minor, "", 0);
+                Beacon beacon = new Beacon(basicElement);
+                beacon.setRssi(rssi);
+                mCallback.onNearestBeaconChanged(beacon);
             }
         }
     };
