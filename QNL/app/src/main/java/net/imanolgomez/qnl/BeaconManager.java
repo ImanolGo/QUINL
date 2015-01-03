@@ -9,6 +9,62 @@ import android.util.Log;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Representation of an Beacon
+ */
+class Beacon {
+    String uuid;
+    int major;
+    int minor;
+    int rssi;
+    int txPower;
+    double accuracy;
+
+    public Beacon(String uuid, int major, int minor, int rssi) {
+        this.uuid = uuid;
+        this.major = major;
+        this.minor = minor;
+        this.rssi = rssi;
+        this.txPower = -65;
+        this.accuracy = calculateAccuracy();
+    }
+
+    public void setRssi (int rssi) {
+        this.rssi = rssi;
+        this.accuracy = calculateAccuracy();
+    }
+
+    public boolean equals (Beacon beacon) {
+        if (beacon.major == this.major && beacon.minor == this.minor) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void setAccuracy(int _accuracy){
+        this.accuracy = _accuracy;
+    }
+
+    public boolean isNear(double distance){
+        return (distance <= this.accuracy);
+    }
+
+    private double calculateAccuracy() {
+        if (this.rssi == 0) {
+            return -1.0; // if we cannot determine accuracy, return -1.
+        }
+
+        double ratio = this.rssi*1.0/this.txPower;
+        if (ratio < 1.0) {
+            return Math.pow(ratio,10);
+        }
+        else {
+            double accuracy =  (0.89976)*Math.pow(ratio,7.7095) + 0.111;
+            return accuracy;
+        }
+    }
+}
 
 interface BeaconFoundCallback {
     void onNearestBeaconChanged(Beacon nearestBeacon);
@@ -70,7 +126,7 @@ public class BeaconManager {
     }
 
     public void foundBeacon(Beacon nearestBeacon){
-        Log.i(TAG, "Beacon-> id: " + nearestBeacon.getId() + ", accuracy: " + nearestBeacon.getAccuracy() );
+        Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -88,9 +144,7 @@ public class BeaconManager {
                 int minor = ((scanRecord[27] & 0xFF) << 8)
                         | (scanRecord[28] & 0xFF);
 
-                BasicElement basicElement = new BasicElement(minor, "", 0);
-                Beacon beacon = new Beacon(basicElement);
-                beacon.setRssi(rssi);
+                Beacon beacon = new Beacon(UUIDHex, major, minor, rssi);
                 mCallback.onNearestBeaconChanged(beacon);
             }
         }
