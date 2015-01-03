@@ -48,8 +48,10 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_VOLUME= "volume";
     public static final String COLUMN_REGION_TYPE= "region_type";
 
-    // Region column names
-    public static final String COLUMN_BEACON_RADIUS= "beacon_radius";
+    // Spot column names
+    public static final String COLUMN_RADIUS= "radius";
+    public static final String COLUMN_LAT =  "latitude";
+    public static final String COLUMN_LON =  "longitude";
 
 
     // Regions table creation sql statement
@@ -89,8 +91,10 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_VERSION + " real, "
             + COLUMN_ROUTE_ID + " integer, "
             + COLUMN_SAMPLE_ID + " integer, "
-            + COLUMN_BEACON_RADIUS + " real, "
             + COLUMN_LOOP + " integer, "
+            + COLUMN_RADIUS + " real, "
+            + COLUMN_LAT + " real, "
+            + COLUMN_LON + " real, "
             + COLUMN_VOLUME + " real);";
 
     // Samples table creation sql statement

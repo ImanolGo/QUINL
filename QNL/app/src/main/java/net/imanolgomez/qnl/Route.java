@@ -29,6 +29,7 @@ public class Route extends BasicElement {
     private HashMap<Integer, Region> mZones;
     private HashMap<Integer, Region> mPaths;
     private HashMap<Integer, Region> mRooms;
+    private HashMap<Integer, Spot>   mSpots;
 
     private Region mCurrentRegion;
 
@@ -52,6 +53,7 @@ public class Route extends BasicElement {
         mZones =  new HashMap<Integer, Region>();
         mPaths =  new HashMap<Integer, Region>();
         mRooms =  new HashMap<Integer, Region>();
+        mSpots =  new HashMap<Integer, Spot>();
         mCurrentRegion = null;
     }
 
@@ -62,6 +64,14 @@ public class Route extends BasicElement {
 
         mRegions.put(region.getId(), region);
         addRegionHierarchically(region);
+    }
+
+    public void addSpot(Spot spot) {
+        if(spot==null){
+            return;
+        }
+
+        mSpots.put(spot.getId(), spot);
     }
 
     public boolean isInside(Location loc) {

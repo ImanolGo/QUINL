@@ -100,6 +100,26 @@ public class DBManager {
         return true;
     }
 
+    public boolean insertSpot(Spot spot)
+    {
+        Log.i(TAG, "insertSpot");
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(mHelper.COLUMN_NAME, spot.getName());
+        contentValues.put(mHelper.COLUMN_ID, spot.getId());
+        contentValues.put(mHelper.COLUMN_VERSION, spot.getVersion());
+        contentValues.put(mHelper.COLUMN_SAMPLE_ID, spot.getSampleId());
+        contentValues.put(mHelper.COLUMN_ROUTE_ID, spot.getRouteId());
+        contentValues.put(mHelper.COLUMN_VOLUME, spot.getVolume());
+        contentValues.put(mHelper.COLUMN_RADIUS, spot.getRadius());
+        contentValues.put(mHelper.COLUMN_LOOP, spot.getLoopInt());
+        contentValues.put(mHelper.COLUMN_LAT, spot.getLocation().getLatitude());
+        contentValues.put(mHelper.COLUMN_LON, spot.getLocation().getLongitude());
+
+        mDatabase.insertWithOnConflict(mHelper.TABLE_BEACONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        return true;
+    }
+
     public boolean insertSection(Section section)
     {
         Log.i(TAG, "insertSection");

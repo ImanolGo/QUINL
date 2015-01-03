@@ -50,6 +50,7 @@ public class RouteManager {
     private void initialize(){
         initializeAttributes();
         new retrieveRoutes().execute();
+        new retrieveSpots().execute();
         new retrieveRegions().execute();
     }
 
@@ -108,6 +109,25 @@ public class RouteManager {
 
     }
 
+    private class retrieveSpots extends AsyncTask<Void,Void,String> {
+        String result;
+        @Override
+        protected String doInBackground(Void... params) {
+            try {
+                result = new ServerCommunicator(mAppContext).getUrl(ENDPOINT+SPOT+"?versions=1");
+                Log.i(TAG, "Retrieving spots data: " + result);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Failed retrieving spots data:  ", ioe);
+            }
+            return result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            createSpots(result);
+        }
+
+    }
+
     private class retrieveRegions extends AsyncTask<Void,Void,String> {
         String result;
         @Override
@@ -153,6 +173,31 @@ public class RouteManager {
         }
     }
 
+    private class getSpotInfo extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String result = EMPTY_STRING;
+            for (String url : urls) {
+                try {
+                    result = new ServerCommunicator(mAppContext).getUrl(url);
+                    Log.i(TAG, "Retrieving spot data from: " + url);
+                    //Log.i(TAG, "Retrieving spot data: " + result);
+                } catch (IOException ioe) {
+                    Log.e(TAG, "Failed to retrieve spot info data: " + url , ioe);
+                }
+
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            createSingleSpot(result);
+        }
+    }
+
     private class getRegionInfo extends AsyncTask<String,Void,String> {
 
         @Override
@@ -186,6 +231,21 @@ public class RouteManager {
                 String key = (String)iterator.next();
                 String url = ENDPOINT+ROUTE+"?route=" + key;
                 new getRouteInfo().execute(url);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createSpots(String spotInfo) {
+        try {
+            JSONObject reader = new JSONObject(spotInfo);
+            Iterator iterator = reader.keys();
+            while(iterator.hasNext()){
+                String key = (String)iterator.next();
+                String url = ENDPOINT+SPOT+"?beacon=" + key;
+                new getSpotInfo().execute(url);
             }
 
         } catch (Exception e) {
@@ -234,6 +294,20 @@ public class RouteManager {
         }
     }
 
+    private void createSingleSpot(String singleSpotnInfo) {
+        Spot spot = Spot.createSpotFromJson(singleSpotnInfo);
+        if (spot != null) {
+            /*Log.i(TAG,"Spot id: " + spot.getId());
+            Log.i(TAG,"Spot name: " + spot.getName());
+            Log.i(TAG,"Spot version: " + spot.getVersion());
+            Log.i(TAG,"Spot sampleId: " + spot.getSampleId());
+            Log.i(TAG,"Spot routeId: " + spot.getRouteId());
+            Log.i(TAG,"Spot volume: " + spot.getVolume());
+            Log.i(TAG,"Spot loop: " + spot.isLooping());*/
+            addSpot(spot);
+        }
+    }
+
     private void addRoute(Route route) {
         if(route==null){
             return;
@@ -253,6 +327,19 @@ public class RouteManager {
             Log.i(TAG,"Added Region: " + region.getId() + " to route: " + region.getRouteId());
             mRoutes.get(region.getRouteId()).addRegion(region);
             mDBManager.insertRegion(region);
+        }
+
+    }
+
+    private void addSpot(Spot spot){
+        if(spot==null){
+            return;
+        }
+
+        if(mRoutes.containsKey(spot.getRouteId())){
+            Log.i(TAG,"Added Spot: " + spot.getId() + " to route: " + spot.getRouteId());
+            mRoutes.get(spot.getRouteId()).addSpot(spot);
+            mDBManager.insertSpot(spot);
         }
 
     }
