@@ -96,12 +96,32 @@
         android:textSize="20sp" />
 
     <TextView
+        android:id="@+id/label_beacon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:text="@string/beaconLabel"
+        android:layout_below="@+id/label_route"
+        android:textSize="20sp"
+        android:layout_marginLeft="10dp" />
+
+    <TextView
+        android:id="@+id/beacon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/label_beacon"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/label_beacon"
+        android:textIsSelectable="true"
+        android:textSize="20sp" />
+
+    <TextView
         android:id="@+id/label_region"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:text="@string/regionLabel"
-        android:layout_below="@+id/label_route"
+        android:layout_below="@+id/label_beacon"
         android:textSize="20sp"
         android:layout_marginLeft="10dp" />
 

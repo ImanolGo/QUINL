@@ -128,16 +128,18 @@ public final class LocationUtils {
         }
     }
 
-    public static String getRoute(Context context, Region currentRegion) {
-        // If the location is valid
+    public static String getRoute(Context context, Route currentRoute) {
+        // If the currentRoute is valid
+        if (currentRoute == null) { return "None";}
 
-        if (currentRegion == null) { return "None";}
+        return currentRoute.getName();
+    }
 
-        Route route = RouteManager.get(context).getRouteFromId(currentRegion.getRouteId());
+    public static String getBeacon(Context context, Spot currentSpot) {
+        // If the currentRoute is valid
+        if (currentSpot == null) { return "None";}
 
-        if (route == null) { return "None";}
-
-        return route.getName();
+        return currentSpot.getName();
     }
 
     public static String getSample(Context context, Region currentRegion) {

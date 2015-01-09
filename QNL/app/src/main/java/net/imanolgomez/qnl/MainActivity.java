@@ -54,6 +54,7 @@ public class MainActivity extends FragmentActivity implements
     private TextView mConnectionStatus;
     private TextView mRegionText;
     private TextView mRouteText;
+    private TextView mBeaconText;
     private TextView mSampleText;
 
     //Handled Managers
@@ -330,7 +331,8 @@ public class MainActivity extends FragmentActivity implements
         // In the UI, set the latitude and longitude to the value received
         mLatLng.setText(LocationUtils.getLatLng(this, mLocationManager.getCurrentLocation()));
         mAccuracyView.setText(LocationUtils.getAccuracy(this, mLocationManager.getCurrentLocation()));
-        mRouteText.setText(LocationUtils.getRoute(this,mLocationManager.getCurrentRegion()));
+        mRouteText.setText(LocationUtils.getRoute(this,mLocationManager.getCurrentRoute()));
+        mBeaconText.setText(LocationUtils.getBeacon(this,mLocationManager.getCurrentSpot()));
         mRegionText.setText(LocationUtils.getRegion(this,mLocationManager.getCurrentRegion()));
         mSampleText.setText(LocationUtils.getSample(this,mLocationManager.getCurrentRegion()));
     }
@@ -409,6 +411,7 @@ public class MainActivity extends FragmentActivity implements
         mRouteText = (TextView) findViewById(R.id.route);
         mRegionText = (TextView) findViewById(R.id.region);
         mSampleText = (TextView) findViewById(R.id.sample);
+        mBeaconText = (TextView) findViewById(R.id.beacon);
         mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
         mConnectionState = (TextView) findViewById(R.id.text_connection_state);
         mConnectionStatus = (TextView) findViewById(R.id.text_connection_status);

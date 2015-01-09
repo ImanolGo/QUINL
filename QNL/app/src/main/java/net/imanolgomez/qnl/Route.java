@@ -32,6 +32,7 @@ public class Route extends BasicElement {
     private HashMap<Integer, Spot>   mSpots;
 
     private Region mCurrentRegion;
+    private Spot mCurrentSpot;
 
     /**
      * @param basicElement The BasicElement's attributes.
@@ -55,6 +56,7 @@ public class Route extends BasicElement {
         mRooms =  new HashMap<Integer, Region>();
         mSpots =  new HashMap<Integer, Spot>();
         mCurrentRegion = null;
+        mCurrentSpot = null;
     }
 
     public void addRegion(Region region) {
@@ -72,6 +74,22 @@ public class Route extends BasicElement {
         }
 
         mSpots.put(spot.getId(), spot);
+    }
+
+    public boolean isInsideSpot(Beacon beacon) {
+        mCurrentSpot = null;
+        if(beacon==null){
+            return false;
+        }
+
+        for (Spot spot : mSpots.values()) {
+            if(spot.getId() == beacon.getMinor() && beacon.getAccuracy() <= spot.getRadius()){
+                mCurrentSpot = spot;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public boolean isInside(Location loc) {
@@ -147,8 +165,11 @@ public class Route extends BasicElement {
                 mPaths.put(region.getId(), region);
             }
 
-
         }
+    }
+
+    public Spot getCurrentSpot() {
+        return mCurrentSpot;
     }
 
     public Region getCurrentRegion() {

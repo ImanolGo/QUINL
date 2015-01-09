@@ -50,6 +50,10 @@ class Beacon {
         this.timeToLive = timeToLiveInMs;
     }
 
+    public double getAccuracy(){
+        return this.accuracy;
+    }
+
     public int getTimeToLive(){
         return this.timeToLive;
     }
@@ -110,6 +114,7 @@ public class BeaconManager {
     private BluetoothAdapter mBluetoothAdapter;
     private BeaconFoundCallback mCallback;
 
+    private Beacon mNearestBeacon;
     private long mLastUpdateTime;
 
     private Context mAppContext;
@@ -149,8 +154,12 @@ public class BeaconManager {
     }
 
     public void update() {
-        long currentTime = System.nanoTime();
+        updateBeaconsList();
+        updateNearestBeacon();
+    }
 
+    public void updateBeaconsList() {
+        long currentTime = System.nanoTime();
         Iterator<Integer> it = mBeacons.keySet().iterator();
         while (it.hasNext()) {
             Integer key = it.next();
@@ -160,9 +169,25 @@ public class BeaconManager {
                 it.remove();
             }
         }
-
         mLastUpdateTime = currentTime;
+    }
 
+    public void updateNearestBeacon(){
+        mNearestBeacon = null;
+        for (Beacon beacon : mBeacons.values()) {
+            if(mNearestBeacon == null){
+                mNearestBeacon = beacon;
+            }
+            else{
+                if(beacon.getAccuracy()<mNearestBeacon.getAccuracy()){
+                    mNearestBeacon = beacon;
+                }
+            }
+        }
+    }
+
+    public Beacon getNearestBeacon(){
+        return mNearestBeacon;
     }
 
     public void stopScanningForBeacons() {

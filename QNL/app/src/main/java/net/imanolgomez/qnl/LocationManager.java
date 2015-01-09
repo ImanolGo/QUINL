@@ -13,12 +13,13 @@ public class LocationManager {
     public static String TAG = "LocationManager";
 
     private Location mCurrentLocation;
-    Region mCurrentRegion;
     private int mCurrentBeaconId = -1;
 
-    Context mAppContext;
-    RouteManager mRouteManager;
-    SoundManager mSoundManager;
+    private Context mAppContext;
+    private Region mCurrentRegion;
+    private Spot mCurrentSpot;
+    private RouteManager mRouteManager;
+    private SoundManager mSoundManager;
 
     private static LocationManager sLocationManager;
 
@@ -39,16 +40,17 @@ public class LocationManager {
     public void updateLocation(Location currentLocation) {
         this.mCurrentLocation = currentLocation;
         Log.i(TAG, "updateLocation");
-        updateRegion();
+        updateRoute();
 
     }
 
-    public void updateRegion() {
+    public void updateRoute() {
 
         mRouteManager.updateLocation(mCurrentLocation);
 
         if(regionHasChanged()){
-            updateRegionId();
+            updateSpot();
+            updateRegion();
             updateSample();
         }
 
@@ -56,11 +58,23 @@ public class LocationManager {
 
 
     private boolean regionHasChanged(){
-        return (mRouteManager.getCurrentRegion()!=mCurrentRegion);
+
+        if(mRouteManager.getCurrentSpot()!=mCurrentSpot){
+            return true;
+        }
+
+        if(mRouteManager.getCurrentRegion()!=mCurrentRegion){
+            return true;
+        }
+
+        return false;
     }
 
-    private void updateRegionId(){
+    private void updateRegion(){
         mCurrentRegion = mRouteManager.getCurrentRegion();
+    }
+    private void updateSpot(){
+        mCurrentSpot = mRouteManager.getCurrentSpot();
     }
 
     private void updateSample(){
@@ -80,8 +94,12 @@ public class LocationManager {
         return mCurrentRegion;
     }
 
-
-    public int getCurrentBeaconId() {
-        return mCurrentBeaconId;
+    public Route getCurrentRoute() {
+        return mRouteManager.getCurrentRoute();
     }
+
+    public Spot getCurrentSpot() {
+        return mCurrentSpot;
+    }
+
 }

@@ -25,7 +25,9 @@ public class RouteManager {
     private static final String REGION = "zone.php";
     private static final String SPOT = "beacon.php";
 
+    private Spot mCurrentSpot;
     private Region mCurrentRegion;
+    private Route mCurrentRoute;
     private DBManager mDBManager;
     private MapManager mMapManager;
 
@@ -57,6 +59,7 @@ public class RouteManager {
     private void initializeAttributes(){
         mRoutes = new HashMap<Integer, Route>();
         mCurrentRegion = null;
+        mCurrentRoute = null;
         mDBManager = DBManager.get(mAppContext);
         getMapManager();
 
@@ -81,13 +84,54 @@ public class RouteManager {
 
     public void updateLocation(Location currentLocation){
 
-        mCurrentRegion = null;
+        mCurrentSpot = null;
+        mCurrentRoute = null;
+
+        if(!updateCurrentRoute(currentLocation)){
+            mCurrentRegion = null;
+            searchForCurrentRoute(currentLocation);
+        }
+
+    }
+
+    public boolean updateCurrentRoute(Location currentLocation){
+
+        if(mCurrentRoute == null){
+            return false;
+        }
+
+        BeaconManager beaconManager = BeaconManager.get(mAppContext);
+        if(mCurrentRoute.isInsideSpot(beaconManager.getNearestBeacon())){
+            mCurrentSpot = mCurrentRoute.getCurrentSpot();
+            return true;
+        }
+
+        if(mCurrentRoute.isInside(currentLocation)){
+            mCurrentRegion = mCurrentRoute.getCurrentRegion();
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private void searchForCurrentRoute(Location currentLocation){
+
+        BeaconManager beaconManager = BeaconManager.get(mAppContext);
+        for (Route route : mRoutes.values()) {
+            if(route.isInsideSpot(beaconManager.getNearestBeacon())){
+                mCurrentSpot = mCurrentRoute.getCurrentSpot();
+                return;
+            }
+        }
+
         for (Route route : mRoutes.values()) {
             if(route.isInside(currentLocation)){
                 mCurrentRegion = route.getCurrentRegion();
                 return;
             }
         }
+
     }
 
     private class retrieveRoutes extends AsyncTask<Void,Void,String> {
@@ -346,6 +390,14 @@ public class RouteManager {
 
     public Region getCurrentRegion() {
         return mCurrentRegion;
+    }
+
+    public Spot getCurrentSpot() {
+        return mCurrentSpot;
+    }
+
+    public Route getCurrentRoute() {
+        return mCurrentRoute;
     }
 
     public Route getRouteFromId(int routeId){
