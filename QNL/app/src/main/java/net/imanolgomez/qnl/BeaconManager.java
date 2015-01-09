@@ -8,17 +8,19 @@ import android.util.Log;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Representation of an Beacon
  */
 class Beacon {
     String uuid;
-    int major;
-    int minor;
-    int rssi;
-    int txPower;
-    double accuracy;
+    private int major;
+    private int minor;
+    private int rssi;
+    private int txPower;
+    private double accuracy;
+    private int timeToLive;
 
     public Beacon(String uuid, int major, int minor, int rssi) {
         this.uuid = uuid;
@@ -27,11 +29,33 @@ class Beacon {
         this.rssi = rssi;
         this.txPower = -65;
         this.accuracy = calculateAccuracy();
+        this.timeToLive = 15000;
+    }
+
+    public void update(long elapsedTimeInMs){
+        this.timeToLive -= (int) elapsedTimeInMs;
+        if(this.timeToLive<0){
+            this.timeToLive = 0;
+        }
+
+        Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
     }
 
     public void setRssi (int rssi) {
         this.rssi = rssi;
         this.accuracy = calculateAccuracy();
+    }
+
+    public void setTimeToLive(int timeToLiveInMs){
+        this.timeToLive = timeToLiveInMs;
+    }
+
+    public int getTimeToLive(){
+        return this.timeToLive;
+    }
+
+    public int getMinor(){
+        return this.minor;
     }
 
     public boolean equals (Beacon beacon) {
@@ -81,13 +105,16 @@ public class BeaconManager {
 
     final static char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
     final static String GELO_UUID = "11E44F094EC4407E9203CF57A50FBCE0";
+    public static final int NANOSECONDS_PER_MILISECONDS = 1000000;
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private BeaconFoundCallback mCallback;
 
+    private long mLastUpdateTime;
+
     private Context mAppContext;
 
-    private HashMap<Integer, Beacon> mRoutes;
+    private HashMap<Integer, Beacon> mBeacons;
 
     private BeaconManager(Context appContext) {
         mAppContext = appContext;
@@ -108,6 +135,9 @@ public class BeaconManager {
         if (mBluetoothManager != null) {
             mBluetoothAdapter = mBluetoothManager.getAdapter();
         }
+
+        mLastUpdateTime = System.nanoTime();
+        mBeacons = new HashMap<Integer, Beacon>();
     }
 
     public void startScanningForBeacons(BeaconFoundCallback callback) {
@@ -118,6 +148,23 @@ public class BeaconManager {
         }
     }
 
+    public void update() {
+        long currentTime = System.nanoTime();
+
+        Iterator<Integer> it = mBeacons.keySet().iterator();
+        while (it.hasNext()) {
+            Integer key = it.next();
+            Beacon beacon = mBeacons.get(key);
+            beacon.update((currentTime-mLastUpdateTime)/NANOSECONDS_PER_MILISECONDS);
+            if (beacon.getTimeToLive()<=0) {
+                it.remove();
+            }
+        }
+
+        mLastUpdateTime = currentTime;
+
+    }
+
     public void stopScanningForBeacons() {
         //Check to see if the device supports Bluetooth and that it's turned on
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
@@ -125,8 +172,13 @@ public class BeaconManager {
         }
     }
 
+
     public void foundBeacon(Beacon nearestBeacon){
-        Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
+        //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
+        if(!mBeacons.containsKey(nearestBeacon.getMinor())){
+            Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
+            mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
+        }
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
