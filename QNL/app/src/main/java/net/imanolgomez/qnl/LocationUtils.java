@@ -142,16 +142,12 @@ public final class LocationUtils {
         return currentSpot.getName();
     }
 
-    public static String getSample(Context context, Region currentRegion) {
+    public static String getSample(Context context, Sample currentSample) {
         // If the location is valid
 
-        if (currentRegion == null) { return "None";}
+        if (currentSample == null) { return "None";}
 
-        Sample sample = SoundManager.get(context).getSampleFromId(currentRegion.getSampleId());
-
-        if (sample == null) { return "None";}
-
-        return sample.getName();
+        return currentSample.getName();
 
     }
 }

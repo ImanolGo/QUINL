@@ -67,7 +67,7 @@ public class MainActivity extends FragmentActivity implements
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 1;
+    long BLUETOOTH_SCAN_PERIOD = 1000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mHandler;
 
@@ -334,7 +334,7 @@ public class MainActivity extends FragmentActivity implements
         mRouteText.setText(LocationUtils.getRoute(this,mLocationManager.getCurrentRoute()));
         mBeaconText.setText(LocationUtils.getBeacon(this,mLocationManager.getCurrentSpot()));
         mRegionText.setText(LocationUtils.getRegion(this,mLocationManager.getCurrentRegion()));
-        mSampleText.setText(LocationUtils.getSample(this,mLocationManager.getCurrentRegion()));
+        mSampleText.setText(LocationUtils.getSample(this,mSoundManager.getCurrentSample()));
     }
 
     private void updateManagers(Location location){

@@ -34,6 +34,7 @@ public class SoundManager {
     private DBManager mDBManager;
 
     private HashMap<Integer, Sample> mSamples;
+    private Sample mCurrentSample;
 
     private static SoundManager sSoundManager;
 
@@ -55,6 +56,7 @@ public class SoundManager {
 
     private void initialize(){
         mDBManager = DBManager.get(mAppContext);
+        mCurrentSample = null;
         createSamplesFolder();
         new retrieveSamples().execute();
     }
@@ -158,11 +160,13 @@ public class SoundManager {
 
         if(!mSamples.containsKey(sampleId)){
             Log.e(TAG,"PlaySample-> No key found with Id: " + sampleId);
+            mCurrentSample = null;
             return;
         }
 
         try {
-            String uri = SAMPLES_ABSOLUTE_PATH + mSamples.get(sampleId).getName();
+            mCurrentSample = mSamples.get(sampleId);
+            String uri = SAMPLES_ABSOLUTE_PATH + mCurrentSample.getName();
             mPlayer = new MediaPlayer();
             mPlayer.setLooping(setLooping);
             mPlayer.setDataSource(uri);
@@ -177,6 +181,7 @@ public class SoundManager {
             mPlayer.start();
 
         } catch (Exception e) {
+            mCurrentSample = null;
             Log.e(TAG, "error: " + e.getMessage(), e);
         }
     }
@@ -202,5 +207,7 @@ public class SoundManager {
         return null;
     }
 
-
+    public Sample getCurrentSample() {
+        return mCurrentSample;
+    }
 }
