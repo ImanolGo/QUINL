@@ -68,7 +68,7 @@ public class ServerCommunicator {
         return getUrl(trackingUrl);
     }
 
-    public String registerPhone() throws IOException {
+    public String registerDevice() throws IOException {
         String registrationUrl = buildRegistrationUrl();
         //Log.i(TAG,trackingUrl);
         return getUrl(registrationUrl);
@@ -101,7 +101,7 @@ public class ServerCommunicator {
         String url = REGISTRATION_ENDPOINT + "&" +
                 NAME + deviceInfoManager.getDeviceName()+ "&" +
                 DEVICE_ID + deviceInfoManager.getDeviceId() + "&" +
-                DEVICE_MODEL + deviceInfoManager.getPhoneModel() + "&" +
+                DEVICE_MODEL + deviceInfoManager.getDeviceModel() + "&" +
                 DEVICE_IMEI + deviceInfoManager.getImei() + "&" +
                 DEVICE_SERIAL + deviceInfoManager.getSerial() + "&" +
                 DEVICE_MAC + deviceInfoManager.getMacAddress();

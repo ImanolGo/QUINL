@@ -85,9 +85,10 @@ public class RouteManager {
     public void updateLocation(Location currentLocation){
 
         mCurrentSpot = null;
+        mCurrentRegion = null;
 
         if(!updateCurrentRoute(currentLocation)){
-            mCurrentRegion = null;
+            mCurrentRoute = null;
             searchForCurrentRoute(currentLocation);
         }
 

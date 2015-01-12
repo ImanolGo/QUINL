@@ -49,13 +49,12 @@ public class LocationManager {
         mRouteManager.updateLocation(mCurrentLocation);
 
         if(regionHasChanged()){
+            Log.i(TAG, "REGION HAS CHANGED");
             updateSpot();
             updateRegion();
             updateSample();
         }
-
     }
-
 
     private boolean regionHasChanged(){
 
@@ -78,12 +77,18 @@ public class LocationManager {
     }
 
     private void updateSample(){
-        if(mCurrentRegion==null){
-            mSoundManager.playSample(-1);
+
+        if(mCurrentSpot!=null){
+            mSoundManager.playSample(mCurrentSpot.getSampleId(), mCurrentSpot.isLooping());
             return;
         }
 
-        mSoundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.isLooping());
+        if(mCurrentRegion!=null){
+            mSoundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.isLooping());
+            return;
+        }
+
+        mSoundManager.playSample(-1);
     }
 
     public Location getCurrentLocation() {

@@ -154,12 +154,12 @@ public class SoundManager {
 
     public void playSample(int sampleId, boolean setLooping) {
 
+        stop();
+
         if(!mSamples.containsKey(sampleId)){
             Log.e(TAG,"PlaySample-> No key found with Id: " + sampleId);
             return;
         }
-
-        stop();
 
         try {
             String uri = SAMPLES_ABSOLUTE_PATH + mSamples.get(sampleId).getName();

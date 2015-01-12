@@ -78,10 +78,10 @@ public class RouteElement extends BasicElement{
     protected static final String TAG_VOLUME = "volume";
     protected static final String TAG_TYPE = "type";
     protected static final String TAG_ROUTE_ID = "route";
-    protected static final String TAG_LAT_1 = "lat_1";
-    protected static final String TAG_LAT_2 = "lat_2";
-    protected static final String TAG_LON_1 = "long_1";
-    protected static final String TAG_LON_2 = "long_2";
+    protected static final String TAG_LAT_1 = "long_1";
+    protected static final String TAG_LAT_2 = "long_2";
+    protected static final String TAG_LON_1 = "lat_1";
+    protected static final String TAG_LON_2 = "lat_2";
 
     /**
      * @param basicElement The BasicElement's attributes.

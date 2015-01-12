@@ -22,7 +22,7 @@ public class DeviceInfoManager {
 
     public static String TAG = "DeviceInfoManager";
 
-    private String mPhoneModel;
+    private String mDeviceModel;
     private String mAndroidVersion;
     private String mDeviceId;
     private String mDeviceName;
@@ -56,7 +56,7 @@ public class DeviceInfoManager {
         mDeviceName = "QNL_Smartphone";
 
         // Device model
-        mPhoneModel =  android.os.Build.MANUFACTURER + "_" + android.os.Build.MODEL ;
+        mDeviceModel =  android.os.Build.MANUFACTURER + "_" + android.os.Build.MODEL ;
         // Android version
         mAndroidVersion = android.os.Build.VERSION.RELEASE;
 
@@ -75,7 +75,7 @@ public class DeviceInfoManager {
 
     private void logValues(){
         Log.i(TAG,"Device Name: " + mDeviceName);
-        Log.i(TAG,"Phone Model: " + mPhoneModel);
+        Log.i(TAG,"Device Model: " + mDeviceModel);
         Log.i(TAG,"Android Version: " + mAndroidVersion);
         Log.i(TAG,"Device ID: " + mDeviceId);
         Log.i(TAG,"Device IMEI: " + mImei);
@@ -108,8 +108,8 @@ public class DeviceInfoManager {
         //return Integer.toString(iBatteryLevel);
     }
 
-    public String getPhoneModel() {
-        return mPhoneModel;
+    public String getDeviceModel() {
+        return mDeviceModel;
     }
 
     public String getAndroidVersion() {

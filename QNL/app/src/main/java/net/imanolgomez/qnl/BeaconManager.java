@@ -20,7 +20,6 @@ class Beacon {
     private int rssi;
     private int txPower;
     private double accuracy;
-    private int timeToLive;
 
     public Beacon(String uuid, int major, int minor, int rssi) {
         this.uuid = uuid;
@@ -29,33 +28,16 @@ class Beacon {
         this.rssi = rssi;
         this.txPower = -65;
         this.accuracy = calculateAccuracy();
-        this.timeToLive = 15000;
     }
 
-    public void update(long elapsedTimeInMs){
-        this.timeToLive -= (int) elapsedTimeInMs;
-        if(this.timeToLive<0){
-            this.timeToLive = 0;
-        }
-
-        //Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
-    }
 
     public void setRssi (int rssi) {
         this.rssi = rssi;
         this.accuracy = calculateAccuracy();
     }
 
-    public void setTimeToLive(int timeToLiveInMs){
-        this.timeToLive = timeToLiveInMs;
-    }
-
     public double getAccuracy(){
         return this.accuracy;
-    }
-
-    public int getTimeToLive(){
-        return this.timeToLive;
     }
 
     public int getMinor(){
@@ -154,22 +136,8 @@ public class BeaconManager {
     }
 
     public void update() {
-        updateBeaconsList();
         updateNearestBeacon();
-    }
-
-    public void updateBeaconsList() {
-        long currentTime = System.nanoTime();
-        Iterator<Integer> it = mBeacons.keySet().iterator();
-        while (it.hasNext()) {
-            Integer key = it.next();
-            Beacon beacon = mBeacons.get(key);
-            beacon.update((currentTime-mLastUpdateTime)/NANOSECONDS_PER_MILISECONDS);
-            if (beacon.getTimeToLive()<=0) {
-                it.remove();
-            }
-        }
-        mLastUpdateTime = currentTime;
+        mBeacons.clear();
     }
 
     public void updateNearestBeacon(){
@@ -200,10 +168,8 @@ public class BeaconManager {
 
     public void foundBeacon(Beacon nearestBeacon){
         //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
-        if(!mBeacons.containsKey(nearestBeacon.getMinor())){
-            //Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
-            mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
-        }
+        Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
+        mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
     }
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {

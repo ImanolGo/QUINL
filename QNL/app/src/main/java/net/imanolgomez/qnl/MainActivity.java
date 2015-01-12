@@ -67,7 +67,7 @@ public class MainActivity extends FragmentActivity implements
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 500;
+    long BLUETOOTH_SCAN_PERIOD = 1;
     BeaconFoundCallback mBeaconCallback;
     private Handler mHandler;
 
@@ -373,7 +373,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeViews();
         this.initializeLocationParameters();
         this.initializeBluetooth();
-        this.registerPhone();
+        this.registerDevice();
     }
 
     protected void initializeManagers(){
@@ -454,7 +454,7 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient = new LocationClient(this, this, this);
     }
 
-    private void registerPhone(){ new RegisteringPhone().execute();
+    private void registerDevice(){ new RegisteringDevice().execute();
     }
 
     private class SendTrackingData extends AsyncTask<Void,Void,Void> {
@@ -470,12 +470,12 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    private class RegisteringPhone extends AsyncTask<Void,Void,Void> {
+    private class RegisteringDevice extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                String result = new ServerCommunicator(getApplicationContext()).registerPhone();
-                //Log.i(TAG, "Fetched contents from tracking data: " + result);
+                String result = new ServerCommunicator(getApplicationContext()).registerDevice();
+                Log.i(TAG, "Device registered!!");
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send register phone ", ioe);
             }

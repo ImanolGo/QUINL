@@ -98,6 +98,7 @@ public class Region extends RouteElement {
     public boolean isInside(Location loc) {
         for (Section section : mSections.values()) {
             if(section.isInside(loc)){
+                //Log.i("Section", "Section found->" + section.getId() + " to region: " + getId());
                 return true;
             }
         }
