@@ -83,7 +83,7 @@ public class Route extends BasicElement {
         }
 
         for (Spot spot : mSpots.values()) {
-            if(spot.getId() == beacon.getMinor() && beacon.getAccuracy() <= spot.getRadius()){
+            if(spot.getUUID().equals(Integer.toString(beacon.getMinor())) && beacon.getAccuracy() <= spot.getRadius()){
                 mCurrentSpot = spot;
                 return true;
             }

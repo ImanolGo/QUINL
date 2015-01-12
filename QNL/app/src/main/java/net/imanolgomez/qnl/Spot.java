@@ -16,26 +16,33 @@ import org.json.JSONObject;
 
 public class Spot extends RouteElement {
 
-    private final double mRadius;
-    private final Location mLocation;
+    private double mRadius;
+    private Location mLocation;
+    private final String mUUID;
 
     protected static final String TAG_RADIUS = "radius";
     protected static final String TAG_LAT = "lat";
     protected static final String TAG_LON = "long";
+    protected static final String TAG_UUID = "uuid";
 
     /**
      * @param basicElement The RouteElement's basic attributes.
-     * @param radius The Radius an which the spot is active.
-     * @param location The location of the spot.
+     * @param uuid The unique identifier from the beacon
      */
     public Spot(
             BasicElement basicElement,
-            double radius,
-            Location location) {
+            String uuid) {
 
         super(basicElement);
+        this.mUUID = uuid;
+        this.mRadius = 5;
+    }
 
+    public void setRadius(double radius){
         this.mRadius = radius;
+    }
+
+    public void setLocation(Location location){
         this.mLocation = location;
     }
 
@@ -47,12 +54,15 @@ public class Spot extends RouteElement {
         return mLocation;
     }
 
+    public String getUUID(){
+        return mUUID;
+    }
+
     public static Spot createSpotFromJson(String jsonStr) {
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
             JSONObject spotJson = reader.getJSONObject("beacon");
-
 
             int id = spotJson.getInt(TAG_ID);
             int sampleId = spotJson.getInt(TAG_SAMPLE_ID);
@@ -63,6 +73,7 @@ public class Spot extends RouteElement {
             double radius = spotJson.getDouble(TAG_RADIUS);
             double lat = spotJson.getDouble(TAG_LAT);
             double lon = spotJson.getDouble(TAG_LON);
+            String uuid = spotJson.getString(TAG_UUID);
             Location location = new Location("");
             location.setLatitude(lat);
             location.setLongitude(lon);
@@ -73,11 +84,13 @@ public class Spot extends RouteElement {
             }
 
             BasicElement basicElement = new BasicElement(id, name, version);
-            Spot spot = new Spot(basicElement, radius, location);
+            Spot spot = new Spot(basicElement, uuid);
             spot.setLoop(loop);
             spot.setSampleId(sampleId);
             spot.setVolume(volume);
             spot.setRouteId(routeId);
+            spot.setRadius(radius);
+            spot.setLocation(location);
             return spot;
 
         } catch (Exception e) {

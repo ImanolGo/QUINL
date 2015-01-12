@@ -49,6 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_REGION_TYPE= "region_type";
 
     // Spot column names
+    public static final String COLUMN_UUID =  "uuid";
     public static final String COLUMN_RADIUS= "radius";
     public static final String COLUMN_LAT =  "latitude";
     public static final String COLUMN_LON =  "longitude";
@@ -88,6 +89,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + TABLE_BEACONS + "("
             + COLUMN_ID + " integer primary key, "
             + COLUMN_NAME + " text, "
+            + COLUMN_UUID + " text, "
             + COLUMN_VERSION + " real, "
             + COLUMN_ROUTE_ID + " integer, "
             + COLUMN_SAMPLE_ID + " integer, "

@@ -373,6 +373,7 @@ public class MainActivity extends FragmentActivity implements
         this.initializeViews();
         this.initializeLocationParameters();
         this.initializeBluetooth();
+        this.registerPhone();
     }
 
     protected void initializeManagers(){
@@ -453,6 +454,9 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient = new LocationClient(this, this, this);
     }
 
+    private void registerPhone(){ new RegisteringPhone().execute();
+    }
+
     private class SendTrackingData extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... params) {
@@ -461,6 +465,19 @@ public class MainActivity extends FragmentActivity implements
                 //Log.i(TAG, "Fetched contents from tracking data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
+            }
+            return null;
+        }
+    }
+
+    private class RegisteringPhone extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                String result = new ServerCommunicator(getApplicationContext()).registerPhone();
+                //Log.i(TAG, "Fetched contents from tracking data: " + result);
+            } catch (IOException ioe) {
+                Log.e(TAG, "Failed to send register phone ", ioe);
             }
             return null;
         }

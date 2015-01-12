@@ -85,7 +85,6 @@ public class RouteManager {
     public void updateLocation(Location currentLocation){
 
         mCurrentSpot = null;
-        mCurrentRoute = null;
 
         if(!updateCurrentRoute(currentLocation)){
             mCurrentRegion = null;
@@ -120,7 +119,8 @@ public class RouteManager {
         BeaconManager beaconManager = BeaconManager.get(mAppContext);
         for (Route route : mRoutes.values()) {
             if(route.isInsideSpot(beaconManager.getNearestBeacon())){
-                mCurrentSpot = mCurrentRoute.getCurrentSpot();
+                mCurrentSpot = route.getCurrentSpot();
+                mCurrentRoute = route;
                 return;
             }
         }
@@ -128,6 +128,7 @@ public class RouteManager {
         for (Route route : mRoutes.values()) {
             if(route.isInside(currentLocation)){
                 mCurrentRegion = route.getCurrentRegion();
+                mCurrentRoute = route;
                 return;
             }
         }

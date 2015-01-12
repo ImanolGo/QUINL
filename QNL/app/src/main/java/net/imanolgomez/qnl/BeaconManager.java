@@ -38,7 +38,7 @@ class Beacon {
             this.timeToLive = 0;
         }
 
-        Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
+        //Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
     }
 
     public void setRssi (int rssi) {
@@ -201,7 +201,7 @@ public class BeaconManager {
     public void foundBeacon(Beacon nearestBeacon){
         //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
         if(!mBeacons.containsKey(nearestBeacon.getMinor())){
-            Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
+            //Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
             mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
         }
     }

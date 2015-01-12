@@ -107,6 +107,7 @@ public class DBManager {
 
         contentValues.put(mHelper.COLUMN_NAME, spot.getName());
         contentValues.put(mHelper.COLUMN_ID, spot.getId());
+        contentValues.put(mHelper.COLUMN_UUID, spot.getUUID());
         contentValues.put(mHelper.COLUMN_VERSION, spot.getVersion());
         contentValues.put(mHelper.COLUMN_SAMPLE_ID, spot.getSampleId());
         contentValues.put(mHelper.COLUMN_ROUTE_ID, spot.getRouteId());
