@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl_androidlocation;
+package net.imanolgomez.qnl;
 
 /*
  * Copyright (C) 2013 The Android Open Source Project

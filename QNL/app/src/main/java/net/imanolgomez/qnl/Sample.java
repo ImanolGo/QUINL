@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl_androidlocation;
+package net.imanolgomez.qnl;
 
 /**
  * Created by imanolgo on 14/12/14.

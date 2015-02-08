@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl_androidlocation;
+package net.imanolgomez.qnl;
 
 import android.app.FragmentManager;
 import android.location.Location;
