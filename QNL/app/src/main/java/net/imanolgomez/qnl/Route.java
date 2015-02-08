@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 /**
  * Created by imanolgo on 14/12/14.
@@ -6,7 +6,6 @@ package net.imanolgomez.qnl;
 
 
 import android.location.Location;
-import android.util.Log;
 
 import org.json.JSONObject;
 

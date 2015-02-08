@@ -1,7 +1,6 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.app.FragmentManager;
-import android.content.Context;
 import android.location.Location;
 
 import com.google.android.gms.maps.CameraUpdateFactory;

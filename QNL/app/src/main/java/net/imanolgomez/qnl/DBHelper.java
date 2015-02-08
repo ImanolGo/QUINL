@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

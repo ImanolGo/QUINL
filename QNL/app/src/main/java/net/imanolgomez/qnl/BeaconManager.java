@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,7 +8,6 @@ import android.util.Log;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * Representation of an Beacon

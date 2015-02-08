@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import com.google.android.gms.common.ConnectionResult;
 import android.content.Context;

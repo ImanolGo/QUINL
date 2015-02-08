@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.content.Context;
 
@@ -76,10 +76,10 @@ public class ServerCommunicator {
 
     private String buildTrackingUrl(){
         DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
-        LocationManager locationManager = LocationManager.get(mAppContext);
+        QnlLocationManager qnlLocationManager = QnlLocationManager.get(mAppContext);
         int currentRegionId = -1;
-        if(locationManager.getCurrentRegion()!=null){
-            currentRegionId = locationManager.getCurrentRegion().getId();
+        if(qnlLocationManager.getCurrentRegion()!=null){
+            currentRegionId = qnlLocationManager.getCurrentRegion().getId();
         }
 
 
@@ -88,9 +88,9 @@ public class ServerCommunicator {
                 DEVICE_ID + deviceInfoManager.getDeviceId() + "&" +
                 BATTERY_LEVEL + deviceInfoManager.getBatteryLevel() + "&" +
                 REGION + currentRegionId + "&" +
-                POSITION + locationManager.getCurrentLocation().getLatitude() + "," +
-                locationManager.getCurrentLocation().getLongitude() + "&" +
-                ACCURACY  + locationManager.getCurrentLocation().getAccuracy();
+                POSITION + qnlLocationManager.getCurrentLocation().getLatitude() + "," +
+                qnlLocationManager.getCurrentLocation().getLongitude() + "&" +
+                ACCURACY  + qnlLocationManager.getCurrentLocation().getAccuracy();
 
         return url;
     }

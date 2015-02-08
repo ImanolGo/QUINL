@@ -1,11 +1,9 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 /**
  * Created by imanolgo on 14/12/14.
  */
 
-
-import android.location.Location;
 
 /**
  * An abstract class, providing the fundamental methods and member variables for each element of a Route

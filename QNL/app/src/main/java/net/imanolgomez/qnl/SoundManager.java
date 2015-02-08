@@ -1,21 +1,15 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
-import android.os.BatteryManager;
 import android.os.Environment;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 

@@ -1,14 +1,12 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.sql.SQLException;
 
 /**
  * Created by imanolgo on 22/12/14.
@@ -129,8 +127,8 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_ID, section.getId());
         contentValues.put(mHelper.COLUMN_REGION_ID, section.getRegionId());
         contentValues.put(mHelper.COLUMN_LAT1, section.getLocation1().getLatitude());
-        contentValues.put(mHelper.COLUMN_LAT2, section.getLocation2().getLatitude());
         contentValues.put(mHelper.COLUMN_LON1, section.getLocation1().getLongitude());
+        contentValues.put(mHelper.COLUMN_LAT2, section.getLocation2().getLatitude());
         contentValues.put(mHelper.COLUMN_LON2, section.getLocation2().getLongitude());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_SECTIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);

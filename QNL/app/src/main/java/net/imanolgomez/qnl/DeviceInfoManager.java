@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 import android.content.Context;
 import android.content.Intent;
@@ -53,7 +53,7 @@ public class DeviceInfoManager {
 
         Log.i(TAG, "initialize()");
 
-        mDeviceName = "QNL_Smartphone";
+        mDeviceName = "QnlDevice";
 
         // Device model
         mDeviceModel =  android.os.Build.MANUFACTURER + "_" + android.os.Build.MODEL ;

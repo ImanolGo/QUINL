@@ -1,4 +1,4 @@
-package net.imanolgomez.qnl;
+package net.imanolgomez.qnl_androidlocation;
 
 
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.util.Log;
 /**
  * Created by imanolgo on 12/12/14.
  */
-public class LocationManager {
+public class QnlLocationManager {
 
     public static String TAG = "LocationManager";
 
@@ -18,24 +18,25 @@ public class LocationManager {
     private Context mAppContext;
     private Region mCurrentRegion;
     private Spot mCurrentSpot;
-    private RouteManager mRouteManager;
-    private SoundManager mSoundManager;
 
-    private static LocationManager sLocationManager;
+    private static QnlLocationManager sQnlLocationManager;
 
-    private LocationManager(Context appContext) {
+    private QnlLocationManager(Context appContext) {
         mAppContext = appContext;
-        mRouteManager =  RouteManager.get(mAppContext);
-        mSoundManager = SoundManager.get(mAppContext);
+        this.initialize();
     }
 
-    public static LocationManager get(Context c) {
-        if (sLocationManager == null) {
-            sLocationManager = new LocationManager(c.getApplicationContext());
+    public static QnlLocationManager get(Context c) {
+        if (sQnlLocationManager == null) {
+            sQnlLocationManager = new QnlLocationManager(c.getApplicationContext());
         }
-        return sLocationManager;
+        return sQnlLocationManager;
     }
 
+    private void initialize(){
+        Log.i(TAG, "initialize");
+        //this.initializeLocationManager();
+    }
 
     public void updateLocation(Location currentLocation) {
         this.mCurrentLocation = currentLocation;
@@ -46,7 +47,8 @@ public class LocationManager {
 
     public void updateRoute() {
 
-        mRouteManager.updateLocation(mCurrentLocation);
+        RouteManager routeManager = RouteManager.get(mAppContext);
+        routeManager.updateLocation(mCurrentLocation);
 
         if(regionHasChanged()){
             Log.i(TAG, "REGION HAS CHANGED");
@@ -58,11 +60,13 @@ public class LocationManager {
 
     private boolean regionHasChanged(){
 
-        if(mRouteManager.getCurrentSpot()!=mCurrentSpot){
+        RouteManager routeManager = RouteManager.get(mAppContext);
+
+        if(routeManager.getCurrentSpot()!=mCurrentSpot){
             return true;
         }
 
-        if(mRouteManager.getCurrentRegion()!=mCurrentRegion){
+        if(routeManager.getCurrentRegion()!=mCurrentRegion){
             return true;
         }
 
@@ -70,25 +74,26 @@ public class LocationManager {
     }
 
     private void updateRegion(){
-        mCurrentRegion = mRouteManager.getCurrentRegion();
+        mCurrentRegion = RouteManager.get(mAppContext).getCurrentRegion();
     }
     private void updateSpot(){
-        mCurrentSpot = mRouteManager.getCurrentSpot();
+        mCurrentSpot = RouteManager.get(mAppContext).getCurrentSpot();
     }
 
     private void updateSample(){
 
+        SoundManager soundManager = SoundManager.get(mAppContext);
         if(mCurrentSpot!=null){
-            mSoundManager.playSample(mCurrentSpot.getSampleId(), mCurrentSpot.isLooping());
+            soundManager.playSample(mCurrentSpot.getSampleId(), mCurrentSpot.isLooping());
             return;
         }
 
         if(mCurrentRegion!=null){
-            mSoundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.isLooping());
+            soundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.isLooping());
             return;
         }
 
-        mSoundManager.playSample(-1);
+        soundManager.playSample(-1);
     }
 
     public Location getCurrentLocation() {
@@ -100,7 +105,7 @@ public class LocationManager {
     }
 
     public Route getCurrentRoute() {
-        return mRouteManager.getCurrentRoute();
+        return RouteManager.get(mAppContext).getCurrentRoute();
     }
 
     public Spot getCurrentSpot() {
