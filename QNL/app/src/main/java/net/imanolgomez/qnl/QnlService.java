@@ -94,10 +94,10 @@ public class QnlService extends Service implements LocationListener {
     protected void initializeManagers(){
         Log.i(TAG, "Initialize Managers");
         mDeviceInfoManager = DeviceInfoManager.get(mAppContext);
-        mSoundManager = SoundManager.get(mAppContext);
-        mBeaconManager = BeaconManager.get(mAppContext);
-        mRouteManager =  RouteManager.get(mAppContext);
         mDBManager = DBManager.get(mAppContext);
+        mSoundManager = SoundManager.get(mAppContext);
+        mRouteManager =  RouteManager.get(mAppContext);
+        mBeaconManager = BeaconManager.get(mAppContext);
         mQnlLocationManager = QnlLocationManager.get(mAppContext);
     }
 

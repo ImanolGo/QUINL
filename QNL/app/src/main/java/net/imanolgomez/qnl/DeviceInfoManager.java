@@ -3,6 +3,8 @@ package net.imanolgomez.qnl;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
@@ -83,6 +85,7 @@ public class DeviceInfoManager {
         Log.i(TAG,"Device MAC Address: " + mMacAddress);
         Log.i(TAG,"Device Battery Life: " + Integer.toString((int)(getFloatBatteryLevel()*100)) + "%");
         Log.i(TAG,"Time: " + getTime());
+        Log.i(TAG,"Network Status: " + isNetworkConnected());
     }
 
     public String getDeviceName() {
@@ -106,6 +109,16 @@ public class DeviceInfoManager {
 
         return ((float)level / (float)scale);
         //return Integer.toString(iBatteryLevel);
+    }
+
+    public boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) mAppContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo ni = cm.getActiveNetworkInfo();
+        if (ni == null) {
+            // There are no active networks.
+            return false;
+        } else
+            return true;
     }
 
     public String getDeviceModel() {

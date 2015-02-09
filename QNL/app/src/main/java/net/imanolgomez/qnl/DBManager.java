@@ -43,11 +43,25 @@ public class DBManager {
         Log.i(TAG, "Initialize");
         this.createDatabaseFolder();
         mHelper = new DBHelper(mAppContext);
-        this.open();
     }
+
+    private void openWriteDB() {
+        mDatabase = mHelper.getWritableDatabase();
+    }
+
+    private void openReadDB() {
+        mDatabase = mHelper.getReadableDatabase();
+    }
+
+    private void closeDB() {
+        mDatabase.close();
+    }
+
 
     public boolean insertRoute(Route route)
     {
+        openWriteDB();
+
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(mHelper.COLUMN_NAME, route.getName());
@@ -55,20 +69,15 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_VERSION, route.getVersion());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_ROUTES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        closeDB();
+
         return true;
     }
 
-    public void open() {
-        mDatabase = mHelper.getWritableDatabase();
-    }
-
-    public void close() {
-        mDatabase.close();
-    }
-
-
     public boolean insertSample(Sample sample)
     {
+        openWriteDB();
+
         Log.i(TAG, "insertSample");
         ContentValues contentValues = new ContentValues();
 
@@ -77,11 +86,15 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_VERSION, sample.getVersion());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_SAMPLES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        closeDB();
+
         return true;
     }
 
     public boolean insertRegion(Region region)
     {
+        openWriteDB();
+
         Log.i(TAG, "insertRegion");
         ContentValues contentValues = new ContentValues();
 
@@ -95,11 +108,15 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_LOOP, region.getLoopInt());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_REGIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        closeDB();
+
         return true;
     }
 
     public boolean insertSpot(Spot spot)
     {
+        openWriteDB();
+
         Log.i(TAG, "insertSpot");
         ContentValues contentValues = new ContentValues();
 
@@ -116,11 +133,15 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_LON, spot.getLocation().getLongitude());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_BEACONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        closeDB();
+
         return true;
     }
 
     public boolean insertSection(Section section)
     {
+        openWriteDB();
+
         Log.i(TAG, "insertSection");
         ContentValues contentValues = new ContentValues();
 
@@ -132,6 +153,8 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_LON2, section.getLocation2().getLongitude());
 
         mDatabase.insertWithOnConflict(mHelper.TABLE_SECTIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+        closeDB();
+
         return true;
     }
 
