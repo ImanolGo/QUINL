@@ -2,6 +2,7 @@ package net.imanolgomez.qnl;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.util.Log;
@@ -53,31 +54,24 @@ public class DBManager {
         mDatabase = mHelper.getReadableDatabase();
     }
 
-    private void closeDB() {
-        mDatabase.close();
-    }
-
+    private void closeDB() { mDatabase.close(); }
 
     public boolean insertRoute(Route route)
     {
-        openWriteDB();
-
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(mHelper.COLUMN_NAME, route.getName());
         contentValues.put(mHelper.COLUMN_ID, route.getId());
         contentValues.put(mHelper.COLUMN_VERSION, route.getVersion());
 
+        openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_ROUTES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-        closeDB();
 
         return true;
     }
 
     public boolean insertSample(Sample sample)
     {
-        openWriteDB();
-
         Log.i(TAG, "insertSample");
         ContentValues contentValues = new ContentValues();
 
@@ -85,16 +79,14 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_ID, sample.getId());
         contentValues.put(mHelper.COLUMN_VERSION, sample.getVersion());
 
+        openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_SAMPLES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-        closeDB();
 
         return true;
     }
 
     public boolean insertRegion(Region region)
     {
-        openWriteDB();
-
         Log.i(TAG, "insertRegion");
         ContentValues contentValues = new ContentValues();
 
@@ -107,15 +99,14 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_REGION_TYPE, region.getRegionTypeString());
         contentValues.put(mHelper.COLUMN_LOOP, region.getLoopInt());
 
+        openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_REGIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-        closeDB();
 
         return true;
     }
 
     public boolean insertSpot(Spot spot)
     {
-        openWriteDB();
 
         Log.i(TAG, "insertSpot");
         ContentValues contentValues = new ContentValues();
@@ -132,16 +123,14 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_LAT, spot.getLocation().getLatitude());
         contentValues.put(mHelper.COLUMN_LON, spot.getLocation().getLongitude());
 
+        openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_BEACONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-        closeDB();
 
         return true;
     }
 
     public boolean insertSection(Section section)
     {
-        openWriteDB();
-
         Log.i(TAG, "insertSection");
         ContentValues contentValues = new ContentValues();
 
@@ -152,10 +141,28 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_LAT2, section.getLocation2().getLatitude());
         contentValues.put(mHelper.COLUMN_LON2, section.getLocation2().getLongitude());
 
+        openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_SECTIONS, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
-        closeDB();
 
         return true;
+    }
+
+    public boolean isRouteInDB(int id) {
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS,  null, // All columns
+                mHelper.COLUMN_ID + " = ?", // limit to the given id
+                new String[]{ String.valueOf(id) },
+                null, // group by
+                null, // order by
+                null, // having
+                "1"); // limit 1 row
+
+        if(cursor!=null && cursor.getCount()>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private void createDatabaseFolder(){

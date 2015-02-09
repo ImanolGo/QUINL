@@ -52,6 +52,7 @@ public class SoundManager {
         mDBManager = DBManager.get(mAppContext);
         mCurrentSample = null;
         createSamplesFolder();
+        addDefaultSample();
         new retrieveSamples().execute();
     }
 
@@ -179,6 +180,18 @@ public class SoundManager {
             Log.e(TAG, "error: " + e.getMessage(), e);
         }
     }
+
+    public void addDefaultSample(){
+
+        int id = -1; //The default sample is the non valid -1
+        double version = 1;
+        String name = "alarm2.wav";
+
+        BasicElement basicElement = new BasicElement(id,name,version);
+        Sample sample = new Sample(basicElement);
+        addSample(sample);
+    }
+
 
     public void addSample(Sample sample) {
         if(sample==null){
