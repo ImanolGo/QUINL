@@ -14,6 +14,8 @@ import android.os.Looper;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by imanolgo on 07/02/15.
@@ -51,8 +53,11 @@ public class QnlService extends Service implements LocationListener {
 
     // BeaconManager utilities
     long BLUETOOTH_SCAN_PERIOD = 1000;
+    long BLUETOOTH_SCAN_INTERVAL = 2000;
     BeaconFoundCallback mBeaconCallback;
-    private Handler mHandler;
+    private Handler mBluetoothHandler;
+    private Handler mBluetoothTaskHandler;
+    private Timer mBluetoothTimer;
 
     // Service Communications
     public static final String ON_UPDATE_LOCATION = "onUpdateLocation";
@@ -89,22 +94,22 @@ public class QnlService extends Service implements LocationListener {
     protected void initializeManagers(){
         Log.i(TAG, "Initialize Managers");
         mDeviceInfoManager = DeviceInfoManager.get(mAppContext);
+        mSoundManager = SoundManager.get(mAppContext);
         mBeaconManager = BeaconManager.get(mAppContext);
         mRouteManager =  RouteManager.get(mAppContext);
-        mSoundManager = SoundManager.get(mAppContext);
         mDBManager = DBManager.get(mAppContext);
         mQnlLocationManager = QnlLocationManager.get(mAppContext);
     }
 
     protected void initializeBluetooth(){
 
-        mHandler = new Handler(Looper.getMainLooper());
+        mBluetoothHandler = new Handler(Looper.getMainLooper());
 
         mBeaconCallback = new BeaconFoundCallback()
         {
             @Override
             public void onNearestBeaconChanged(final Beacon nearestBeacon) {
-                mHandler.post(new Runnable() {
+                mBluetoothHandler.post(new Runnable() {
                     public void run() {
                         mBeaconManager.foundBeacon(nearestBeacon);
                         //scanBeacons(false);
@@ -112,6 +117,18 @@ public class QnlService extends Service implements LocationListener {
                 });
             }
         };
+
+
+        mBluetoothTaskHandler = new Handler(); // run on another Thread to avoid crash
+        if(mBluetoothTimer != null) {
+            mBluetoothTimer.cancel();
+        } else {
+            // recreate new
+            mBluetoothTimer = new Timer();
+        }
+        // schedule task
+        mBluetoothTimer.scheduleAtFixedRate(new UpdateBeaconsTask(), 0, BLUETOOTH_SCAN_INTERVAL);
+
     }
 
     @Override
@@ -126,10 +143,10 @@ public class QnlService extends Service implements LocationListener {
     }
 
     private void updateManagers(Location location){
-        scanBeacons(true);
+        //scanBeacons(true);
         mBeaconManager.update();
         mQnlLocationManager.updateLocation(location);
-        mBeaconManager.update();
+        //mBeaconManager.update();
     }
 
     private void sendTrackingData(){
@@ -167,7 +184,7 @@ public class QnlService extends Service implements LocationListener {
     private void scanBeacons(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
+            mBluetoothHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mBeaconManager.stopScanningForBeacons();
@@ -184,6 +201,22 @@ public class QnlService extends Service implements LocationListener {
         Intent intent = new Intent(ON_UPDATE_LOCATION);
         Log.i(TAG, "sendBroadcast");
         sendBroadcast(intent);
+    }
+
+    class UpdateBeaconsTask extends TimerTask {
+        @Override
+        public void run() {
+            // run on another thread
+            mBluetoothHandler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    //Log.i(TAG, "Scan Beacons");
+                    scanBeacons(true);
+                }
+
+            });
+        }
     }
 
     private void initializeLocationUpdates(){

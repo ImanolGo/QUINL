@@ -66,6 +66,7 @@ public class QnlLocationManager {
             return true;
         }
 
+
         if(routeManager.getCurrentRegion()!=mCurrentRegion){
             return true;
         }

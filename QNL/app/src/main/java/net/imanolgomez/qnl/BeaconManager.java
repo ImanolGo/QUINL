@@ -148,6 +148,7 @@ public class BeaconManager {
             else{
                 if(beacon.getAccuracy()<mNearestBeacon.getAccuracy()){
                     mNearestBeacon = beacon;
+                    Log.i(TAG,"Found Beacon: " + mNearestBeacon.getMinor());
                 }
             }
         }
@@ -167,7 +168,7 @@ public class BeaconManager {
 
     public void foundBeacon(Beacon nearestBeacon){
         //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
-        Log.i(TAG,"Added Beacon: " + nearestBeacon.getMinor());
+        //Log.i(TAG,"FoundBeacon Beacon: " + nearestBeacon.getMinor());
         mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
     }
 
