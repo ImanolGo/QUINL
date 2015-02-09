@@ -52,7 +52,7 @@ public class QnlService extends Service implements LocationListener {
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 1000;
+    long BLUETOOTH_SCAN_PERIOD = 800;
     long BLUETOOTH_SCAN_INTERVAL = 2000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
@@ -136,17 +136,15 @@ public class QnlService extends Service implements LocationListener {
         Log.i(TAG, "onLocationChanged");
         Log.i(TAG, "lat-> " +  location.getLatitude() + ", lon-> " +  location.getLongitude() );
 
-        updateManagers(location);
-        communicateOnUpdate();
-        sendTrackingData();
+        mCurrentLocation = location;
+        updateLocation();
 
     }
 
-    private void updateManagers(Location location){
-        //scanBeacons(true);
-        mBeaconManager.update();
-        mQnlLocationManager.updateLocation(location);
-        //mBeaconManager.update();
+    public void updateLocation() {
+        mQnlLocationManager.updateLocation(mCurrentLocation);
+        communicateOnUpdate();
+        sendTrackingData();
     }
 
     private void sendTrackingData(){
@@ -211,7 +209,9 @@ public class QnlService extends Service implements LocationListener {
 
                 @Override
                 public void run() {
-                    //Log.i(TAG, "Scan Beacons");
+                    Log.i(TAG, "Scan Beacons");
+                    mBeaconManager.update();
+                    updateLocation();
                     scanBeacons(true);
                 }
 

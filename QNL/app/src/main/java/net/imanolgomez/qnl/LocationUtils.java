@@ -136,18 +136,33 @@ public final class LocationUtils {
     }
 
     public static String getBeacon(Context context, Spot currentSpot) {
-        // If the currentRoute is valid
-        if (currentSpot == null) { return "None";}
 
-        return currentSpot.getName();
+        Beacon beacon = BeaconManager.get(context).getNearestBeacon();
+        String beaconAccuracy = "";
+        if (beacon != null) {
+
+            beaconAccuracy = ", " + context.getString(
+                    R.string.accuracy_string,
+                    beacon.getAccuracy());
+        }
+
+
+        // If the currentRoute is valid
+        if (currentSpot == null) {
+            return "None" + beaconAccuracy;
+        }
+
+
+        return currentSpot.getName() + beaconAccuracy;
     }
+
 
     public static String getSample(Context context, Sample currentSample) {
         // If the location is valid
 
         if (currentSample == null) { return "None";}
 
-        return currentSample.getName();
+        return  currentSample.getName();
 
     }
 }

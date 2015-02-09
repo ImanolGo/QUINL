@@ -12,8 +12,8 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:text="@string/latlng"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/label_lat_lng"
         android:textIsSelectable="true"
-        android:textSize="13sp" />
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/accuracy_label"
@@ -35,7 +35,7 @@
         android:text="@string/accuracy"
         android:textIsSelectable="true"
         android:layout_marginLeft="10dp"
-        android:textSize="20sp" />/>
+        android:textSize="18sp" />/>
 
     <TextView
         android:id="@+id/accuracy"
@@ -45,7 +45,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/accuracy_label"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/label_route"
@@ -54,8 +54,8 @@
         android:layout_alignParentLeft="true"
         android:text="@string/routeLabel"
         android:layout_below="@+id/accuracy_label"
-        android:textSize="20sp"
-        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -66,7 +66,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/label_route"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/label_beacon"
@@ -75,7 +75,7 @@
         android:layout_alignParentLeft="true"
         android:text="@string/beaconLabel"
         android:layout_below="@+id/label_route"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -86,7 +86,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/label_beacon"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/label_region"
@@ -95,7 +95,7 @@
         android:layout_alignParentLeft="true"
         android:text="@string/regionLabel"
         android:layout_below="@+id/label_beacon"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -106,7 +106,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/label_region"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/label_sample"
@@ -115,7 +115,7 @@
         android:layout_alignParentLeft="true"
         android:text="@string/sampleLabel"
         android:layout_below="@+id/label_region"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:layout_marginLeft="10dp" />
 
     <TextView
@@ -126,7 +126,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@+id/label_sample"
         android:textIsSelectable="true"
-        android:textSize="20sp" />
+        android:textSize="18sp" />
 
     <fragment
         android:id="@+id/map"

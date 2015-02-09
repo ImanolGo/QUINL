@@ -142,14 +142,13 @@ public class BeaconManager {
     public void updateNearestBeacon(){
         mNearestBeacon = null;
         for (Beacon beacon : mBeacons.values()) {
-            if(mNearestBeacon == null){
-                mNearestBeacon = beacon;
+            if(mNearestBeacon==null){
+                mNearestBeacon = beacon; //Get the first beacon as nearest
             }
-            else{
-                if(beacon.getAccuracy()<mNearestBeacon.getAccuracy()){
-                    mNearestBeacon = beacon;
-                    Log.i(TAG,"Found Beacon: " + mNearestBeacon.getMinor());
-                }
+            if(beacon.getAccuracy()<=mNearestBeacon.getAccuracy()){
+                mNearestBeacon = beacon;
+                Log.i(TAG,"Found Beacon: " + mNearestBeacon.getMinor() +
+                       ", " + mNearestBeacon.getAccuracy() + "m");
             }
         }
     }

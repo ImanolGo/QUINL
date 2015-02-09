@@ -165,6 +165,7 @@ public class DBManager {
         }
     }
 
+
     private void createDatabaseFolder(){
         File folder = new File(DB_ABSOLUTE_PATH);
         if (!folder.exists()) {
