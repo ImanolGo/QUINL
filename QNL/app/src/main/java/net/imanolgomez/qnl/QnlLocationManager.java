@@ -12,7 +12,8 @@ public class QnlLocationManager {
 
     public static String TAG = "LocationManager";
 
-    private Location mCurrentLocation;
+    private Location mCurrentLocation = new Location("FirstLocation");
+
     private int mCurrentBeaconId = -1;
 
     private Context mAppContext;

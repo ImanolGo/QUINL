@@ -23,6 +23,7 @@ public class SoundManager {
     private static final String SAMPLES_ABSOLUTE_PATH = Environment.getExternalStorageDirectory() + SAMPLES_RELATIVE_PATH;
     private static final String EMPTY_STRING = "";
     public static String TAG = "SoundManager";
+    private static String DEFAULT_SAMPLE_NAME =  "radar_7s_2.5Khz.wav";
     private static final String ENDPOINT = "http://www.o-a.info/qnl/lib/sound.php";
 
     private DBManager mDBManager;
@@ -185,7 +186,7 @@ public class SoundManager {
 
         int id = -1; //The default sample is the non valid -1
         double version = 1;
-        String name = "alarm2.wav";
+        String name = DEFAULT_SAMPLE_NAME;
 
         BasicElement basicElement = new BasicElement(id,name,version);
         Sample sample = new Sample(basicElement);

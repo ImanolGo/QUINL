@@ -1,6 +1,7 @@
 package net.imanolgomez.qnl;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -82,6 +83,9 @@ public class ServerCommunicator {
             currentRegionId = qnlLocationManager.getCurrentRegion().getId();
         }
 
+        if(qnlLocationManager.getCurrentLocation() == null){
+            return "";
+        }
 
         String url = TRACKING_ENDPOINT + "?" +
                 TIME + deviceInfoManager.getTime() + "&" +
@@ -91,6 +95,8 @@ public class ServerCommunicator {
                 POSITION + qnlLocationManager.getCurrentLocation().getLatitude() + "," +
                 qnlLocationManager.getCurrentLocation().getLongitude() + "&" +
                 ACCURACY  + qnlLocationManager.getCurrentLocation().getAccuracy();
+
+        //Log.i("ServerCommunicator","url: " + url);
 
         return url;
     }

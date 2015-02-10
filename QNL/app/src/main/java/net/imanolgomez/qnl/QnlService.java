@@ -31,7 +31,7 @@ public class QnlService extends Service implements LocationListener {
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meters
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 3; // 3 second
+    private static final long MIN_TIME_BW_UPDATES = 3000 * 1; // 3 second
     // flag for GPS status
     boolean mIsGPSEnabled = false;
     // flag for network status
@@ -52,8 +52,8 @@ public class QnlService extends Service implements LocationListener {
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 800;
-    long BLUETOOTH_SCAN_INTERVAL = 2000;
+    long BLUETOOTH_SCAN_PERIOD = 1000;
+    long BLUETOOTH_SCAN_INTERVAL = 3000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
     private Handler mBluetoothTaskHandler;

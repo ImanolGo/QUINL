@@ -24,7 +24,7 @@
     <string name="action_settings">Settings</string>
 
     <!-- Labels -->
-    <string name="latlng">Lat/Long:</string>
+    <string name="latlng">Lat/Lon:</string>
     <string name="address">Address:</string>
     <string name="accuracy">Accuracy:</string>
     <string name="routeLabel">Route:</string>
