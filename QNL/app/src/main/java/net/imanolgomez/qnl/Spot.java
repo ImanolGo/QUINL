@@ -17,8 +17,17 @@ import org.json.JSONObject;
 public class Spot extends RouteElement {
 
     private double mRadius;
+    private double mDeviation;
+    private double mCurrentDeviation;
     private Location mLocation;
     private final String mUUID;
+
+    private enum RangeType {IMMEDIATE, NEAR, FAR};
+    RangeType mRangeType;
+
+    protected static final double IMMEDIATE_LIMIT = 0.2;
+    protected static final double NEAR_LIMIT = 2.0;
+    protected static final double FAR_LIMIT = 70.0;
 
     protected static final String TAG_RADIUS = "radius";
     protected static final String TAG_LAT = "lat";
@@ -35,10 +44,48 @@ public class Spot extends RouteElement {
 
         super(basicElement);
         this.mUUID = uuid;
-        this.mRadius = 5;
+        this.initialize();
+    }
+
+    public void initialize(){
+        mRadius = 5;
+        mCurrentDeviation = 0;
+        this.updateProximityValues();
+    }
+
+    public void updateProximityValues(){
+
+        if(mRadius <= FAR_LIMIT){
+            mRangeType = RangeType.FAR;
+            this.mDeviation = 5;
+        }
+
+        if(mRadius <= NEAR_LIMIT){
+            mRangeType = RangeType.NEAR;
+            this.mDeviation = 2;
+        }
+
+        if(mRadius <= IMMEDIATE_LIMIT){
+            mRangeType = RangeType.IMMEDIATE;
+            this.mDeviation = 1;
+        }
+    }
+
+    public void setDeviation(boolean addDeviation){
+        if(addDeviation){
+            mCurrentDeviation = mDeviation;
+        }
+        else{
+            mCurrentDeviation = 0;
+        }
+    }
+
+    public double getCurrentDeviation(){
+        return mCurrentDeviation;
     }
 
     public void setRadius(double radius){
+        updateProximityValues();
         this.mRadius = radius;
     }
 

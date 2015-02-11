@@ -53,7 +53,7 @@ public class SoundManager {
         mDBManager = DBManager.get(mAppContext);
         mCurrentSample = null;
         createSamplesFolder();
-        addDefaultSample();
+        //addDefaultSample();
         new retrieveSamples().execute();
     }
 

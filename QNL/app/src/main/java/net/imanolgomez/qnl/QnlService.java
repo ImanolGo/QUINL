@@ -52,7 +52,7 @@ public class QnlService extends Service implements LocationListener {
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 1000;
+    long BLUETOOTH_SCAN_PERIOD = 1500;
     long BLUETOOTH_SCAN_INTERVAL = 3000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;

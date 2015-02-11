@@ -79,7 +79,18 @@ public class QnlLocationManager {
         mCurrentRegion = RouteManager.get(mAppContext).getCurrentRegion();
     }
     private void updateSpot(){
-        mCurrentSpot = RouteManager.get(mAppContext).getCurrentSpot();
+
+        Spot spot = RouteManager.get(mAppContext).getCurrentSpot();
+
+        if(spot == null && mCurrentSpot!=null){
+            mCurrentSpot.setDeviation(false);
+        }
+
+        if(spot != null && mCurrentSpot!=spot){
+            spot.setDeviation(true);
+        }
+
+        mCurrentSpot = spot;
     }
 
     private void updateSample(){

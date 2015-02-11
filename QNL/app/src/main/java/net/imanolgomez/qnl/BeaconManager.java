@@ -25,7 +25,7 @@ class Beacon {
         this.major = major;
         this.minor = minor;
         this.rssi = rssi;
-        this.txPower = -65;
+        this.txPower = -59;
         this.accuracy = calculateAccuracy();
     }
 
