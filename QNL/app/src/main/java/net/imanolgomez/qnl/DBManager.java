@@ -150,13 +150,15 @@ public class DBManager {
     public boolean isRouteInDB(int id) {
 
         openReadDB();
-        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS,  null, // All columns
-                mHelper.COLUMN_ID + " = ?", // limit to the given id
-                new String[]{ String.valueOf(id) },
-                null, // group by
-                null, // order by
-                null, // having
-                "1"); // limit 1 row
+        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS, // a. table
+                        new String[] {mHelper.COLUMN_ID }, // b. column names
+                        " id = ?", // c. selections
+                        new String[] { String.valueOf(id) }, // d. selections args
+                        null, // e. group by
+                        null, // f. having
+                        null, // g. order by
+                        null); // h. limit
+
 
         if(cursor!=null && cursor.getCount()>0){
             return true;
@@ -206,7 +208,7 @@ public class DBManager {
 
         if(cursor!=null && cursor.getCount()>0){
             cursor.moveToFirst();
-            Log.i(TAG, "getDeviceId: " + cursor.getInt(0));
+            Log.d(TAG, "getDeviceId: " + cursor.getInt(0));
             return cursor.getInt(0);
         }else{
             return -1;

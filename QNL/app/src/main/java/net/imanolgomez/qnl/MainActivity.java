@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(QnlService.ON_UPDATE_LOCATION);
+        mIntentFilter.addAction(QnlService.ON_CHARGING_DEVICE);
 
         Log.i(TAG, "Start Service");
         Intent serviceIntent = new Intent(this, QnlService.class);
@@ -79,6 +80,11 @@ public class MainActivity extends Activity {
             if(action.equalsIgnoreCase(QnlService.ON_UPDATE_LOCATION)){
                 Log.i(TAG, "ON_UPDATE_LOCATION");
                 updateTextLabels();
+            }
+
+            if(action.equalsIgnoreCase(QnlService.ON_CHARGING_DEVICE)){
+                Log.i(TAG, "ON_CHARGING_DEVICE");
+                mRegionText.setText("ON_CHARGING_DEVICE");
             }
         }
     };

@@ -92,8 +92,9 @@ public class QnlService extends Service implements LocationListener {
 
             String action = intent.getAction();
             if(action.equals(Intent.ACTION_POWER_CONNECTED)){
-                Log.i(TAG, "ACTION_POWER_CONNECTED");
-                new SendingServicedMessage().execute();
+                updateServicedMessage();
+                retrieveData();
+
             }
         }
     };
@@ -152,13 +153,23 @@ public class QnlService extends Service implements LocationListener {
     {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
-
         registerReceiver(mReceiver, filter);
+    }
+
+    protected void retrieveData()
+    {
+        mRouteManager.startRetrievingRoutes();
+        mSoundManager.startRetrievingSamples();
     }
 
 
     @Override
     public void onLocationChanged(Location location) {
+
+        if(location==null){
+            return;
+        }
+
         Log.i(TAG, "onLocationChanged");
         Log.i(TAG, "lat-> " +  location.getLatitude() + ", lon-> " +  location.getLongitude() );
 
@@ -247,8 +258,14 @@ public class QnlService extends Service implements LocationListener {
     private void communicateOnUpdate() {
         Log.i(TAG, "communicateOnUpdate");
         Intent intent = new Intent(ON_UPDATE_LOCATION);
-        Log.i(TAG, "sendBroadcast");
         sendBroadcast(intent);
+    }
+
+    private void updateServicedMessage() {
+        Log.i(TAG, "ACTION_POWER_CONNECTED");
+        new SendingServicedMessage().execute();
+        Intent intentSend = new Intent(ON_CHARGING_DEVICE);
+        sendBroadcast(intentSend);
     }
 
     class UpdateBeaconsTask extends TimerTask {

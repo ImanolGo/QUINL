@@ -51,10 +51,9 @@ public class SoundManager {
 
     private void initialize(){
         mDBManager = DBManager.get(mAppContext);
-        mCurrentSample = null;
         createSamplesFolder();
         //addDefaultSample();
-        new retrieveSamples().execute();
+        startRetrievingSamples();
     }
 
     private void createSamplesFolder(){
@@ -63,6 +62,12 @@ public class SoundManager {
             folder.mkdirs();
         }
     }
+
+    public void startRetrievingSamples(){
+        mCurrentSample = null;
+        new retrieveSamples().execute();
+    }
+
 
     private class retrieveSamples extends AsyncTask<Void,Void,String> {
         String result;

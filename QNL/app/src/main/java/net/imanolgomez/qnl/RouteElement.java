@@ -56,6 +56,10 @@ class Section {
     }
 
     public boolean isInside(Location loc) {
+        if (loc==null){
+            return false;
+        }
+
         return (loc.getLatitude()>= mLocation1.getLatitude()&&loc.getLatitude()<=mLocation2.getLatitude() &&
                 loc.getLongitude()>= mLocation1.getLongitude()&&loc.getLongitude()<=mLocation2.getLongitude());
     }

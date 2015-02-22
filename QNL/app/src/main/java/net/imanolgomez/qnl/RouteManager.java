@@ -51,18 +51,29 @@ public class RouteManager {
 
     private void initialize(){
         initializeAttributes();
+        startRetrievingRoutes();
+    }
+
+    private void initializeAttributes(){
+        mRoutes = new HashMap<Integer, Route>();
+        clearAttributes();
+        mDBManager = DBManager.get(mAppContext);
+        getMapManager();
+    }
+
+    public void startRetrievingRoutes()
+    {
+        clearAttributes();
         new retrieveRoutes().execute();
         new retrieveSpots().execute();
         new retrieveRegions().execute();
     }
 
-    private void initializeAttributes(){
-        mRoutes = new HashMap<Integer, Route>();
+    private void clearAttributes(){
+        mRoutes.clear();
         mCurrentRegion = null;
         mCurrentRoute = null;
-        mDBManager = DBManager.get(mAppContext);
-        getMapManager();
-
+        mCurrentSpot = null;
     }
 
     private void getMapManager(){
