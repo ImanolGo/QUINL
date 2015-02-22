@@ -27,7 +27,7 @@ public class DeviceInfoManager {
     private String mDeviceManufacturer;
     private String mDeviceModel;
     private String mAndroidVersion;
-    private String mDeviceId;
+    private int mDeviceId;
     private String mDeviceUuid;
     private String mDeviceName;
     private String mImei;
@@ -72,7 +72,7 @@ public class DeviceInfoManager {
         mImei = tManager.getDeviceId();
 
         mDeviceUuid = Settings.Secure.getString(mAppContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        mDeviceId = "105";
+        mDeviceId = 105;
 
         WifiManager wifiManager = (WifiManager) mAppContext.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
@@ -138,8 +138,12 @@ public class DeviceInfoManager {
         return mAndroidVersion;
     }
 
-    public String getDeviceId() {
+    public int getDeviceId() {
         return mDeviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        mDeviceId = deviceId;
     }
 
     public String getDeviceUuid() {

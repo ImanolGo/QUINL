@@ -61,8 +61,9 @@ public class QnlService extends Service implements LocationListener {
     private Handler mBluetoothTaskHandler;
     private Timer mBluetoothTimer;
 
-    // Service Communications
+    // Broadcast Communications
     public static final String ON_UPDATE_LOCATION = "onUpdateLocation";
+    public static final String ON_CHARGING_DEVICE = "onChargingDevice";
 
     @Override
     public void onCreate() {
@@ -92,6 +93,7 @@ public class QnlService extends Service implements LocationListener {
             String action = intent.getAction();
             if(action.equals(Intent.ACTION_POWER_CONNECTED)){
                 Log.i(TAG, "ACTION_POWER_CONNECTED");
+                new SendingServicedMessage().execute();
             }
         }
     };
@@ -99,8 +101,8 @@ public class QnlService extends Service implements LocationListener {
     private void initialize(){
 
         Log.i(TAG, "Initialize");
-        this.initializeLocationUpdates();
         this.initializeManagers();
+        this.initializeLocationUpdates();
         this.initializeBluetooth();
         this.initializeReceiver();
         this.registerDevice();
@@ -188,7 +190,18 @@ public class QnlService extends Service implements LocationListener {
         }
     }
 
-    private void registerDevice(){ new RegisteringDevice().execute(); }
+    private void registerDevice()
+    {
+        if(mDBManager.isDeviceRegistered()){
+            Log.i(TAG, "Device registered");
+            mDeviceInfoManager.setDeviceId(mDBManager.getDeviceId());
+        }
+        else{
+            Log.i(TAG, "Register Device");
+            mDBManager.registerDevice();
+            new RegisteringDevice().execute();
+        }
+    }
 
     private class RegisteringDevice extends AsyncTask<Void,Void,Void> {
         @Override
@@ -196,6 +209,19 @@ public class QnlService extends Service implements LocationListener {
             try {
                 String result = new ServerCommunicator(mAppContext).registerDevice();
                 Log.i(TAG, "Device registered!!");
+            } catch (IOException ioe) {
+                Log.e(TAG, "Failed to send register phone ", ioe);
+            }
+            return null;
+        }
+    }
+
+    private class SendingServicedMessage extends AsyncTask<Void,Void,Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                String result = new ServerCommunicator(mAppContext).SendServicedMessage();
+                Log.i(TAG, "Send Serviced Message!!");
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send register phone ", ioe);
             }
@@ -263,7 +289,7 @@ public class QnlService extends Service implements LocationListener {
                 // no network provider is enabled
             } else {
                 mCanGetLocation = true;
-                if (mIsNetworkEnabled) {
+                /*if (mIsNetworkEnabled) {
                     mLocationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
@@ -274,7 +300,7 @@ public class QnlService extends Service implements LocationListener {
                         mCurrentLocation = mLocationManager
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
                     }
-                }
+                }*/
                 // if GPS Enabled get lat/long using GPS Services
                 if (mIsGPSEnabled) {
                     if (mCurrentLocation == null) {

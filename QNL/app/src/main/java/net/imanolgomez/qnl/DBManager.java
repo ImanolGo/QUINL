@@ -165,6 +165,54 @@ public class DBManager {
         }
     }
 
+    public boolean registerDevice()
+    {
+        Log.i(TAG, "registerDevice");
+        ContentValues contentValues = new ContentValues();
+        DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
+
+        contentValues.put(mHelper.COLUMN_ID, deviceInfoManager.getDeviceId());
+        contentValues.put(mHelper.COLUMN_NAME, deviceInfoManager.getDeviceName());
+        contentValues.put(mHelper.COLUMN_PHONE_UUID, deviceInfoManager.getDeviceUuid());
+        contentValues.put(mHelper.COLUMN_MAKE, deviceInfoManager.getDeviceManufacturer());
+        contentValues.put(mHelper.COLUMN_MODEL, deviceInfoManager.getDeviceModel());
+        contentValues.put(mHelper.COLUMN_SERIAL, deviceInfoManager.getSerial());
+        contentValues.put(mHelper.COLUMN_IMEI, deviceInfoManager.getImei());
+        contentValues.put(mHelper.COLUMN_MAC, deviceInfoManager.getMacAddress());
+
+        openWriteDB();
+        mDatabase.insertWithOnConflict(mHelper.TABLE_PHONE, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
+
+        return true;
+    }
+
+    public boolean isDeviceRegistered() {
+
+        if(getDeviceId()==-1){
+            return false;
+        }
+
+        return true;
+    }
+
+    public int getDeviceId() {
+
+        openReadDB();
+
+        Cursor cursor = mDatabase.query(mHelper.TABLE_PHONE, // Only return column ID
+                new String[] {mHelper.COLUMN_ID },
+                null, null, null, null, null);
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            Log.i(TAG, "getDeviceId: " + cursor.getInt(0));
+            return cursor.getInt(0);
+        }else{
+            return -1;
+        }
+    }
+
 
     private void createDatabaseFolder(){
         File folder = new File(DB_ABSOLUTE_PATH);

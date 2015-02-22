@@ -26,6 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String TABLE_REGIONS = "regions";
     public static final String TABLE_SAMPLES = "samples";
     public static final String TABLE_BEACONS = "beacons";
+    public static final String TABLE_PHONE = "phone";
 
     // Common column names
     public static final String COLUMN_ID = "id";
@@ -54,6 +55,13 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LAT =  "latitude";
     public static final String COLUMN_LON =  "longitude";
 
+    // Phone column names
+    public static final String COLUMN_PHONE_UUID =  "uuid";
+    public static final String COLUMN_MAKE= "make";
+    public static final String COLUMN_MODEL=  "model";
+    public static final String COLUMN_SERIAL =  "serial";
+    public static final String COLUMN_IMEI =  "imei";
+    public static final String COLUMN_MAC =  "mac";
 
     // Regions table creation sql statement
     private static final String CREATE_REGIONS_TABLE = "create table "
@@ -99,6 +107,7 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_LON + " real, "
             + COLUMN_VOLUME + " real);";
 
+
     // Samples table creation sql statement
     private static final String CREATE_SAMPLES_TABLE = "create table "
             + TABLE_SAMPLES + "("
@@ -106,6 +115,17 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_NAME + " text, "
             + COLUMN_VERSION + " real);";
 
+    // Beacons table creation sql statement
+    private static final String CREATE_PHONE_TABLE = "create table "
+            + TABLE_PHONE + "("
+            + COLUMN_ID + " integer primary key, "
+            + COLUMN_NAME + " text, "
+            + COLUMN_PHONE_UUID + " integer, "
+            + COLUMN_MAKE+ " text, "
+            + COLUMN_MODEL + " text, "
+            + COLUMN_SERIAL + " text, "
+            + COLUMN_MAC + " text, "
+            + COLUMN_IMEI + " text);";
 
     public DBHelper(Context context) {
 
@@ -124,6 +144,8 @@ public class DBHelper extends SQLiteOpenHelper {
         database.execSQL(CREATE_BEACONS_TABLE);
         Log.i(TAG, "CREATE_SECTIONS_TABLE");
         database.execSQL(CREATE_SECTIONS_TABLE);
+        Log.i(TAG, "CREATE_PHONE_TABLE");
+        database.execSQL(CREATE_PHONE_TABLE);
     }
 
     @Override
@@ -140,6 +162,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_REGIONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_BEACONS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTIONS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PHONE);
         onCreate(db);
     }
 

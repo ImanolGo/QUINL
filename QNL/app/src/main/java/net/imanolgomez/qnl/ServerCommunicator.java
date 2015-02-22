@@ -18,9 +18,11 @@ public class ServerCommunicator {
     public static final String TAG = "ServerCommunicator";
 
     private static final String TRACKING_ENDPOINT = "http://www.o-a.info/qnl/lib/track.php";
-    private static final String REGISTRATION_ENDPOINT = "http://www.o-a.info/qnl/lib/phone.php?register=1";
+    private static final String PHONE_ENDPOINT = "http://www.o-a.info/qnl/lib/phone.php?";
     private static final String TIME = "time=";
     private static final String NAME = "name=";
+    private static final String REGISTER = "register=";
+    private static final String SERVICED = "serviced=";
     private static final String DEVICE_ID = "phone=";
     private static final String DEVICE_UUID = "uuid=";
     private static final String BATTERY_LEVEL = "bat=";
@@ -80,6 +82,14 @@ public class ServerCommunicator {
         return getUrl(registrationUrl);
     }
 
+    public String SendServicedMessage() throws IOException {
+        String servicedMessageUrl = buildServicedMessageUrl();
+        //Log.d(TAG,servicedMessageUrl);
+        return getUrl(servicedMessageUrl);
+    }
+
+
+
     private String buildTrackingUrl(){
         DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
         QnlLocationManager qnlLocationManager = QnlLocationManager.get(mAppContext);
@@ -125,7 +135,8 @@ public class ServerCommunicator {
     private String buildRegistrationUrl(){
         DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
 
-        String url = REGISTRATION_ENDPOINT + "&" +
+        String url = PHONE_ENDPOINT +
+                REGISTER + "1" + "&" +
                 NAME + deviceInfoManager.getDeviceName()+ "&" +
                 DEVICE_ID + deviceInfoManager.getDeviceId() + "&" +
                 DEVICE_UUID + deviceInfoManager.getDeviceUuid() + "&" +
@@ -138,4 +149,12 @@ public class ServerCommunicator {
         return url;
     }
 
+    private String buildServicedMessageUrl(){
+        DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
+
+        String url = PHONE_ENDPOINT +
+                SERVICED + deviceInfoManager.getDeviceId();
+
+        return url;
+    }
 }
