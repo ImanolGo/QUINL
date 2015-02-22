@@ -52,7 +52,7 @@ public class QnlService extends Service implements LocationListener {
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 1500;
+    long BLUETOOTH_SCAN_PERIOD = 2000;
     long BLUETOOTH_SCAN_INTERVAL = 3000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
@@ -156,7 +156,7 @@ public class QnlService extends Service implements LocationListener {
         protected Void doInBackground(Void... params) {
             try {
                 String result = new ServerCommunicator(mAppContext).sendTrackingData();
-                //Log.i(TAG, "Fetched contents from tracking data: " + result);
+                Log.d(TAG, "Fetched contents from tracking data: " + result);
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }

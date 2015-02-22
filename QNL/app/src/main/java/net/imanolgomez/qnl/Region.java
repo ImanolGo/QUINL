@@ -135,7 +135,7 @@ public class Region extends RouteElement {
         }
     }
 
-    public void createSectionsFromJson(String jsonStr, DBManager dbManager, MapManager mapManager){
+    public Boolean createSectionsFromJson(String jsonStr, DBManager dbManager, MapManager mapManager){
 
         try {
             JSONObject reader = new JSONObject(jsonStr);
@@ -146,12 +146,17 @@ public class Region extends RouteElement {
 
             JSONArray regionsNumbers = regionsJson.names();
 
+            if(regionsNumbers==null){
+                return false;
+            }
+
             for (int i = 0; i < regionsJson.length(); i++) {
                 String key = regionsNumbers.getString(i);
                 //Log.i("createSegmentsFromJson", "Json regionsNumbers:" + key);
                 JSONObject regionJson  = regionsJson.getJSONObject(key);
                 Section section = createSectionFromJsonObject(regionJson);
                 if(section!=null){
+                    Log.i("createSegmentsFromJson", "Added Section: " + section.getId());
                     addSection(section);
                     if(dbManager!=null) {
                         dbManager.insertSection(section);
@@ -163,7 +168,7 @@ public class Region extends RouteElement {
                 }
                 //Log.i("createSegmentsFromJson", "Single region names:" + regionJson.names());
             }
-
+            return true;
 
 
             // looping through All Contacts
@@ -180,8 +185,8 @@ public class Region extends RouteElement {
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-
     }
 
 }

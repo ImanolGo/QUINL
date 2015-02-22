@@ -24,9 +24,11 @@ public class DeviceInfoManager {
 
     public static String TAG = "DeviceInfoManager";
 
+    private String mDeviceManufacturer;
     private String mDeviceModel;
     private String mAndroidVersion;
     private String mDeviceId;
+    private String mDeviceUuid;
     private String mDeviceName;
     private String mImei;
     private String mSerial;
@@ -57,8 +59,10 @@ public class DeviceInfoManager {
 
         mDeviceName = "QnlDevice";
 
+        // Device manufacturer
+        mDeviceManufacturer =  android.os.Build.MANUFACTURER;
         // Device model
-        mDeviceModel =  android.os.Build.MANUFACTURER + "_" + android.os.Build.MODEL ;
+        mDeviceModel = android.os.Build.MODEL ;
         // Android version
         mAndroidVersion = android.os.Build.VERSION.RELEASE;
 
@@ -67,8 +71,8 @@ public class DeviceInfoManager {
         TelephonyManager tManager = (TelephonyManager)mAppContext.getSystemService(Context.TELEPHONY_SERVICE);
         mImei = tManager.getDeviceId();
 
-        mDeviceId = Settings.Secure.getString(mAppContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        mDeviceId = "102";
+        mDeviceUuid = Settings.Secure.getString(mAppContext.getContentResolver(), Settings.Secure.ANDROID_ID);
+        mDeviceId = "105";
 
         WifiManager wifiManager = (WifiManager) mAppContext.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
@@ -80,6 +84,7 @@ public class DeviceInfoManager {
         Log.i(TAG,"Device Model: " + mDeviceModel);
         Log.i(TAG,"Android Version: " + mAndroidVersion);
         Log.i(TAG,"Device ID: " + mDeviceId);
+        Log.i(TAG,"Device UUID: " + mDeviceUuid);
         Log.i(TAG,"Device IMEI: " + mImei);
         Log.i(TAG,"Device Serial: " + mSerial);
         Log.i(TAG,"Device MAC Address: " + mMacAddress);
@@ -121,6 +126,10 @@ public class DeviceInfoManager {
             return true;
     }
 
+    public String getDeviceManufacturer() {
+        return mDeviceManufacturer;
+    }
+
     public String getDeviceModel() {
         return mDeviceModel;
     }
@@ -131,6 +140,10 @@ public class DeviceInfoManager {
 
     public String getDeviceId() {
         return mDeviceId;
+    }
+
+    public String getDeviceUuid() {
+        return mDeviceUuid;
     }
 
     public String getImei() {

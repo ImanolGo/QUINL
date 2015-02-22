@@ -25,7 +25,7 @@ class Beacon {
         this.major = major;
         this.minor = minor;
         this.rssi = rssi;
-        this.txPower = -59;
+        this.txPower = -65;
         this.accuracy = calculateAccuracy();
     }
 
@@ -41,6 +41,10 @@ class Beacon {
 
     public int getMinor(){
         return this.minor;
+    }
+
+    public int getRssi(){
+        return this.rssi;
     }
 
     public boolean equals (Beacon beacon) {
@@ -170,6 +174,18 @@ public class BeaconManager {
         //Log.i(TAG,"FoundBeacon Beacon: " + nearestBeacon.getMinor());
         mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
     }
+
+
+    public String getBeaconsListString(){
+        String beaconsList = "";
+
+        for (Beacon beacon : mBeacons.values()) {
+            beaconsList = beaconsList + beacon.getMinor() + "," + beacon.getRssi() + ";";
+        }
+
+        return beaconsList;
+    }
+
 
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override

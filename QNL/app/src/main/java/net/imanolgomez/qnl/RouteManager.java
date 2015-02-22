@@ -335,8 +335,10 @@ public class RouteManager {
             Log.i(TAG,"Region routeId: " + region.getRouteId());
             Log.i(TAG,"Region volume: " + region.getVolume());
             Log.i(TAG,"Region loop: " + region.isLooping());*/
-            region.createSectionsFromJson(singleRegionInfo, mDBManager,mMapManager);
-            addRegion(region);
+            boolean sectionsCreated = region.createSectionsFromJson(singleRegionInfo, mDBManager,mMapManager);
+            if(sectionsCreated){
+                addRegion(region);
+            }
         }
     }
 
