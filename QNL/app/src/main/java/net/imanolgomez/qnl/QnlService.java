@@ -1,8 +1,10 @@
 package net.imanolgomez.qnl;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -79,8 +81,20 @@ public class QnlService extends Service implements LocationListener {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mReceiver);
         Log.d(TAG, "onDestroy");
     }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            String action = intent.getAction();
+            if(action.equals(Intent.ACTION_POWER_CONNECTED)){
+                Log.i(TAG, "ACTION_POWER_CONNECTED");
+            }
+        }
+    };
 
     private void initialize(){
 
@@ -88,6 +102,7 @@ public class QnlService extends Service implements LocationListener {
         this.initializeLocationUpdates();
         this.initializeManagers();
         this.initializeBluetooth();
+        this.initializeReceiver();
         this.registerDevice();
     }
 
@@ -130,6 +145,15 @@ public class QnlService extends Service implements LocationListener {
         mBluetoothTimer.scheduleAtFixedRate(new UpdateBeaconsTask(), 0, BLUETOOTH_SCAN_INTERVAL);
 
     }
+
+    protected void initializeReceiver()
+    {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+
+        registerReceiver(mReceiver, filter);
+    }
+
 
     @Override
     public void onLocationChanged(Location location) {

@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
+    public static String TAG = "MainActivity";
+
     // Handles to UI widgets
     private TextView mLatLng;
     private TextView mAccuracyView;
@@ -48,12 +50,12 @@ public class MainActivity extends Activity {
 
     protected void initializeQnlService(){
 
-        Log.i("MainActivity", "Initialize QNL Service");
+        Log.i(TAG, "Initialize QNL Service");
 
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(QnlService.ON_UPDATE_LOCATION);
 
-        Log.i("MainActivity", "Start Service");
+        Log.i(TAG, "Start Service");
         Intent serviceIntent = new Intent(this, QnlService.class);
         startService(serviceIntent);
     }
@@ -71,11 +73,11 @@ public class MainActivity extends Activity {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("MainActivity", "onReceive");
+            Log.i(TAG, "onReceive");
 
             String action = intent.getAction();
             if(action.equalsIgnoreCase(QnlService.ON_UPDATE_LOCATION)){
-                Log.i("MainActivity", "ON_UPDATE_LOCATION");
+                Log.i(TAG, "ON_UPDATE_LOCATION");
                 updateTextLabels();
             }
         }
