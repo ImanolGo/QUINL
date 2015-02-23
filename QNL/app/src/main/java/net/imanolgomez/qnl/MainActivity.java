@@ -54,7 +54,8 @@ public class MainActivity extends Activity {
 
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(QnlService.ON_UPDATE_LOCATION);
-        mIntentFilter.addAction(QnlService.ON_CHARGING_DEVICE);
+        mIntentFilter.addAction(QnlService.ON_POWER_CONNECTED);
+        mIntentFilter.addAction(QnlService.ON_POWER_DISCONNECTED);
 
         Log.i(TAG, "Start Service");
         Intent serviceIntent = new Intent(this, QnlService.class);
@@ -82,9 +83,14 @@ public class MainActivity extends Activity {
                 updateTextLabels();
             }
 
-            if(action.equalsIgnoreCase(QnlService.ON_CHARGING_DEVICE)){
-                Log.i(TAG, "ON_CHARGING_DEVICE");
-                mRegionText.setText("ON_CHARGING_DEVICE");
+            else if(action.equalsIgnoreCase(QnlService.ON_POWER_CONNECTED)){
+                Log.i(TAG, "ON_POWER_CONNECTED");
+                mRegionText.setText("POWER_CONNECTED");
+            }
+
+            else if(action.equalsIgnoreCase(QnlService.ON_POWER_DISCONNECTED)){
+                Log.i(TAG, "ON_POWER_DISCONNECTED");
+                mRegionText.setText("POWER_DISCONNECTED");
             }
         }
     };

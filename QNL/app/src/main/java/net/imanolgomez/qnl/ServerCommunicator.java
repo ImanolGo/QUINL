@@ -72,23 +72,21 @@ public class ServerCommunicator {
 
     public String sendTrackingData() throws IOException {
         String trackingUrl = buildTrackingUrl();
-        //Log.d(TAG,trackingUrl);
+        Log.d(TAG,trackingUrl);
         return getUrl(trackingUrl);
     }
 
     public String registerDevice() throws IOException {
         String registrationUrl = buildRegistrationUrl();
-        //Log.d(TAG,registrationUrl);
+        Log.d(TAG,registrationUrl);
         return getUrl(registrationUrl);
     }
 
     public String SendServicedMessage() throws IOException {
         String servicedMessageUrl = buildServicedMessageUrl();
-        //Log.d(TAG,servicedMessageUrl);
+        Log.d(TAG,servicedMessageUrl);
         return getUrl(servicedMessageUrl);
     }
-
-
 
     private String buildTrackingUrl(){
         DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);

@@ -54,16 +54,16 @@ public class QnlService extends Service implements LocationListener {
     private BeaconManager mBeaconManager;
 
     // BeaconManager utilities
-    long BLUETOOTH_SCAN_PERIOD = 2000;
-    long BLUETOOTH_SCAN_INTERVAL = 3000;
+    long BLUETOOTH_SCAN_PERIOD = 300;
+    long BLUETOOTH_SCAN_INTERVAL = 1000;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
-    private Handler mBluetoothTaskHandler;
     private Timer mBluetoothTimer;
 
     // Broadcast Communications
     public static final String ON_UPDATE_LOCATION = "onUpdateLocation";
-    public static final String ON_CHARGING_DEVICE = "onChargingDevice";
+    public static final String ON_POWER_CONNECTED = "onPowerConnected";
+    public static final String ON_POWER_DISCONNECTED = "onPowerDisconnected";
 
     @Override
     public void onCreate() {
@@ -93,8 +93,16 @@ public class QnlService extends Service implements LocationListener {
             String action = intent.getAction();
             if(action.equals(Intent.ACTION_POWER_CONNECTED)){
                 updateServicedMessage();
+                stopUsingGPS();
+                stopBluetoothTimer();
                 retrieveData();
-
+            }
+            else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)){
+                Log.i(TAG, "ACTION_POWER_DISCONNECTED");
+                Intent intentSend = new Intent(ON_POWER_DISCONNECTED);
+                sendBroadcast(intentSend);
+                startUsingGPS();
+                startBluetoothTimer();
             }
         }
     };
@@ -136,23 +144,31 @@ public class QnlService extends Service implements LocationListener {
             }
         };
 
+        startBluetoothTimer();
 
-        mBluetoothTaskHandler = new Handler(); // run on another Thread to avoid crash
-        if(mBluetoothTimer != null) {
-            mBluetoothTimer.cancel();
-        } else {
-            // recreate new
-            mBluetoothTimer = new Timer();
-        }
+    }
+
+    protected void startBluetoothTimer()
+    {
+        stopBluetoothTimer();
+        mBluetoothTimer = new Timer();
         // schedule task
         mBluetoothTimer.scheduleAtFixedRate(new UpdateBeaconsTask(), 0, BLUETOOTH_SCAN_INTERVAL);
+    }
 
+    protected void stopBluetoothTimer()
+    {
+        if(mBluetoothTimer != null) {
+            mBluetoothTimer.cancel();
+            mBluetoothTimer = null;
+        }
     }
 
     protected void initializeReceiver()
     {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         registerReceiver(mReceiver, filter);
     }
 
@@ -264,7 +280,7 @@ public class QnlService extends Service implements LocationListener {
     private void updateServicedMessage() {
         Log.i(TAG, "ACTION_POWER_CONNECTED");
         new SendingServicedMessage().execute();
-        Intent intentSend = new Intent(ON_CHARGING_DEVICE);
+        Intent intentSend = new Intent(ON_POWER_CONNECTED);
         sendBroadcast(intentSend);
     }
 
@@ -287,56 +303,54 @@ public class QnlService extends Service implements LocationListener {
     }
 
     private void initializeLocationUpdates(){
-
         Log.i(TAG, "Initialize Location Updates");
+        mLocationManager = (LocationManager) mAppContext.getSystemService(mAppContext.LOCATION_SERVICE);
+        startUsingGPS();
+    }
 
-        mLocationManager = (LocationManager) mAppContext
-                .getSystemService(mAppContext.LOCATION_SERVICE);
-
+    /**
+     * Start using GPS listener
+     * Calling this function will start using GPS in your app
+     * */
+    public void startUsingGPS(){
         try {
             // getting GPS status
             mIsGPSEnabled = mLocationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            // getting network status
-            mIsNetworkEnabled = mLocationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (!mIsGPSEnabled && !mIsNetworkEnabled) {
-                // no network provider is enabled
-            } else {
+            if (!mIsGPSEnabled) {
+                // no GPS provider is enabled
+                mCanGetLocation = false;
+            }
+            else
+            {
                 mCanGetLocation = true;
-                /*if (mIsNetworkEnabled) {
-                    mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            MIN_TIME_BW_UPDATES,
-                            MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                            this);
-                    Log.i(TAG, "Network");
-                    if (mLocationManager != null) {
-                        mCurrentLocation = mLocationManager
-                                .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                    }
-                }*/
-                // if GPS Enabled get lat/long using GPS Services
-                if (mIsGPSEnabled) {
-                    if (mCurrentLocation == null) {
-                        mLocationManager.requestLocationUpdates(
-                                LocationManager.GPS_PROVIDER,
-                                MIN_TIME_BW_UPDATES,
-                                MIN_DISTANCE_CHANGE_FOR_UPDATES,
-                                this);
-                        Log.i(TAG, "GPS Enabled");
-                        if (mLocationManager != null) {
-                            mCurrentLocation = mLocationManager
-                                    .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                        }
-                    }
+
+                mLocationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        MIN_TIME_BW_UPDATES,
+                        MIN_DISTANCE_CHANGE_FOR_UPDATES,
+                        this);
+                Log.i(TAG, "GPS Enabled");
+                if (mLocationManager != null) {
+                    mCurrentLocation = mLocationManager
+                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
                 }
+
             }
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    /**
+     * Stop using GPS listener
+     * Calling this function will stop using GPS in your app
+     * */
+    public void stopUsingGPS(){
+        if(mLocationManager != null){
+            mLocationManager.removeUpdates(QnlService.this);
         }
     }
 
