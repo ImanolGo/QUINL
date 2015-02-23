@@ -147,6 +147,7 @@ public class SoundManager {
         if (mPlayer != null) {
             mPlayer.release();
             mPlayer = null;
+            mCurrentSample = null;
         }
      }
 

@@ -95,6 +95,7 @@ public class QnlService extends Service implements LocationListener {
                 updateServicedMessage();
                 stopUsingGPS();
                 stopBluetoothTimer();
+                stopManagers();
                 retrieveData();
             }
             else if(action.equals(Intent.ACTION_POWER_DISCONNECTED)){
@@ -178,6 +179,14 @@ public class QnlService extends Service implements LocationListener {
         mSoundManager.startRetrievingSamples();
     }
 
+    protected void stopManagers()
+    {
+        mSoundManager.stop();
+        mBeaconManager.stop();
+        mRouteManager.stop();
+        mQnlLocationManager.stop();
+        communicateOnUpdate();
+    }
 
     @Override
     public void onLocationChanged(Location location) {

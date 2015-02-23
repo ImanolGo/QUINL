@@ -46,6 +46,11 @@ public class QnlLocationManager {
 
     }
 
+    public void stop(){
+        mCurrentRegion = null;
+        mCurrentSpot = null;
+    }
+
     public void updateRoute() {
 
         RouteManager routeManager = RouteManager.get(mAppContext);

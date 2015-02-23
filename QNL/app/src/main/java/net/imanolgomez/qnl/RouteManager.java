@@ -76,6 +76,12 @@ public class RouteManager {
         mCurrentSpot = null;
     }
 
+    public void stop(){
+        mCurrentRegion = null;
+        mCurrentRoute = null;
+        mCurrentSpot = null;
+    }
+
     private void getMapManager(){
 
         try{

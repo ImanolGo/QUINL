@@ -168,6 +168,12 @@ public class BeaconManager {
         }
     }
 
+    public void stop() {
+        stopScanningForBeacons();
+        mNearestBeacon = null;
+        mBeacons.clear();
+    }
+
 
     public void foundBeacon(Beacon nearestBeacon){
         //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
