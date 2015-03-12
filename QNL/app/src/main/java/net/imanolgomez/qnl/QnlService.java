@@ -55,10 +55,14 @@ public class QnlService extends Service implements LocationListener {
 
     // BeaconManager utilities
     long BLUETOOTH_SCAN_PERIOD = 300;
-    long BLUETOOTH_SCAN_INTERVAL = 1000;
+    long BLUETOOTH_SCAN_INTERVAL = 500;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
     private Timer mBluetoothTimer;
+
+    // Send Tracking
+    long TRACKING_SEND_INTERVAL = 5000;
+    private Timer mTrackingTimer;
 
     // Broadcast Communications
     public static final String ON_UPDATE_LOCATION = "onUpdateLocation";
@@ -116,6 +120,7 @@ public class QnlService extends Service implements LocationListener {
         this.initializeBluetooth();
         this.initializeReceiver();
         this.registerDevice();
+        this.startTrackingTimer();
     }
 
     protected void initializeManagers(){
@@ -139,6 +144,7 @@ public class QnlService extends Service implements LocationListener {
                 mBluetoothHandler.post(new Runnable() {
                     public void run() {
                         mBeaconManager.foundBeacon(nearestBeacon);
+                        updateLocation();
                         //scanBeacons(false);
                     }
                 });
@@ -147,6 +153,18 @@ public class QnlService extends Service implements LocationListener {
 
         startBluetoothTimer();
 
+    }
+
+    protected void startTrackingTimer(){
+
+        if(mTrackingTimer != null) {
+            mTrackingTimer.cancel();
+            mTrackingTimer = null;
+        }
+
+        mTrackingTimer = new Timer();
+        // schedule task
+        mTrackingTimer.scheduleAtFixedRate(new UpdateSendingTask(), 0, TRACKING_SEND_INTERVAL);
     }
 
     protected void startBluetoothTimer()
@@ -206,7 +224,7 @@ public class QnlService extends Service implements LocationListener {
     public void updateLocation() {
         mQnlLocationManager.updateLocation(mCurrentLocation);
         communicateOnUpdate();
-        sendTrackingData();
+        //sendTrackingData();
     }
 
     private void sendTrackingData(){
@@ -303,13 +321,22 @@ public class QnlService extends Service implements LocationListener {
                 public void run() {
                     Log.i(TAG, "Scan Beacons");
                     mBeaconManager.update();
-                    updateLocation();
+                    //updateLocation();
                     scanBeacons(true);
                 }
 
             });
         }
     }
+
+    class UpdateSendingTask extends TimerTask {
+        @Override
+        public void run() {
+            //sendTrackingData();
+        }
+    }
+
+
 
     private void initializeLocationUpdates(){
         Log.i(TAG, "Initialize Location Updates");

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Representation of an Beacon
@@ -19,20 +20,39 @@ class Beacon {
     private int rssi;
     private int txPower;
     private double accuracy;
+    private int timeToLive;
 
     public Beacon(String uuid, int major, int minor, int rssi) {
         this.uuid = uuid;
         this.major = major;
         this.minor = minor;
         this.rssi = rssi;
-        this.txPower = -65;
+        this.txPower = -69;
         this.accuracy = calculateAccuracy();
+        this.timeToLive = 3000;
     }
 
 
     public void setRssi (int rssi) {
         this.rssi = rssi;
         this.accuracy = calculateAccuracy();
+    }
+
+    public void update(long elapsedTimeInMs){
+        this.timeToLive -= (int) elapsedTimeInMs;
+        if(this.timeToLive<0){
+            this.timeToLive = 0;
+        }
+
+        Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
+    }
+
+    public void setTimeToLive(int timeToLiveInMs){
+        this.timeToLive = timeToLiveInMs;
+    }
+
+    public int getTimeToLive(){
+        return this.timeToLive;
     }
 
     public double getAccuracy(){
@@ -48,11 +68,7 @@ class Beacon {
     }
 
     public boolean equals (Beacon beacon) {
-        if (beacon.major == this.major && beacon.minor == this.minor) {
-            return true;
-        }
-
-        return false;
+        return (beacon.major == this.major && beacon.minor == this.minor);
     }
 
     public void setAccuracy(int _accuracy){
@@ -139,8 +155,20 @@ public class BeaconManager {
     }
 
     public void update() {
-        updateNearestBeacon();
-        mBeacons.clear();
+        long currentTime = System.nanoTime();
+
+        Iterator<Integer> it = mBeacons.keySet().iterator();
+        while (it.hasNext()) {
+            Integer key = it.next();
+            Beacon beacon = mBeacons.get(key);
+            beacon.update((currentTime-mLastUpdateTime)/NANOSECONDS_PER_MILISECONDS);
+            if (beacon.getTimeToLive()<=0) {
+                it.remove();
+            }
+        }
+
+        mLastUpdateTime = currentTime;
+
     }
 
     public void updateNearestBeacon(){
@@ -148,11 +176,11 @@ public class BeaconManager {
         for (Beacon beacon : mBeacons.values()) {
             if(mNearestBeacon==null){
                 mNearestBeacon = beacon; //Get the first beacon as nearest
+                //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
             }
-            if(beacon.getAccuracy()<=mNearestBeacon.getAccuracy()){
+            else if(beacon.getAccuracy()<=mNearestBeacon.getAccuracy()){
                 mNearestBeacon = beacon;
-                Log.i(TAG,"Found Beacon: " + mNearestBeacon.getMinor() +
-                       ", " + mNearestBeacon.getAccuracy() + "m");
+                //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
             }
         }
     }
@@ -177,8 +205,12 @@ public class BeaconManager {
 
     public void foundBeacon(Beacon nearestBeacon){
         //Log.i(TAG, "Beacon-> id: " + nearestBeacon.minor + ", accuracy: " + nearestBeacon.accuracy);
-        //Log.i(TAG,"FoundBeacon Beacon: " + nearestBeacon.getMinor());
+        Log.i(TAG,"FoundBeacon Beacon: " + nearestBeacon.getMinor() +
+                ", " + nearestBeacon.getAccuracy() + "m");
+
         mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
+
+        updateNearestBeacon();
     }
 
 

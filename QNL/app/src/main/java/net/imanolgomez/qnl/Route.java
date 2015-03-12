@@ -7,6 +7,7 @@ package net.imanolgomez.qnl;
 
 import android.location.Location;
 
+import android.util.Log;
 import org.json.JSONObject;
 
 import java.util.Date;
@@ -82,7 +83,9 @@ public class Route extends BasicElement {
         }
 
         for (Spot spot : mSpots.values()) {
-            if(spot.getUUID().equals(Integer.toString(beacon.getMinor())) && beacon.getAccuracy() <= spot.getRadius()){
+            double radius = spot.getRadius() + spot.getCurrentDeviation();
+            if(spot.getUUID().equals(Integer.toString(beacon.getMinor())) && beacon.getAccuracy() <= radius){
+                Log.i("Spot","isInsideSpot-> Beacon: id= " + beacon.getMinor() + ", distance = " +beacon.getAccuracy()  + ", radius = " + radius);
                 mCurrentSpot = spot;
                 return true;
             }

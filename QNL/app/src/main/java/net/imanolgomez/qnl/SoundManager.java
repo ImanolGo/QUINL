@@ -122,8 +122,22 @@ public class SoundManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                String url = ENDPOINT + "?sound=" + key;
-                new getSampleInfo().execute(url);
+                double version = reader.getDouble(key);
+                int id = Integer.parseInt(key);
+                if(mDBManager.isSampleUpToDate(id,version)){
+                    Sample sample = mDBManager.getSample(id);
+                    if (sample != null) {
+                        /*Log.i(TAG,"Sample id: " + sample.getId());
+                        Log.i(TAG,"Sample name: " + sample.getName());
+                        Log.i(TAG,"Sample version: " + sample.getVersion());*/
+                        addSample(sample);
+                    }
+                }
+                else {
+                    String url = ENDPOINT + "?sound=" + key;
+                    new getSampleInfo().execute(url);
+                }
+
             }
 
         } catch (Exception e) {

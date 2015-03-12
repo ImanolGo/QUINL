@@ -64,7 +64,7 @@ public class Region extends RouteElement {
         return regionTypeStr;
     }
 
-    private static RegionType getTypeFromString(String typeStr) {
+    public static RegionType getTypeFromString(String typeStr) {
 
         RegionType regionType;
 

@@ -147,11 +147,11 @@ public class DBManager {
         return true;
     }
 
-    public boolean isRouteInDB(int id) {
+    public boolean isRouteUpToDate(int id, double version) {
 
         openReadDB();
-        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS, // a. table
-                        new String[] {mHelper.COLUMN_ID }, // b. column names
+        Cursor cursor = mDatabase.query(mHelper.TABLE_ROUTES, // a. table
+                        new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
                         " id = ?", // c. selections
                         new String[] { String.valueOf(id) }, // d. selections args
                         null, // e. group by
@@ -161,9 +161,203 @@ public class DBManager {
 
 
         if(cursor!=null && cursor.getCount()>0){
-            return true;
+            cursor.moveToFirst();
+            double dbVersion = cursor.getDouble(2);
+            //Log.i(TAG,"New Route -> Id = " + id +  ", version = " + dbVersion+  ", name = " + name);
+            return dbVersion>=version;
+
         }else{
             return false;
+        }
+    }
+
+    public Route getRoute(int id){
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_ROUTES, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            String name = cursor.getString(1);
+            double version = cursor.getDouble(2);
+            BasicElement basicElement = new BasicElement(id,name,version);
+            return new Route(basicElement);
+
+        }else{
+            return null;
+        }
+
+    }
+
+    public boolean isSampleUpToDate(int id, double version) {
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            double dbVersion = cursor.getDouble(2);
+            //Log.i(TAG,"New Route -> Id = " + id +  ", version = " + dbVersion+  ", name = " + name);
+            return dbVersion>=version;
+
+        }else{
+            return false;
+        }
+    }
+
+    public Sample getSample(int id){
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            String name = cursor.getString(1);
+            double version = cursor.getDouble(2);
+            BasicElement basicElement = new BasicElement(id,name,version);
+            return new Sample(basicElement);
+
+        }else{
+            return null;
+        }
+
+    }
+
+    public boolean isSpotUpToDate(int id, double version) {
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_BEACONS, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            double dbVersion = cursor.getDouble(2);
+            //Log.i(TAG,"New Route -> Id = " + id +  ", version = " + dbVersion+  ", name = " + name);
+            return dbVersion>=version;
+
+        }else{
+            return false;
+        }
+    }
+
+    public Spot getSpot(int id){
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_UUID, mHelper.COLUMN_VERSION,
+                        mHelper.COLUMN_ROUTE_ID, mHelper.COLUMN_SAMPLE_ID, mHelper.COLUMN_LOOP, , mHelper.COLUMN_RADIUS
+                        }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            String name = cursor.getString(1);
+            double version = cursor.getDouble(2);
+            BasicElement basicElement = new BasicElement(id,name,version);
+            return new Sample(basicElement);
+
+        }else{
+            return null;
+        }
+
+    }
+
+    public boolean isRegionUpToDate(int id, double version) {
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            double dbVersion = cursor.getDouble(2);
+            //Log.i(TAG,"New Route -> Id = " + id +  ", version = " + dbVersion+  ", name = " + name);
+            return dbVersion>=version;
+
+        }else{
+            return false;
+        }
+    }
+
+    public Region getRegion(int id){
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_REGION_TYPE, mHelper.COLUMN_VERSION,
+                mHelper.COLUMN_ROUTE_ID, mHelper.COLUMN_SAMPLE_ID,mHelper.COLUMN_LOOP,mHelper.COLUMN_VOLUME}, // b. column names
+                " id = ?", // c. selections
+                new String[] { String.valueOf(id) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+
+            String name = cursor.getString(1);
+            Region.RegionType regionType = Region.getTypeFromString(cursor.getString(2));
+            double version = cursor.getDouble(3);
+            int routeId = cursor.getInt(4);
+            int sampleId = cursor.getInt(5);
+            int intBoolean  = cursor.getInt(6);
+            boolean loop = intBoolean!=0;
+            double volume = cursor.getDouble(7);
+
+
+            BasicElement basicElement = new BasicElement(id,name,version);
+            Region region = new Region(basicElement,regionType);
+            region.setLoop(loop);region.setSampleId(sampleId);region.setVolume(volume); region.setRouteId(routeId);
+
+            return region;
+
+        }else{
+            return null;
         }
     }
 

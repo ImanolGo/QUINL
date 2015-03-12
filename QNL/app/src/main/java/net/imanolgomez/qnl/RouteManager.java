@@ -292,8 +292,23 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                String url = ENDPOINT+ROUTE+"?route=" + key;
-                new getRouteInfo().execute(url);
+                double version = reader.getDouble(key);
+                int id = Integer.parseInt(key);
+                if(mDBManager.isRouteUpToDate(id,version)){
+                    Route route = mDBManager.getRoute(id);
+                    if (route != null) {
+                        /*Log.i(TAG,"Route id: " + route.getId());
+                        Log.i(TAG,"Route name: " + route.getName());
+                        Log.i(TAG,"Route version: " + route.getVersion());*/
+                        addRoute(route);
+                    }
+                }
+                else{
+                    String url = ENDPOINT+ROUTE+"?route=" + key;
+                    new getRouteInfo().execute(url);
+                }
+
+
             }
 
         } catch (Exception e) {
