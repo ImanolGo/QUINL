@@ -4,10 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by imanolgo on 22/12/14.
@@ -185,6 +188,8 @@ public class DBManager {
 
 
         if(cursor!=null && cursor.getCount()>0){
+
+
             cursor.moveToFirst();
             String name = cursor.getString(1);
             double version = cursor.getDouble(2);
@@ -274,10 +279,10 @@ public class DBManager {
     public Spot getSpot(int id){
 
         openReadDB();
-        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+        Cursor cursor = mDatabase.query(mHelper.TABLE_BEACONS, // a. table
                 new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_UUID, mHelper.COLUMN_VERSION,
-                        mHelper.COLUMN_ROUTE_ID, mHelper.COLUMN_SAMPLE_ID, mHelper.COLUMN_LOOP, , mHelper.COLUMN_RADIUS
-                        }, // b. column names
+                        mHelper.COLUMN_ROUTE_ID, mHelper.COLUMN_SAMPLE_ID, mHelper.COLUMN_LOOP, mHelper.COLUMN_RADIUS,
+                        mHelper.COLUMN_LAT, mHelper.COLUMN_LON, mHelper.COLUMN_VOLUME}, // b. column names
                 " id = ?", // c. selections
                 new String[] { String.valueOf(id) }, // d. selections args
                 null, // e. group by
@@ -288,10 +293,28 @@ public class DBManager {
 
         if(cursor!=null && cursor.getCount()>0){
             cursor.moveToFirst();
+
             String name = cursor.getString(1);
-            double version = cursor.getDouble(2);
-            BasicElement basicElement = new BasicElement(id,name,version);
-            return new Sample(basicElement);
+            String uuid = cursor.getString(2);
+            double version = cursor.getDouble(3);
+            int routeId = cursor.getInt(4);
+            int sampleId = cursor.getInt(5);
+            int intBoolean  = cursor.getInt(6);
+            boolean loop = intBoolean!=0;
+            double radius =  cursor.getDouble(7);
+            double lat =  cursor.getDouble(8);
+            double lon =  cursor.getDouble(9);
+            double volume = cursor.getDouble(10);
+            Location location = new Location("");
+            location.setLatitude(lat);
+            location.setLongitude(lon);
+
+            BasicElement basicElement = new BasicElement(id, name, version);
+            Spot spot = new Spot(basicElement, uuid);
+            spot.setLoop(loop); spot.setSampleId(sampleId); spot.setVolume(volume); spot.setRouteId(routeId);
+            spot.setRadius(radius);spot.setLocation(location);
+
+            return spot;
 
         }else{
             return null;
@@ -326,7 +349,7 @@ public class DBManager {
     public Region getRegion(int id){
 
         openReadDB();
-        Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
+        Cursor cursor = mDatabase.query(mHelper.TABLE_REGIONS, // a. table
                 new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_REGION_TYPE, mHelper.COLUMN_VERSION,
                 mHelper.COLUMN_ROUTE_ID, mHelper.COLUMN_SAMPLE_ID,mHelper.COLUMN_LOOP,mHelper.COLUMN_VOLUME}, // b. column names
                 " id = ?", // c. selections
@@ -337,9 +360,8 @@ public class DBManager {
                 null); // h. limit
 
 
-        if(cursor!=null && cursor.getCount()>0){
-            cursor.moveToFirst();
-
+        Region region = null;
+        if(cursor.moveToFirst()){
             String name = cursor.getString(1);
             Region.RegionType regionType = Region.getTypeFromString(cursor.getString(2));
             double version = cursor.getDouble(3);
@@ -349,16 +371,58 @@ public class DBManager {
             boolean loop = intBoolean!=0;
             double volume = cursor.getDouble(7);
 
-
             BasicElement basicElement = new BasicElement(id,name,version);
-            Region region = new Region(basicElement,regionType);
+            region = new Region(basicElement,regionType);
             region.setLoop(loop);region.setSampleId(sampleId);region.setVolume(volume); region.setRouteId(routeId);
 
-            return region;
-
-        }else{
-            return null;
+            region = addSectionsToRegion(region);
         }
+
+        return region;
+    }
+
+
+    // Getting All Sections from a Specific Region
+    public Region addSectionsToRegion(Region region) {
+
+        openReadDB();
+        Cursor cursor = mDatabase.query(mHelper.TABLE_SECTIONS, // a. table
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_REGION_ID,
+                        mHelper.COLUMN_LAT1, mHelper.COLUMN_LAT2,mHelper.COLUMN_LON1,mHelper.COLUMN_LON2}, // b. column names
+                " region_id = ?", // c. selections
+                new String[] { String.valueOf(region.getId()) }, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+
+
+        if(cursor.moveToFirst()){
+
+            do {
+
+                int id = cursor.getInt(0);
+                double lat1 = cursor.getDouble(2);
+                double lat2 = cursor.getDouble(3);
+                double lon1 = cursor.getDouble(4);
+                double lon2 = cursor.getDouble(5);
+
+                Location location1 = new Location("");
+                location1.setLatitude(lat1);
+                location1.setLongitude(lon1);
+
+                Location location2 = new Location("");
+                location2.setLatitude(lat2);
+                location2.setLongitude(lon2);
+
+                Section section = new Section(id,location1,location2, region.getId());
+                region.addSection(section);
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return region;
     }
 
     public boolean registerDevice()

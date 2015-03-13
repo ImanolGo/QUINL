@@ -322,8 +322,21 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                String url = ENDPOINT+SPOT+"?beacon=" + key;
-                new getSpotInfo().execute(url);
+                double version = reader.getDouble(key);
+                int id = Integer.parseInt(key);
+                if(mDBManager.isSpotUpToDate(id,version)){
+                    Spot spot = mDBManager.getSpot(id);
+                    if (spot != null) {
+                        /*Log.i(TAG,"Spot id: " + spot.getId());
+                        Log.i(TAG,"Spot name: " + spot.getName());
+                        Log.i(TAG,"Spot version: " + spot.getVersion());*/
+                        addSpot(spot);
+                    }
+                }
+                else {
+                    String url = ENDPOINT + SPOT + "?beacon=" + key;
+                    new getSpotInfo().execute(url);
+                }
             }
 
         } catch (Exception e) {
@@ -337,8 +350,21 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                String url = ENDPOINT+REGION+"?zone=" + key;
-                new getRegionInfo().execute(url);
+                double version = reader.getDouble(key);
+                int id = Integer.parseInt(key);
+                if(mDBManager.isRegionUpToDate(id,version)){
+                    Region region = mDBManager.getRegion(id);
+                    if (region != null) {
+                        /*Log.i(TAG,"Region id: " + region.getId());
+                        Log.i(TAG,"Region name: " + region.getName());
+                        Log.i(TAG,"Region version: " + region.getVersion());*/
+                        addRegion(region);
+                    }
+                }
+                else {
+                    String url = ENDPOINT + REGION + "?zone=" + key;
+                    new getRegionInfo().execute(url);
+                }
             }
 
         } catch (Exception e) {
