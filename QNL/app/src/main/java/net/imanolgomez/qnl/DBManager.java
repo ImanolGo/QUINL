@@ -81,6 +81,7 @@ public class DBManager {
         contentValues.put(mHelper.COLUMN_NAME, sample.getName());
         contentValues.put(mHelper.COLUMN_ID, sample.getId());
         contentValues.put(mHelper.COLUMN_VERSION, sample.getVersion());
+        contentValues.put(mHelper.COLUMN_URL, sample.getUrl());
 
         openWriteDB();
         mDatabase.insertWithOnConflict(mHelper.TABLE_SAMPLES, null, contentValues,SQLiteDatabase.CONFLICT_REPLACE);
@@ -230,7 +231,7 @@ public class DBManager {
 
         openReadDB();
         Cursor cursor = mDatabase.query(mHelper.TABLE_SAMPLES, // a. table
-                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION }, // b. column names
+                new String[] {mHelper.COLUMN_ID, mHelper.COLUMN_NAME, mHelper.COLUMN_VERSION, mHelper.COLUMN_URL }, // b. column names
                 " id = ?", // c. selections
                 new String[] { String.valueOf(id) }, // d. selections args
                 null, // e. group by
@@ -239,17 +240,18 @@ public class DBManager {
                 null); // h. limit
 
 
-        if(cursor!=null && cursor.getCount()>0){
-            cursor.moveToFirst();
+        Sample sample = null;
+
+        if(cursor.moveToFirst()){
             String name = cursor.getString(1);
             double version = cursor.getDouble(2);
+            String url = cursor.getString(3);
             BasicElement basicElement = new BasicElement(id,name,version);
-            return new Sample(basicElement);
-
-        }else{
-            return null;
+            sample = new Sample(basicElement);
+            sample.setUrl(url);
         }
 
+       return sample;
     }
 
     public boolean isSpotUpToDate(int id, double version) {

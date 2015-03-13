@@ -1,7 +1,9 @@
 package net.imanolgomez.qnl;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -35,6 +37,7 @@ public class SoundManager {
 
     private Context mAppContext;
     private MediaPlayer mPlayer;
+    private DownloadManager mDownloadManager;
 
     private SoundManager(Context appContext) {
         mAppContext = appContext;
@@ -53,6 +56,7 @@ public class SoundManager {
         mDBManager = DBManager.get(mAppContext);
         createSamplesFolder();
         //addDefaultSample();
+        createDownloadManager();
         startRetrievingSamples();
     }
 
@@ -62,6 +66,12 @@ public class SoundManager {
             folder.mkdirs();
         }
     }
+
+    private void createDownloadManager(){
+        String servicestring = Context.DOWNLOAD_SERVICE;
+        mDownloadManager = (DownloadManager) mAppContext.getSystemService(servicestring);
+    }
+
 
     public void startRetrievingSamples(){
         mCurrentSample = null;
@@ -154,8 +164,20 @@ public class SoundManager {
             Log.i(TAG,"Sample name: " + sample.getName());
             Log.i(TAG,"Sample version: " + sample.getVersion());
             Log.i(TAG,"Sample sampleId: " + sample.getUrl());*/
+            downloadSample(sample);
         }
     }
+
+    private void downloadSample(Sample sample) {
+
+        Uri uri = Uri.parse(sample.getUrl());
+        DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setDestinationInExternalPublicDir(SAMPLES_ABSOLUTE_PATH, sample.getName());
+        Long reference = mDownloadManager.enqueue(request);
+
+        Log.i(TAG, "Downloading Sample from: " + sample.getUrl());
+    }
+
 
     public void stop() {
         if (mPlayer != null) {

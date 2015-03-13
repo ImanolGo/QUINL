@@ -55,6 +55,9 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_LAT =  "latitude";
     public static final String COLUMN_LON =  "longitude";
 
+    // Samples column names
+    public static final String COLUMN_URL =  "url";
+
     // Phone column names
     public static final String COLUMN_PHONE_UUID =  "uuid";
     public static final String COLUMN_MAKE= "make";
@@ -113,7 +116,8 @@ public class DBHelper extends SQLiteOpenHelper {
             + TABLE_SAMPLES + "("
             + COLUMN_ID + " integer primary key, "
             + COLUMN_NAME + " text, "
-            + COLUMN_VERSION + " real);";
+            + COLUMN_VERSION + " real, "
+            + COLUMN_URL + " text);";
 
     // Beacons table creation sql statement
     private static final String CREATE_PHONE_TABLE = "create table "

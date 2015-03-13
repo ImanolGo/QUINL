@@ -1,13 +1,16 @@
 package net.imanolgomez.qnl;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -91,6 +94,16 @@ public class MainActivity extends Activity {
             else if(action.equalsIgnoreCase(QnlService.ON_POWER_DISCONNECTED)){
                 Log.i(TAG, "ON_POWER_DISCONNECTED");
                 mRegionText.setText("POWER_DISCONNECTED");
+            }
+
+            else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+                long downloadId = intent.getLongExtra(
+                        DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+
+                Toast toast = Toast.makeText(MainActivity.this,"Finished Downloading " + downloadId, Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.TOP, 25, 400);
+                toast.show();
+
             }
         }
     };
