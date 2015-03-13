@@ -42,6 +42,7 @@ public class SoundManager {
     private SoundManager(Context appContext) {
         mAppContext = appContext;
         mSamples = new HashMap<Integer, Sample>();
+        Log.i(TAG,"Samples Absolute Path = " + SAMPLES_ABSOLUTE_PATH);
         this.initialize();
     }
 
@@ -172,7 +173,7 @@ public class SoundManager {
 
         Uri uri = Uri.parse(sample.getUrl());
         DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setDestinationInExternalPublicDir(SAMPLES_ABSOLUTE_PATH, sample.getName());
+        request.setDestinationInExternalPublicDir(SAMPLES_RELATIVE_PATH, sample.getName());
         Long reference = mDownloadManager.enqueue(request);
 
         Log.i(TAG, "Downloading Sample from: " + sample.getUrl());
@@ -204,7 +205,9 @@ public class SoundManager {
 
         try {
             mCurrentSample = mSamples.get(sampleId);
+            Log.i(TAG,"PlaySample-> Playing Sample : " + mCurrentSample.getName());
             String uri = SAMPLES_ABSOLUTE_PATH + mCurrentSample.getName();
+            Log.i(TAG,"PlaySample-> Uri : " + uri);
             mPlayer = new MediaPlayer();
             mPlayer.setLooping(setLooping);
             mPlayer.setDataSource(uri);
