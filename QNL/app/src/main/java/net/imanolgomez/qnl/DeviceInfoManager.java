@@ -72,7 +72,7 @@ public class DeviceInfoManager {
         mImei = tManager.getDeviceId();
 
         mDeviceUuid = Settings.Secure.getString(mAppContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        mDeviceId = 105;
+        mDeviceId = 0;
 
         WifiManager wifiManager = (WifiManager) mAppContext.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();

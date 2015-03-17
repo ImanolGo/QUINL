@@ -235,8 +235,15 @@ public class QnlService extends Service implements LocationListener {
         @Override
         protected Void doInBackground(Void... params) {
             try {
+                Log.d(TAG, "SendTrackingData");
                 String result = new ServerCommunicator(mAppContext).sendTrackingData();
-                Log.d(TAG, "Fetched contents from tracking data: " + result);
+                if (result == null || result.equals("")){
+                    Log.e(TAG, "Failed to get tracking data");
+                }
+                else{
+                    Log.d(TAG, "Fetched contents from tracking data: " + result);
+                }
+
             } catch (IOException ioe) {
                 Log.e(TAG, "Failed to send tracking data ", ioe);
             }
@@ -249,10 +256,10 @@ public class QnlService extends Service implements LocationListener {
         if(mDBManager.isDeviceRegistered()){
             Log.i(TAG, "Device registered");
             mDeviceInfoManager.setDeviceId(mDBManager.getDeviceId());
+            updateServicedMessage();
         }
         else{
             Log.i(TAG, "Register Device");
-            mDBManager.registerDevice();
             new RegisteringDevice().execute();
         }
     }
@@ -262,9 +269,16 @@ public class QnlService extends Service implements LocationListener {
         protected Void doInBackground(Void... params) {
             try {
                 String result = new ServerCommunicator(mAppContext).registerDevice();
-                Log.i(TAG, "Device registered!!");
+                if (result == null || result.equals("")){
+                    Log.e(TAG, "Failed to get to register device");
+                }
+                else{
+                    mDBManager.registerDevice();
+                    Log.i(TAG, "Device registered!!");
+                }
+
             } catch (IOException ioe) {
-                Log.e(TAG, "Failed to send register phone ", ioe);
+                Log.e(TAG, "Failed to send register device ", ioe);
             }
             return null;
         }
@@ -275,9 +289,15 @@ public class QnlService extends Service implements LocationListener {
         protected Void doInBackground(Void... params) {
             try {
                 String result = new ServerCommunicator(mAppContext).SendServicedMessage();
-                Log.i(TAG, "Send Serviced Message!!");
+                if (result == null || result.equals("")){
+                    Log.e(TAG, "Failed to send service device ");
+                }
+                else{
+                    Log.i(TAG, "Send Serviced Message: " + result);
+                }
+
             } catch (IOException ioe) {
-                Log.e(TAG, "Failed to send register phone ", ioe);
+                Log.e(TAG, "Failed to send service device ", ioe);
             }
             return null;
         }
@@ -332,7 +352,7 @@ public class QnlService extends Service implements LocationListener {
     class UpdateSendingTask extends TimerTask {
         @Override
         public void run() {
-            //sendTrackingData();
+            sendTrackingData();
         }
     }
 

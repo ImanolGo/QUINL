@@ -25,9 +25,9 @@ public class Spot extends RouteElement {
     private enum RangeType {IMMEDIATE, NEAR, FAR};
     RangeType mRangeType;
 
-    protected static final double IMMEDIATE_LIMIT = 0.2;
-    protected static final double NEAR_LIMIT = 2.0;
-    protected static final double FAR_LIMIT = 70.0;
+    protected static final double IMMEDIATE_LIMIT = 0.5;
+    protected static final double NEAR_LIMIT = 5.0;
+    protected static final double FAR_LIMIT = 10.0;
 
     protected static final String TAG_RADIUS = "radius";
     protected static final String TAG_LAT = "lat";
