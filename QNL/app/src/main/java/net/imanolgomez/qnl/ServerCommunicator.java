@@ -156,7 +156,6 @@ public class ServerCommunicator {
         List<NameValuePair> nameValuePair = buildRegistrationParameters();
         //Log.d(TAG,registrationUrl);
         String response =  makePostRequest(registrationUrl, nameValuePair);
-        setDeviceId(response);
         return response;
     }
 
@@ -229,20 +228,5 @@ public class ServerCommunicator {
                 SERVICED + deviceInfoManager.getDeviceId();
 
         return url;
-    }
-
-    private void setDeviceId(String jsonStr){
-
-        try {
-            JSONObject jsonObj = new JSONObject(jsonStr);
-
-            int id = jsonObj.getInt("inserted");
-            Log.i(TAG,"Read Device ID from JSON response: " + id);
-            DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
-            deviceInfoManager.setDeviceId(id);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 }

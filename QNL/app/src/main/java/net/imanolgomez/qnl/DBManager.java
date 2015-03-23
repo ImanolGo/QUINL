@@ -475,6 +475,24 @@ public class DBManager {
         }
     }
 
+    public String getDeviceName() {
+
+        openReadDB();
+
+        Cursor cursor = mDatabase.query(mHelper.TABLE_PHONE, // Only return column ID
+                new String[] {mHelper.COLUMN_NAME },
+                null, null, null, null, null);
+
+
+        if(cursor!=null && cursor.getCount()>0){
+            cursor.moveToFirst();
+            Log.d(TAG, "getDeviceName: " + cursor.getString(0));
+            return cursor.getString(0);
+        }else{
+            return "QnlDevice";
+        }
+    }
+
 
     private void createDatabaseFolder(){
         File folder = new File(DB_ABSOLUTE_PATH);

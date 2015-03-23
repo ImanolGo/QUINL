@@ -12,6 +12,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,7 +58,7 @@ public class DeviceInfoManager {
 
         Log.i(TAG, "initialize()");
 
-        mDeviceName = "QnlDevice";
+        DBManager dbManager = DBManager.get(mAppContext);
 
         // Device manufacturer
         mDeviceManufacturer =  android.os.Build.MANUFACTURER;
@@ -72,7 +73,9 @@ public class DeviceInfoManager {
         mImei = tManager.getDeviceId();
 
         mDeviceUuid = Settings.Secure.getString(mAppContext.getContentResolver(), Settings.Secure.ANDROID_ID);
-        mDeviceId = 0;
+
+        mDeviceId = dbManager.getDeviceId();
+        mDeviceName = dbManager.getDeviceName();
 
         WifiManager wifiManager = (WifiManager) mAppContext.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wInfo = wifiManager.getConnectionInfo();
@@ -126,6 +129,22 @@ public class DeviceInfoManager {
             return true;
     }
 
+    public void setDeviceIdFromJson(String jsonStr){
+
+        try {
+            JSONObject jsonObj = new JSONObject(jsonStr);
+
+            int id = jsonObj.getInt("inserted");
+            Log.i(TAG,"Read Device ID from JSON response: " + id);
+            DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
+            setDeviceId(id);
+            setDeviceName("QD" + id);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getDeviceManufacturer() {
         return mDeviceManufacturer;
     }
@@ -144,6 +163,10 @@ public class DeviceInfoManager {
 
     public void setDeviceId(int deviceId) {
         mDeviceId = deviceId;
+    }
+
+    public void setDeviceName(String deviceName) {
+        mDeviceName = deviceName;
     }
 
     public String getDeviceUuid() {

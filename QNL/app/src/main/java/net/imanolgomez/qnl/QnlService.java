@@ -256,6 +256,7 @@ public class QnlService extends Service implements LocationListener {
         if(mDBManager.isDeviceRegistered()){
             Log.i(TAG, "Device registered");
             mDeviceInfoManager.setDeviceId(mDBManager.getDeviceId());
+            mDeviceInfoManager.setDeviceName(mDBManager.getDeviceName());
             updateServicedMessage();
         }
         else{
@@ -273,6 +274,7 @@ public class QnlService extends Service implements LocationListener {
                     Log.e(TAG, "Failed to get to register device");
                 }
                 else{
+                    mDeviceInfoManager.setDeviceIdFromJson(result);
                     mDBManager.registerDevice();
                     Log.i(TAG, "Device registered!!");
                 }
