@@ -94,6 +94,18 @@ public class Route extends BasicElement {
         return false;
     }
 
+
+    Spot getSpot(String uuid) {
+
+        for (Spot spot : mSpots.values()) {
+            if(spot.getUUID().equals(uuid)){
+                return spot;
+            }
+        }
+
+        return null;
+    }
+
     public boolean isInside(Location loc) {
         mCurrentRegion = null;
 

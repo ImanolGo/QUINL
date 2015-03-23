@@ -217,8 +217,21 @@ public class BeaconManager {
     public String getBeaconsListString(){
         String beaconsList = "";
 
+        Route currentRoute = RouteManager.get(mAppContext).getCurrentRoute();
+
         for (Beacon beacon : mBeacons.values()) {
-            beaconsList = beaconsList + beacon.getMinor() + "," + beacon.getRssi() + ";";
+
+            int spotId = beacon.getMinor();
+
+            if(currentRoute!=null){
+                Spot spot = currentRoute.getSpot(Integer.toString(beacon.getMinor()));
+
+                if(spot!=null){
+                    spotId = spot.getId();
+                }
+            }
+
+            beaconsList = beaconsList + spotId + "," + beacon.getRssi() + ";";
         }
 
         return beaconsList;
