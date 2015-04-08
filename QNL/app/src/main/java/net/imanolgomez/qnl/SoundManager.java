@@ -260,6 +260,8 @@ public class SoundManager {
         return null;
     }
 
+    public boolean isSampleLooping() { return mPlayer.isLooping();}
+
     public Sample getCurrentSample() {
         return mCurrentSample;
     }

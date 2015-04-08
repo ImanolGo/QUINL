@@ -120,6 +120,8 @@ public class RouteManager {
         BeaconManager beaconManager = BeaconManager.get(mAppContext);
         if(mCurrentRoute.isInsideSpot(beaconManager.getNearestBeacon())){
             mCurrentSpot = mCurrentRoute.getCurrentSpot();
+            int beaconMinor = Integer.parseInt(mCurrentSpot.getUUID());
+            beaconManager.setBeaconToSleep(beaconMinor);
             return true;
         }
 
@@ -139,6 +141,8 @@ public class RouteManager {
             if(route.isInsideSpot(beaconManager.getNearestBeacon())){
                 mCurrentSpot = route.getCurrentSpot();
                 mCurrentRoute = route;
+                int beaconMinor = Integer.parseInt(mCurrentSpot.getUUID());
+                beaconManager.setBeaconToSleep(beaconMinor);
                 return;
             }
         }

@@ -53,6 +53,10 @@ public class QnlLocationManager {
 
     public void updateRoute() {
 
+        if(!isRouteUpdatable()){
+            return;
+        }
+
         RouteManager routeManager = RouteManager.get(mAppContext);
         routeManager.updateLocation(mCurrentLocation);
 
@@ -74,6 +78,21 @@ public class QnlLocationManager {
 
 
         if(routeManager.getCurrentRegion()!=mCurrentRegion){
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isRouteUpdatable(){
+
+        SoundManager soundManager = SoundManager.get(mAppContext);
+
+        if(soundManager.getCurrentSample()==null){
+            return true;
+        }
+
+        if(soundManager.isSampleLooping()){
             return true;
         }
 

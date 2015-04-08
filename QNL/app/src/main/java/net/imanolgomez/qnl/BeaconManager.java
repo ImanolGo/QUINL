@@ -14,6 +14,9 @@ import java.util.Iterator;
  * Representation of an Beacon
  */
 class Beacon {
+
+    public static int TIME_TO_LIVE_MS = 30000;
+
     String uuid;
     private int major;
     private int minor;
@@ -29,7 +32,7 @@ class Beacon {
         this.rssi = rssi;
         this.txPower = -69;
         this.accuracy = calculateAccuracy();
-        this.timeToLive = 3000;
+        this.timeToLive = 0;
     }
 
 
@@ -45,6 +48,12 @@ class Beacon {
         }
 
         //Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
+    }
+
+    public boolean isAlive(){return timeToLive == 0;}
+
+    public void setToSleep(){
+        setTimeToLive(TIME_TO_LIVE_MS);
     }
 
     public void setTimeToLive(int timeToLiveInMs){
@@ -174,13 +183,16 @@ public class BeaconManager {
     public void updateNearestBeacon(){
         mNearestBeacon = null;
         for (Beacon beacon : mBeacons.values()) {
-            if(mNearestBeacon==null){
-                mNearestBeacon = beacon; //Get the first beacon as nearest
-                //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
-            }
-            else if(beacon.getAccuracy()<=mNearestBeacon.getAccuracy()){
-                mNearestBeacon = beacon;
-                //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
+
+            if(beacon.isAlive()){
+                if(mNearestBeacon==null){
+                    mNearestBeacon = beacon; //Get the first beacon as nearest
+                    //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
+                }
+                else if(beacon.getAccuracy()<=mNearestBeacon.getAccuracy()){
+                    mNearestBeacon = beacon;
+                    //Log.i(TAG,"Nearest Beacon: " + mNearestBeacon.getMinor() + ", " + mNearestBeacon.getAccuracy() + "m");
+                }
             }
         }
     }
@@ -208,9 +220,12 @@ public class BeaconManager {
         Log.i(TAG,"FoundBeacon Beacon: " + nearestBeacon.getMinor() +
                 ", " + nearestBeacon.getAccuracy() + "m");
 
-        mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
+        if(!mBeacons.containsKey(nearestBeacon.getMinor()))
+        {
+            mBeacons.put(nearestBeacon.getMinor(), nearestBeacon);
+            updateNearestBeacon();
+        }
 
-        updateNearestBeacon();
     }
 
 
@@ -241,6 +256,20 @@ public class BeaconManager {
         }
 
         return beaconsList;
+    }
+
+    public void setBeaconToSleep(int minor){
+        Log.i(TAG,"setBeaconToSleep " +minor);
+
+        for (Beacon beacon : mBeacons.values()) {
+
+            if(beacon.getMinor()==minor) {
+                Log.i(TAG,"Beacon to sleep: " + beacon.getMinor());
+                beacon.setToSleep();
+                updateNearestBeacon();
+                return;
+            }
+        }
     }
 
 
