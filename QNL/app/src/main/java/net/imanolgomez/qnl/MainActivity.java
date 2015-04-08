@@ -59,6 +59,8 @@ public class MainActivity extends Activity {
         mIntentFilter.addAction(QnlService.ON_UPDATE_LOCATION);
         mIntentFilter.addAction(QnlService.ON_POWER_CONNECTED);
         mIntentFilter.addAction(QnlService.ON_POWER_DISCONNECTED);
+        mIntentFilter.addAction(QnlService.SET_TITLE);
+        mIntentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 
         Log.i(TAG, "Start Service");
         Intent serviceIntent = new Intent(this, QnlService.class);
@@ -96,7 +98,13 @@ public class MainActivity extends Activity {
                 mRegionText.setText("POWER_DISCONNECTED");
             }
 
-            else if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+            else if(action.equalsIgnoreCase(QnlService.SET_TITLE)){
+                Log.i(TAG, "SET_TITLE");
+                String title = intent.getExtras().getString("Title");
+                setTitle(title);
+            }
+
+            else if (action.equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                 long downloadId = intent.getLongExtra(
                         DownloadManager.EXTRA_DOWNLOAD_ID, 0);
 

@@ -44,7 +44,7 @@ class Beacon {
             this.timeToLive = 0;
         }
 
-        Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
+        //Log.i("Beacon", this.minor + " , time to live: " + this.timeToLive);
     }
 
     public void setTimeToLive(int timeToLiveInMs){
@@ -215,9 +215,15 @@ public class BeaconManager {
 
 
     public String getBeaconsListString(){
-        String beaconsList = "";
 
+        if(mBeacons.isEmpty()){
+            return "";
+        }
+
+        String beaconsList = "";
         Route currentRoute = RouteManager.get(mAppContext).getCurrentRoute();
+
+
 
         for (Beacon beacon : mBeacons.values()) {
 

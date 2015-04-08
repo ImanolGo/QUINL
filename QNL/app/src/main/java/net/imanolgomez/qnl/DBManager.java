@@ -489,7 +489,7 @@ public class DBManager {
             Log.d(TAG, "getDeviceName: " + cursor.getString(0));
             return cursor.getString(0);
         }else{
-            return "QnlDevice";
+            return "QNL_Device_";
         }
     }
 

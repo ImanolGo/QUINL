@@ -57,7 +57,7 @@ public class Spot extends RouteElement {
 
         if(mRadius <= FAR_LIMIT){
             mRangeType = RangeType.FAR;
-            this.mDeviation = 5;
+            this.mDeviation = 10;
         }
 
         if(mRadius <= NEAR_LIMIT){

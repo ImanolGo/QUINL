@@ -61,13 +61,14 @@ public class QnlService extends Service implements LocationListener {
     private Timer mBluetoothTimer;
 
     // Send Tracking
-    long TRACKING_SEND_INTERVAL = 5000;
+    long TRACKING_SEND_INTERVAL = 2000;
     private Timer mTrackingTimer;
 
     // Broadcast Communications
     public static final String ON_UPDATE_LOCATION = "onUpdateLocation";
     public static final String ON_POWER_CONNECTED = "onPowerConnected";
     public static final String ON_POWER_DISCONNECTED = "onPowerDisconnected";
+    public static final String SET_TITLE = "setTitle";
 
     @Override
     public void onCreate() {
@@ -96,6 +97,7 @@ public class QnlService extends Service implements LocationListener {
 
             String action = intent.getAction();
             if(action.equals(Intent.ACTION_POWER_CONNECTED)){
+                Log.i(TAG, "ACTION_POWER_CONNECTED");
                 updateServicedMessage();
                 stopUsingGPS();
                 stopBluetoothTimer();
@@ -120,6 +122,7 @@ public class QnlService extends Service implements LocationListener {
         this.initializeBluetooth();
         this.initializeReceiver();
         this.registerDevice();
+        this.setAppTitle();
         this.startTrackingTimer();
     }
 
@@ -169,6 +172,7 @@ public class QnlService extends Service implements LocationListener {
 
     protected void startBluetoothTimer()
     {
+        Log.i(TAG, "Start BluetoothTimer");
         stopBluetoothTimer();
         mBluetoothTimer = new Timer();
         // schedule task
@@ -177,6 +181,7 @@ public class QnlService extends Service implements LocationListener {
 
     protected void stopBluetoothTimer()
     {
+        Log.i(TAG, "Stop BluetoothTimer");
         if(mBluetoothTimer != null) {
             mBluetoothTimer.cancel();
             mBluetoothTimer = null;
@@ -224,7 +229,7 @@ public class QnlService extends Service implements LocationListener {
     public void updateLocation() {
         mQnlLocationManager.updateLocation(mCurrentLocation);
         communicateOnUpdate();
-        //sendTrackingData();
+        sendTrackingData();
     }
 
     private void sendTrackingData(){
@@ -263,6 +268,14 @@ public class QnlService extends Service implements LocationListener {
             Log.i(TAG, "Register Device");
             new RegisteringDevice().execute();
         }
+    }
+
+    private void setAppTitle()
+    {
+        Log.i(TAG, "setAppTitle");
+        Intent intentSend = new Intent(SET_TITLE);
+        intentSend.putExtra("Title", mDBManager.getDeviceName());
+        sendBroadcast(intentSend);
     }
 
     private class RegisteringDevice extends AsyncTask<Void,Void,Void> {
@@ -354,7 +367,7 @@ public class QnlService extends Service implements LocationListener {
     class UpdateSendingTask extends TimerTask {
         @Override
         public void run() {
-            sendTrackingData();
+            //sendTrackingData();
         }
     }
 
@@ -371,6 +384,8 @@ public class QnlService extends Service implements LocationListener {
      * Calling this function will start using GPS in your app
      * */
     public void startUsingGPS(){
+        Log.i(TAG, "Start GPS");
+
         try {
             // getting GPS status
             mIsGPSEnabled = mLocationManager
@@ -407,6 +422,7 @@ public class QnlService extends Service implements LocationListener {
      * Calling this function will stop using GPS in your app
      * */
     public void stopUsingGPS(){
+        Log.i(TAG, "Stop GPS");
         if(mLocationManager != null){
             mLocationManager.removeUpdates(QnlService.this);
         }

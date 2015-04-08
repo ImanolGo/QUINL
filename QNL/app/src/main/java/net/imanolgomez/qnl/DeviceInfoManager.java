@@ -138,7 +138,8 @@ public class DeviceInfoManager {
             Log.i(TAG,"Read Device ID from JSON response: " + id);
             DeviceInfoManager deviceInfoManager = DeviceInfoManager.get(mAppContext);
             setDeviceId(id);
-            setDeviceName("QD" + id);
+            setDeviceName("QNL_Device_" + id);
+            Log.i(TAG,"New Device Name: " + mDeviceName);
 
         } catch (Exception e) {
             e.printStackTrace();

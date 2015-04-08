@@ -154,7 +154,7 @@ public class ServerCommunicator {
     public String registerDevice() throws IOException {
         String registrationUrl = PHONE_ENDPOINT;
         List<NameValuePair> nameValuePair = buildRegistrationParameters();
-        //Log.d(TAG,registrationUrl);
+        Log.d(TAG,registrationUrl);
         String response =  makePostRequest(registrationUrl, nameValuePair);
         return response;
     }
