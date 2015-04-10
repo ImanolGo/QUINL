@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.AudioManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -110,6 +111,7 @@ public class QnlService extends Service implements LocationListener {
                 sendBroadcast(intentSend);
                 startUsingGPS();
                 startBluetoothTimer();
+                setMaxStreamingVolume();
             }
         }
     };
@@ -124,6 +126,7 @@ public class QnlService extends Service implements LocationListener {
         this.registerDevice();
         this.setAppTitle();
         this.startTrackingTimer();
+        this.setMaxStreamingVolume();
     }
 
     protected void initializeManagers(){
@@ -194,6 +197,15 @@ public class QnlService extends Service implements LocationListener {
         filter.addAction(Intent.ACTION_POWER_CONNECTED);
         filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         registerReceiver(mReceiver, filter);
+    }
+
+    protected void setMaxStreamingVolume()
+    {
+        AudioManager audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        int maxVolume = audioManager.getStreamMaxVolume(audioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0);
+
+        Log.i(TAG, "setMaxStreamingVolume-> Set max streaming volume to " + maxVolume);
     }
 
     protected void retrieveData()

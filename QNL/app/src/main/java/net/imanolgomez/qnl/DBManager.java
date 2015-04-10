@@ -413,7 +413,10 @@ public class DBManager {
     // Delete All Sections from a Specific Region
     public void deleteSectionsFromRegion(int regionId) {
         openWriteDB();
-        mDatabase.delete(mHelper.TABLE_SECTIONS, mHelper.COLUMN_REGION_ID + " = ?", new String[] { String.valueOf(regionId) });
+        int deletedRows =  mDatabase.delete(mHelper.TABLE_SECTIONS, mHelper.COLUMN_REGION_ID + " = ?", new String[] { String.valueOf(regionId) });
+
+        Log.i(TAG, "deleteSectionsFromRegion-> Deleted " + deletedRows + " sections from region " + regionId);
+
     }
 
     // Getting All Sections from a Specific Region

@@ -21,6 +21,8 @@ import java.util.Iterator;
 
 public class SoundManager {
 
+
+    private final static int MAX_VOLUME = 100;
     private static final String SAMPLES_RELATIVE_PATH = "/QNL/Samples/";
     private static final String SAMPLES_ABSOLUTE_PATH = Environment.getExternalStorageDirectory() + SAMPLES_RELATIVE_PATH;
     private static final String EMPTY_STRING = "";
@@ -212,7 +214,11 @@ public class SoundManager {
             mPlayer.setLooping(setLooping);
             mPlayer.setDataSource(uri);
             mPlayer.prepare();
-            mPlayer.setVolume(volume,volume);
+
+            float soundVolume = (float) (1 - (Math.log(MAX_VOLUME - volume*MAX_VOLUME) / Math.log(MAX_VOLUME)));
+            mPlayer.setVolume(soundVolume, soundVolume);
+            Log.i(TAG,"PlaySample-> SetVolume : " + volume);
+            Log.i(TAG,"PlaySample-> SoundVolume : " + soundVolume);
 
             mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
