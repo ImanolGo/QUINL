@@ -188,12 +188,12 @@ public class SoundManager {
         }
      }
 
-    public void playSample(int sampleId) {
-        playSample(sampleId, true);
+    public void playSample(int sampleId, float volume) {
+        playSample(sampleId, volume, true);
     }
 
 
-    public void playSample(int sampleId, boolean setLooping) {
+    public void playSample(int sampleId, float volume, boolean setLooping) {
 
         stop();
 
@@ -212,6 +212,7 @@ public class SoundManager {
             mPlayer.setLooping(setLooping);
             mPlayer.setDataSource(uri);
             mPlayer.prepare();
+            mPlayer.setVolume(volume,volume);
 
             mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
@@ -230,7 +231,7 @@ public class SoundManager {
     public void addDefaultSample(){
 
         int id = -1; //The default sample is the non valid -1
-        double version = 1;
+        float version = 1;
         String name = DEFAULT_SAMPLE_NAME;
 
         BasicElement basicElement = new BasicElement(id,name,version);

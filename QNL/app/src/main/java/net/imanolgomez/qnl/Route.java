@@ -141,7 +141,7 @@ public class Route extends BasicElement {
             JSONObject zoneJson  = reader.getJSONObject("route");
 
             int id = zoneJson.getInt(TAG_ID);
-            double version = zoneJson.getDouble(TAG_VERSION);
+            float version = (float) zoneJson.getDouble(TAG_VERSION);
             String name = zoneJson.getString(TAG_NAME);
 
             BasicElement basicElement = new BasicElement(id,name,version);

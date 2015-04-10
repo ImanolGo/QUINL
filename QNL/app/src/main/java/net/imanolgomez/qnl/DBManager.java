@@ -151,7 +151,7 @@ public class DBManager {
         return true;
     }
 
-    public boolean isRouteUpToDate(int id, double version) {
+    public boolean isRouteUpToDate(int id, float version) {
 
         openReadDB();
         Cursor cursor = mDatabase.query(mHelper.TABLE_ROUTES, // a. table
@@ -166,7 +166,7 @@ public class DBManager {
 
         if(cursor!=null && cursor.getCount()>0){
             cursor.moveToFirst();
-            double dbVersion = cursor.getDouble(2);
+            float dbVersion = cursor.getFloat(2);
             //Log.i(TAG,"New Route -> Id = " + id +  ", version = " + dbVersion+  ", name = " + name);
             return dbVersion>=version;
 
@@ -193,7 +193,7 @@ public class DBManager {
 
             cursor.moveToFirst();
             String name = cursor.getString(1);
-            double version = cursor.getDouble(2);
+            float version = cursor.getFloat(2);
             BasicElement basicElement = new BasicElement(id,name,version);
             return new Route(basicElement);
 
@@ -244,7 +244,7 @@ public class DBManager {
 
         if(cursor.moveToFirst()){
             String name = cursor.getString(1);
-            double version = cursor.getDouble(2);
+            float version = cursor.getFloat(2);
             String url = cursor.getString(3);
             BasicElement basicElement = new BasicElement(id,name,version);
             sample = new Sample(basicElement);
@@ -298,7 +298,7 @@ public class DBManager {
 
             String name = cursor.getString(1);
             String uuid = cursor.getString(2);
-            double version = cursor.getDouble(3);
+            float version = cursor.getFloat(3);
             int routeId = cursor.getInt(4);
             int sampleId = cursor.getInt(5);
             int intBoolean  = cursor.getInt(6);
@@ -306,7 +306,7 @@ public class DBManager {
             double radius =  cursor.getDouble(7);
             double lat =  cursor.getDouble(8);
             double lon =  cursor.getDouble(9);
-            double volume = cursor.getDouble(10);
+            float volume = cursor.getFloat(10);
             Location location = new Location("");
             location.setLatitude(lat);
             location.setLongitude(lon);
@@ -366,12 +366,12 @@ public class DBManager {
         if(cursor.moveToFirst()){
             String name = cursor.getString(1);
             Region.RegionType regionType = Region.getTypeFromString(cursor.getString(2));
-            double version = cursor.getDouble(3);
+            float version = cursor.getFloat(3);
             int routeId = cursor.getInt(4);
             int sampleId = cursor.getInt(5);
             int intBoolean  = cursor.getInt(6);
             boolean loop = intBoolean!=0;
-            double volume = cursor.getDouble(7);
+            float volume = cursor.getFloat(7);
 
             BasicElement basicElement = new BasicElement(id,name,version);
             region = new Region(basicElement,regionType);

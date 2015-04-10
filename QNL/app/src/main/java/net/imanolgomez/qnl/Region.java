@@ -114,9 +114,9 @@ public class Region extends RouteElement {
             int id = zoneJson.getInt(TAG_ID);
             int sampleId = zoneJson.getInt(TAG_SAMPLE_ID);
             int routeId = zoneJson.getInt(TAG_ROUTE_ID);
-            double version = zoneJson.getDouble(TAG_VERSION);
+            float version = (float) zoneJson.getDouble(TAG_VERSION);
             String name = zoneJson.getString(TAG_NAME);
-            double volume = zoneJson.getDouble(TAG_VOLUME);
+            float volume = (float) zoneJson.getDouble(TAG_VOLUME);
             int intBoolean = zoneJson.getInt(TAG_LOOP);
             boolean loop = true;
             if(intBoolean==0){

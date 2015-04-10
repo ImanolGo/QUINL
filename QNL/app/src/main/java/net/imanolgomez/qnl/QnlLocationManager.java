@@ -121,16 +121,16 @@ public class QnlLocationManager {
 
         SoundManager soundManager = SoundManager.get(mAppContext);
         if(mCurrentSpot!=null){
-            soundManager.playSample(mCurrentSpot.getSampleId(), mCurrentSpot.isLooping());
+            soundManager.playSample(mCurrentSpot.getSampleId(), mCurrentSpot.getVolume(), mCurrentSpot.isLooping());
             return;
         }
 
         if(mCurrentRegion!=null){
-            soundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.isLooping());
+            soundManager.playSample(mCurrentRegion.getSampleId(), mCurrentRegion.getVolume(), mCurrentRegion.isLooping());
             return;
         }
 
-        soundManager.playSample(-1);
+        soundManager.playSample(-1, 0.0f);
     }
 
     public Location getCurrentLocation() {
