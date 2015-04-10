@@ -383,6 +383,38 @@ public class DBManager {
         return region;
     }
 
+    public Region getRegion(Location loc) {
+
+        openWriteDB();
+        //SELECT id, region_id FROM sections WHERE lat1 <= 51.21096 AND lat2 >= 51.21096 AND lon1 <= 3.2263 AND lon2 >= 3.2263
+
+        int regionId = 0;
+        Region region = null;
+        String selectQuery = "SELECT " + mHelper.COLUMN_REGION_ID + " FROM " + mHelper.TABLE_SECTIONS + " WHERE " +
+                mHelper.COLUMN_LAT1 + " <= " + loc.getLatitude() + " AND " + mHelper.COLUMN_LAT2 + " >= " + loc.getLatitude() +
+                mHelper.COLUMN_LON1 + " <= " + loc.getLongitude() + " AND " + mHelper.COLUMN_LON2 + " >= " + loc.getLongitude();
+        Cursor cursor = mDatabase.rawQuery(selectQuery, null);
+        if(cursor.moveToFirst()){
+
+            do {
+
+                regionId = cursor.getInt(1);
+                region = getRegion(regionId);
+                if(region!=null && region.getRegionType() == Region.RegionType.ROOM ){ //Found a Room!!
+                    return region;
+                }
+
+            } while (cursor.moveToNext());
+
+        }
+
+        return region;
+    }
+    // Delete All Sections from a Specific Region
+    public void deleteSectionsFromRegion(int regionId) {
+        openWriteDB();
+        mDatabase.delete(mHelper.TABLE_SECTIONS, mHelper.COLUMN_REGION_ID + " = ?", new String[] { String.valueOf(regionId) });
+    }
 
     // Getting All Sections from a Specific Region
     public Region addSectionsToRegion(Region region) {

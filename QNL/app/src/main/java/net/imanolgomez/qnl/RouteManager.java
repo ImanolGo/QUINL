@@ -63,10 +63,10 @@ public class RouteManager {
 
     public void startRetrievingRoutes()
     {
-        clearAttributes();
         new retrieveRoutes().execute();
         new retrieveSpots().execute();
         new retrieveRegions().execute();
+        new updateDatabase().execute();
     }
 
     private void clearAttributes(){
@@ -290,6 +290,21 @@ public class RouteManager {
         }
     }
 
+    private class updateDatabase extends AsyncTask<Void,Void,String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+            //To DO
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            //To DO
+        }
+
+    }
+
     private void createRoutes(String routeInfo) {
         try {
             JSONObject reader = new JSONObject(routeInfo);
@@ -366,6 +381,7 @@ public class RouteManager {
                     }
                 }
                 else {
+                    mDBManager.deleteSectionsFromRegion(id);
                     String url = ENDPOINT + REGION + "?zone=" + key;
                     new getRegionInfo().execute(url);
                 }
