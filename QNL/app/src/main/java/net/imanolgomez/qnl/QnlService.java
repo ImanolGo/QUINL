@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -56,7 +57,7 @@ public class QnlService extends Service implements LocationListener {
 
     // BeaconManager utilities
     long BLUETOOTH_SCAN_PERIOD = 300;
-    long BLUETOOTH_SCAN_INTERVAL = 1000;
+    long BLUETOOTH_SCAN_INTERVAL = 800;
     BeaconFoundCallback mBeaconCallback;
     private Handler mBluetoothHandler;
     private Timer mBluetoothTimer;

@@ -114,9 +114,9 @@ public class Spot extends RouteElement {
             int id = spotJson.getInt(TAG_ID);
             int sampleId = spotJson.getInt(TAG_SAMPLE_ID);
             int routeId = spotJson.getInt(TAG_ROUTE_ID);
-            float version = (float) spotJson.getDouble(TAG_VERSION);
+            double version = spotJson.getDouble(TAG_VERSION);
             String name = spotJson.getString(TAG_NAME);
-            float volume = (float) spotJson.getDouble(TAG_VOLUME);
+            double volume = spotJson.getDouble(TAG_VOLUME);
             double radius = spotJson.getDouble(TAG_RADIUS);
             double lat = spotJson.getDouble(TAG_LAT);
             double lon = spotJson.getDouble(TAG_LON);

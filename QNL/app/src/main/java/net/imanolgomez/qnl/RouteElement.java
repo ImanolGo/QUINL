@@ -74,7 +74,7 @@ public class RouteElement extends BasicElement{
     // member variables
     private int mSampleId;
     private int mRouteId;
-    private float mVolume;
+    private double mVolume;
     private boolean mLoop;
 
     protected static final String TAG_LOOP = "loop";
@@ -109,7 +109,7 @@ public class RouteElement extends BasicElement{
         return mSampleId;
     }
 
-    public float getVolume() {
+    public double getVolume() {
         return mVolume;
     }
 
@@ -130,7 +130,7 @@ public class RouteElement extends BasicElement{
         this.mSampleId = sampleId;
     }
 
-    public void setVolume(float volume) {
+    public void setVolume(double volume) {
         this.mVolume = volume;
     }
 

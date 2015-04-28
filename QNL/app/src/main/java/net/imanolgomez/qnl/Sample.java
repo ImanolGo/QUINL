@@ -45,7 +45,7 @@ public class Sample extends BasicElement {
 
 
             int id = sampleJson.getInt(TAG_ID);
-            float version = (float) sampleJson.getDouble(TAG_VERSION);
+            double version = sampleJson.getDouble(TAG_VERSION);
             String name = sampleJson.getString(TAG_FILE_NAME);
             String url = ENDPOINT + name;
 

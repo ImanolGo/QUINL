@@ -311,7 +311,7 @@ public class RouteManager {
             Iterator iterator = reader.keys();
             while(iterator.hasNext()){
                 String key = (String)iterator.next();
-                float version = (float) reader.getDouble(key);
+                double version =  reader.getDouble(key);
                 int id = Integer.parseInt(key);
                 if(mDBManager.isRouteUpToDate(id,version)){
                     Route route = mDBManager.getRoute(id);
