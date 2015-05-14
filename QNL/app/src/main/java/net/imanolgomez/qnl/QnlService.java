@@ -35,7 +35,7 @@ public class QnlService extends Service implements LocationListener {
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meters
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 3000 * 1; // 3 second
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 1; // 1 second
     // flag for GPS status
     boolean mIsGPSEnabled = false;
     // flag for network status
@@ -63,7 +63,7 @@ public class QnlService extends Service implements LocationListener {
     private Timer mBluetoothTimer;
 
     // Send Tracking
-    long TRACKING_SEND_INTERVAL = 2000;
+    long TRACKING_SEND_INTERVAL = 5000;
     private Timer mTrackingTimer;
 
     // Broadcast Communications
@@ -242,7 +242,7 @@ public class QnlService extends Service implements LocationListener {
     public void updateLocation() {
         mQnlLocationManager.updateLocation(mCurrentLocation);
         communicateOnUpdate();
-        sendTrackingData();
+        //sendTrackingData();
     }
 
     private void sendTrackingData(){
@@ -380,7 +380,7 @@ public class QnlService extends Service implements LocationListener {
     class UpdateSendingTask extends TimerTask {
         @Override
         public void run() {
-            //sendTrackingData();
+            sendTrackingData();
         }
     }
 
